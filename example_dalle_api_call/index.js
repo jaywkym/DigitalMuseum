@@ -7,18 +7,23 @@ const app        = express()
 
 app.use(bodyParser.json())
 
-const PORT          = 3000;
-const DALLE_API_KEY = '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';
+const PORT          = process.env.PORT
+const DALLE_API_KEY = process.env.DALLE_API_KEY
 
-const prompt = 'A dog surfing a wave, painting';
+const prompt = 'A dog surfing a wave with a swan in the background eating a horse and the sun is smiling while the cow jumped over the moon, drawn with crayon like a child drew it.';
 const amount = 1;
 
 (async() => {
 
     const image_urls = await requestDalleImages(prompt)
+
+    console.log("Image Generated. Parsing image...")
+
     const image_b64 = image_urls.data[0].b64_json
     const buffer = Buffer.from(image_b64, "base64");
     fs.writeFileSync("output.png", buffer);
+
+    console.log("Done")
 
 })()
 
@@ -50,6 +55,7 @@ async function getImageFromURL(url) {
 
 
     try {
+        console.log("Drawing Image...")
         const resp = await axios.request(request)
 
         console.log(resp)
@@ -95,6 +101,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`)
-})
+// app.listen(PORT, () => {
+//   console.log(`Example app listening on port ${PORT}`)
+// })
