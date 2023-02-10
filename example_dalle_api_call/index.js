@@ -9,7 +9,7 @@ app.use(bodyParser.json())
 
 const DALLE_API_KEY = process.env.DALLE_API_KEY
 
-const prompt = 'A dog surfing a wave with a swan in the background eating a horse and the sun is smiling while the cow jumped over the moon, drawn with crayon like a child drew it.';
+const prompt = 'The king of the dolphins with a crayon stuffed up its nose eating a pile of spaghetti with campbells chunky chicken nooodle soup. The cheese caves where the dolphin is in is dripping yummy cheese from the walls., drawn with crayon like a child drew it.';
 const amount = 1;
 
 (async() => {
