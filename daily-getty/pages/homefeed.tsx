@@ -10,6 +10,11 @@ import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import CssBaseline from '@mui/material/CssBaseline';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Button from '@mui/material/Button';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
@@ -18,6 +23,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
 import Link from 'next/link';
+import { Container } from '@mui/system';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -102,9 +108,32 @@ export default function Home() {
                             </Search>
                         </Toolbar>
                     </AppBar>
-                    <CssBaseline />
-                    <List>
-                    </List>
+                    <Container fixed>
+                        <CssBaseline />
+                        <List>
+                            <Card sx={{ maxWidth: 345 }}>
+                                <CardMedia
+                                    component="img"
+                                    alt="green iguana"
+                                    height="140"
+                                    image="/static/images/cards/contemplative-reptile.jpg"
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h5" component="div">
+                                        Lizard
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Lizards are a widespread group of squamate reptiles, with over 6,000
+                                        species, ranging across all continents except Antarctica
+                                    </Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button size="small">Share</Button>
+                                    <Button size="small">Learn More</Button>
+                                </CardActions>
+                            </Card>
+                        </List>
+                    </Container>
                     <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
                         <BottomNavigation
                             showLabels
