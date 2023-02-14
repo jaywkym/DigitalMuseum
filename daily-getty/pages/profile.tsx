@@ -20,7 +20,7 @@ import List from '@mui/material/List';
 import Link from 'next/link';
 import { Container } from '@mui/system';
 
-export default function Home() {
+export default function Profile() {
 
     const [value, setValue] = React.useState(0);
 
