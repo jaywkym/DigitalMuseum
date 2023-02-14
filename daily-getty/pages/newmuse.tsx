@@ -58,13 +58,13 @@ export default function NewMuse() {
                 <Box sx={{ flexGrow: 1 }}>
                     <CssBaseline />
                     <Container fixed>
-                        <h1>
+                        <h1 color='white'>
                             Prompt of the Day!
                         </h1>
                         <FormControl>
-                            <FormLabel id="prompt">Prompt of the Day</FormLabel>
+                            <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
                             <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required />
-                            <FormHelperText id="prompt-helper">Limit your answer to 100 words or less.</FormHelperText>
+                            <FormHelperText id="prompt-helper" color='info'>Limit your answer to 100 words or less.</FormHelperText>
                         </FormControl>
                     </Container>
                     <Container fixed>

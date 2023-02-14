@@ -36,7 +36,7 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1, bgcolor: '#262626' }}>
                     <Container fixed>
                         <div>
                             <h1>
