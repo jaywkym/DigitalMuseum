@@ -1,14 +1,7 @@
 import * as React from 'react';
 import Head from 'next/head'
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
+import { green } from '@mui/material/colors';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import CssBaseline from '@mui/material/CssBaseline';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -16,54 +9,45 @@ import HomeIcon from '@mui/icons-material/Home';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Paper from '@mui/material/Paper';
-import List from '@mui/material/List';
 import Link from 'next/link';
+import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress } from '@mui/material';
+import { Container } from '@mui/system';
 
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
+export default function NewMuse() {
+    const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
+    const [loading, setLoading] = React.useState(false); //Loading ARTWORK
+    const [success, setSuccess] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
+    const timer = React.useRef<number>();
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
+    React.useEffect(() => {
+        return () => {
+            clearTimeout(timer.current);
+        };
+    }, []);
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue((event.target as HTMLInputElement).value);
+    };
+
+    const buttonSx = {
+        ...(success && {
+            bgcolor: green[500],
+            '&:hover': {
+                bgcolor: green[700],
             },
-        },
-    },
-}));
+        }),
+    };
 
-export default function Home() {
-
-    const [value, setValue] = React.useState(0);
+    const handleButtonClick = () => {
+        if (!loading) {
+            setSuccess(false);
+            setLoading(true);
+            timer.current = window.setTimeout(() => {
+                setSuccess(true);
+                setLoading(false);
+            }, 2000);
+        }
+    };
 
     return (
         <>
@@ -73,8 +57,50 @@ export default function Home() {
             <main>
                 <Box sx={{ flexGrow: 1 }}>
                     <CssBaseline />
-                    <List>
-                    </List>
+                    <Container fixed>
+                        <h1>
+                            Prompt of the Day!
+                        </h1>
+                        <FormControl>
+                            <FormLabel id="prompt">Prompt of the Day</FormLabel>
+                            <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required />
+                            <FormHelperText id="prompt-helper">Limit your answer to 100 words or less.</FormHelperText>
+                        </FormControl>
+                    </Container>
+                    <Container fixed>
+                        <FormControl>
+                            <FormLabel id="art-style">Choose an art style</FormLabel>
+                            <RadioGroup
+                                aria-labelledby="art-style-radio"
+                                name="art-style-radio"
+                                value={value}
+                                onChange={handleChange}
+                            >
+                                <FormControlLabel value="realism" control={<Radio />} label="Realism" />
+                                <FormControlLabel value="animated" control={<Radio />} label="Animated" />
+                                <FormControlLabel value="pop art" control={<Radio />} label="Pop Art" />
+                                <FormControlLabel value="abstract" control={<Radio />} label="Abstract" />
+                                <FormControlLabel value="retro" control={<Radio />} label="Retro" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Container>
+                    <Container fixed>
+                        <Button variant="contained" color="success" onClick={handleButtonClick}>
+                            Submit Prompt for Your Muse!
+                        </Button>
+                        {loading && (
+                            <CircularProgress
+                                size={68}
+                                sx={{
+                                    color: green[500],
+                                    position: 'absolute',
+                                    top: -6,
+                                    left: -6,
+                                    zIndex: 1,
+                                }}
+                            />
+                        )}
+                    </Container>
                     <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
                         <BottomNavigation
                             showLabels
