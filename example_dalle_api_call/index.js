@@ -85,7 +85,11 @@ async function requestDalleImages(prompt) {
         }
     }
 
+    console.log(dalle_request)
+
     try {
+
+        
         const resp = await axios.request(dalle_request);
 
         console.log(resp.status)
