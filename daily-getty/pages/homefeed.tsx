@@ -20,6 +20,8 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import IosShareIcon from '@mui/icons-material/IosShare';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
 import Link from 'next/link';
@@ -67,7 +69,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function Home() {
+const handleLike = () => { } //Handle Adding Like to DataBase
+
+const handleShare = () => { } //Overlay Share Window
+
+export default function HomeFeed() {
 
     const [value, setValue] = React.useState(0);
 
@@ -112,24 +118,48 @@ export default function Home() {
                         <CssBaseline />
                         <List>
                             <Card sx={{ maxWidth: 345 }}>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    User1
+                                </Typography>
                                 <CardMedia
                                     component="img"
                                     alt="green iguana"
                                     height="140"
                                     image="/static/images/cards/contemplative-reptile.jpg"
                                 />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        Lizard
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Lizards are a widespread group of squamate reptiles, with over 6,000
-                                        species, ranging across all continents except Antarctica
-                                    </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <Button size="small">Share</Button>
-                                    <Button size="small">Learn More</Button>
+                                <CardActions> {/*Like Button*/}
+                                    <Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
+                                    <Button endIcon={< IosShareIcon onClick={handleShare} />} />
+                                </CardActions>
+                            </Card>
+                            <Card sx={{ maxWidth: 345 }}>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    User2
+                                </Typography>
+                                <CardMedia
+                                    component="img"
+                                    alt="green iguana"
+                                    height="140"
+                                    image="/static/images/cards/contemplative-reptile.jpg"
+                                />
+                                <CardActions> {/*Like Button*/}
+                                    <Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
+                                    <Button endIcon={< IosShareIcon onClick={handleShare} />} />
+                                </CardActions>
+                            </Card>
+                            <Card sx={{ maxWidth: 345 }}>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    User3
+                                </Typography>
+                                <CardMedia
+                                    component="img"
+                                    alt="green iguana"
+                                    height="140"
+                                    image="/static/images/cards/contemplative-reptile.jpg"
+                                />
+                                <CardActions> {/*Like Button*/}
+                                    <Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
+                                    <Button endIcon={< IosShareIcon onClick={handleShare} />} />
                                 </CardActions>
                             </Card>
                         </List>
