@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { signIn, signOut } from 'next-auth/react'
+import Image from 'next/image';
 
 type ImageResponse = {
     success: boolean,
@@ -75,7 +76,7 @@ function SignInPage() {
             <br></br>
             <br></br>
 
-            <img src={b64_image} alt={"Base 64 Image"}></img>
+            <Image src={b64_image} alt={"Base 64 Image"}></Image>
         </>
     )
 }
