@@ -5,7 +5,7 @@ function SignInPage() {
 
     return (
         <>
-            <p>Test</p>
+            <p>Test Login Page</p>
             <button onClick={() =>{
                 signIn();
             }}>Sign In</button>
