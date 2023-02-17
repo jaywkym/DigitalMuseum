@@ -17,7 +17,7 @@ import type {
 const useImage = (prompt: string, amount: string): 
     [string, DalleError, () => void] => {
 
-    const [b64_image, setImage] = useState(null);
+    const [b64_image, setImage]: [string, Dispatch<string>] = useState(null);
     const [error    , setError]: [DalleError, Dispatch<DalleError>] = useState(null);
 
     function generate() {
