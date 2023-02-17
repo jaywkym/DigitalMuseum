@@ -1,32 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-require('dotenv').config()
+import type { 
+    DalleError, 
+    DalleResponse,
+    ImageResponse
+}  from "../../../types/DalleResponseTypes";
 
 const DALLE_API_KEY = process.env.DALLE_API_KEY
 const url = 'https://api.openai.com/v1/images/generations'
-
-type DalleResponse = {
-    created: number,
-    data   : {
-        b64_json: string
-    }[],
-    success: boolean
-}
-
-type DalleError = {
-    code: number,
-    message: string,
-    param: string,
-    type: string 
-}
-
-type ImageResponse = {
-  success: boolean,
-  amount : number,
-  image  : DalleResponse,
-  error  : DalleError,
-}
 
 /**
  * 
