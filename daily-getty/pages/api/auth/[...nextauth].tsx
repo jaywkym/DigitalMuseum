@@ -1,5 +1,4 @@
-import { Sign, randomBytes, randomUUID } from "crypto";
-import { Session } from "inspector";
+import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
 import type { NextAuthOptions } from "next-auth" 
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -38,7 +37,13 @@ type CustomUserToken = {
 }
 
 type CustomSession = {
-
+    user: {
+        name: string,
+        email: string,
+        image: string,
+        id: string,
+    },
+    expires: string
 }
 
 type Post = {
@@ -112,7 +117,7 @@ const authOptions: NextAuthOptions = {
 
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
-            console.log("Signin")
+            // console.log("Signin")
             // console.log({
             //     user: user,
             //     account: account,
@@ -129,35 +134,37 @@ const authOptions: NextAuthOptions = {
         //     console.log(url)
         //     return url
         //   },
-          async session( {session, user, token} ) {
+        /* Callback whenever a session token is created/updated */
+          async session( {session, token} ) {
 
-            console.log("Session updated!")
-            console.log(session)
-            console.log(user)
-            console.log(token)
-            
-            // if(session.user)
-            //     session.user.id = token.id
+            // console.log("Session updated!")
 
-            return session
+            /* Create new session object */
+            const new_session = {
+                user: {
+                    name: token.name,
+                    email: token.email,
+                    image: token.picture,
+                    id: token.id
+                },
+                expires: session.expires
+            } as CustomSession;
+
+            // console.log(new_session)
+
+            return new_session
           },
-          async jwt( {token, user, account, profile, isNewUser }) {
+
+          /* Callback whenever jwt token is created/ updated */
+          async jwt( {token, user}) {
             
-            console.log("JWT updated")
-
-            console.log(token)
+            // console.log("JWT updated")
  
-
+            /* Update token id from user id */
             if(user)
                 token.id = user.id
 
-            const new_token = {} as CustomUserToken
-
-            new_token.user_id = user.id;
-            new_token.email = user.email;
-            new_token.username = user.name;
-
-            return new_token;
+            return token;
           }
     },
 
