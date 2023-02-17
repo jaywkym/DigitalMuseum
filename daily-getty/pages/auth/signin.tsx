@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { signIn, signOut } from 'next-auth/react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import useImage from '../dalle/images'
 import Image from 'next/image';
 
@@ -8,6 +8,14 @@ function SignInPage() {
     const [prompt, setPrompt] = useState('')
     const [amount, setAmount] = useState('')
     const [ b64_image, error, generateImage ] = useImage(prompt, amount);
+
+    const { data: session, status } = useSession()
+
+    if (status === "authenticated") {
+        console.log(session)
+    } else {
+        console.log("NOT LOGGED IN")
+    }
 
     return (
         <>
