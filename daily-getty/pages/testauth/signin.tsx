@@ -11,7 +11,7 @@ function SignInPage() {
 
     return (
         <>
-            <p>Test Login Page</p>
+            <p>Test AUTH Login Page</p>
             <button onClick={() =>{
                 signIn();
             }}>Sign In</button>

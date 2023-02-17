@@ -117,7 +117,7 @@ const authOptions: NextAuthOptions = {
 
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
-            console.log("Signin")
+            // console.log("Signin")
             // console.log({
             //     user: user,
             //     account: account,
@@ -137,7 +137,7 @@ const authOptions: NextAuthOptions = {
         /* Callback whenever a session token is created/updated */
           async session( {session, token} ) {
 
-            console.log("Session updated!")
+            // console.log("Session updated!")
 
             /* Create new session object */
             const new_session = {
@@ -150,7 +150,7 @@ const authOptions: NextAuthOptions = {
                 expires: session.expires
             } as CustomSession;
 
-            console.log(new_session)
+            // console.log(new_session)
 
             return new_session
           },
@@ -158,7 +158,7 @@ const authOptions: NextAuthOptions = {
           /* Callback whenever jwt token is created/ updated */
           async jwt( {token, user}) {
             
-            console.log("JWT updated")
+            // console.log("JWT updated")
  
             /* Update token id from user id */
             if(user)
