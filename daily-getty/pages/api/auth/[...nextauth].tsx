@@ -1,5 +1,4 @@
-import { Sign, randomBytes, randomUUID } from "crypto";
-import { Session } from "inspector";
+import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
 import type { NextAuthOptions } from "next-auth" 
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -136,7 +135,7 @@ const authOptions: NextAuthOptions = {
         //     return url
         //   },
         /* Callback whenever a session token is created/updated */
-          async session( {session, user, token} ) {
+          async session( {session, token} ) {
 
             console.log("Session updated!")
 
@@ -157,7 +156,7 @@ const authOptions: NextAuthOptions = {
           },
 
           /* Callback whenever jwt token is created/ updated */
-          async jwt( {token, user, account, profile, isNewUser }) {
+          async jwt( {token, user}) {
             
             console.log("JWT updated")
  
