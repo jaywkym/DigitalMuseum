@@ -5,9 +5,9 @@ import Image from 'next/image';
 
 function SignInPage() {
 
-    const [prompt, setPrompt] = useState('')
+    const [prompt1, setPrompt] = useState('')
     const [amount, setAmount] = useState('')
-    const [ b64_image, error, generateImage ] = useImage(prompt, amount);
+    const [ b64_image, error, loading, generateImage ] = useImage(prompt1, amount);
 
     console.log(error);
        
@@ -24,14 +24,14 @@ function SignInPage() {
             <br></br>
             <br></br>
 
-            <input type={'text'} value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+            <input type={'text'} value={prompt1} onChange={(e) => setPrompt(e.target.value)} />
             <input type={'number'} step={'1'} value={amount} onChange={(e) => setAmount(e.target.value)} />
             <input type={'button'} onClick={generateImage} value={'Generate Image'} />
 
             <br></br>
             <br></br>
 
-            <Image src={b64_image !== null? b64_image : "/"} alt={"Base 64 Image"} width={500} height={500}></Image>
+            {!loading && <Image src={b64_image} alt={"Base 64 Image"} width={500} height={500}></Image>}
         </>
     )
 }
