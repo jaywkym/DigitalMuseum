@@ -25,7 +25,10 @@
     "next-auth": "^4.19.2",
     "react": "^18.2.0",
     "react-dom": "18.2.0",
+<<<<<<< HEAD
     "react-firebase-hooks": "^5.1.1",
+=======
+>>>>>>> 42dc59a (Fixed dependency issues)
     "typescript": "4.9.5"
   },
   "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
