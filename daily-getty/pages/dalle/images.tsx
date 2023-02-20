@@ -7,23 +7,30 @@ import type {
 /**
  * useImage: This hook provides the functionality to generate an image from
  *           the DALLE api. The hook requires two parameters to generate the
- *           image. The image will actually be generated when the generate
- *           function is called.
+ *           image. The image will start being generated when the generate
+ *           function is called. A loading variable is also provided to signify
+ *           when the image has finished generating and it is safe to use.
  * @param prompt Prompt for image
  * @param amount Amount of images requested
- * @returns [b64_image, error, generate] A base64 encoded image, an error, a
- *          function to generate the image.
+ * @returns [b64_image, error, loading, generate] A base64 encoded image, an error, a
+ *          loading boolean, and a function to generate the image.
  */
 const useImage = (prompt: string, amount: string): 
-    [string, DalleError, () => void] => {
+    [string, DalleError, boolean, () => void] => {
 
-    const [b64_image, setImage]: [string, Dispatch<string>] = useState(null);
+    const [b64_image, setImage]: [string, Dispatch<string>] = useState('');
     const [error    , setError]: [DalleError, Dispatch<DalleError>] = useState(null);
+    const [loading  , setLoading]: [boolean, Dispatch<boolean>] = useState(false);
 
     function generate() {
 
         if(!checkParams(prompt, Number.parseInt(amount)))
             return;
+
+        if(loading)
+            return;
+
+        setLoading(true);
 
         const request = {
             method: 'POST',
@@ -45,10 +52,12 @@ const useImage = (prompt: string, amount: string):
             } else {
                 setError(res.error)
             }
+
+            setLoading(false);
         })
     };
     
-    return [b64_image, error, generate];
+    return [b64_image, error, loading, generate];
 }
 
 function checkParams(prompt: string, amount: number): boolean {

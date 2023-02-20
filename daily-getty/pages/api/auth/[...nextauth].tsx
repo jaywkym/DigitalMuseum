@@ -128,6 +128,12 @@ const authOptions: NextAuthOptions = {
 
             /* TOTO - Verify if new user (Create account) */
 
+            /* TODO - Check if user has account (use google id/ google email) */
+
+            /* TODO - Pull account info from the database */
+
+            /* TODO - If account does not exist --> Create account from google info */
+
             return true
           },
         //   async redirect({ url, baseUrl }) {
