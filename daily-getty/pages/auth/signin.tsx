@@ -91,7 +91,7 @@ export default function SignIn() {
               Sign In
             </Button>
 
-            <Button
+            <Button 
 
                 type="submit"
                 fullWidth
@@ -100,8 +100,7 @@ export default function SignIn() {
 
                 onClick={() =>{
                     signIn();
-                }}
-                >
+                }}>
 
                 Sign In With Google
             
