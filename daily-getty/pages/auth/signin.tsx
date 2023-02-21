@@ -9,6 +9,8 @@ function SignInPage() {
     const [amount, setAmount] = useState('')
     const [ b64_image, error, generateImage ] = useImage(prompt, amount);
 
+    console.log(error);
+       
     return (
         <>
             <p>Test Login Page</p>
