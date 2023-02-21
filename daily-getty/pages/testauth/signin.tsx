@@ -21,15 +21,6 @@ function SignInPage() {
 
             <br></br>
             <br></br>
-
-            <input type={'text'} value={prompt} onChange={(e) => setPrompt(e.target.value)} />
-            <input type={'number'} step={'1'} value={amount} onChange={(e) => setAmount(e.target.value)} />
-            <input type={'button'} onClick={generateImage} value={'Generate Image'} />
-
-            <br></br>
-            <br></br>
-
-            <Image src={b64_image !== null? b64_image : "/"} alt={"Base 64 Image"} width={500} height={500}></Image>
         </>
     )
 }
