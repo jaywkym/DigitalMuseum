@@ -142,7 +142,7 @@ const authOptions: NextAuthOptions = {
             }
             
 
-            fetch('/api/database/checkAccount', request)
+            fetch('http://localhost:3000/api/database/checkAccount', request)
             .then(res => res.json())
             .then(resj => {
                 const res = resj as DatabaseResponse
