@@ -3,7 +3,7 @@ import useImage from './dalle/images';
 import Head from 'next/head'
 import { green } from '@mui/material/colors';
 import Box from '@mui/material/Box';
-import Image from 'Next/image';
+import Image from 'next/image';
 import CssBaseline from '@mui/material/CssBaseline';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';

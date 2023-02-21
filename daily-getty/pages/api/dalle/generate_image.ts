@@ -43,7 +43,7 @@ export default async function request_image_handler(
     const prompt = req.body.prompt;
     const amount = req.body.amount;
 
-    const image  = await requestDalleImages(prompt, amount);
+    const image  = await requestToDalleAPI(prompt, amount);
 
     /* ERROR generating image for various reasons */
     if(!image.success) {
@@ -68,7 +68,7 @@ export default async function request_image_handler(
  * @param amount Amount of images to request from DALLE
  * @returns DalleResponse representing a successful or error response from DALLE
  */
-async function requestDalleImages(prompt: string, amount: string) {
+async function requestToDalleAPI(prompt: string, amount: string) {
 
     /* Generate dalle post request information */
     const dalle_request = {
