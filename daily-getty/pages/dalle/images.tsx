@@ -20,7 +20,7 @@ const useImage = (prompt: string, amount: string):
 
     const [b64_image, setImage]: [string, Dispatch<string>] = useState('');
     const [error    , setError]: [DalleError, Dispatch<DalleError>] = useState(null);
-    const [loading  , setLoading]: [boolean, Dispatch<boolean>] = useState(false);
+    const [loading  , setLoading] = useState(false);
 
     function generate() {
 
