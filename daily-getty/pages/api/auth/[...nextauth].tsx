@@ -5,7 +5,10 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import FacebookProvider from "next-auth/providers/facebook"
 import GoogleProvider from "next-auth/providers/google";
 import InstagramProvider from "next-auth/providers/instagram";
-import TwitterProvider from "next-auth/providers/twitter"
+import TwitterProvider from "next-auth/providers/twitter";
+import type { 
+    DatabaseResponse
+}  from "../../../types/FirebaseResponseTypes";
 
 type LoginCredentials = {
     username: string
@@ -121,12 +124,37 @@ const authOptions: NextAuthOptions = {
             // console.log({
             //     user: user,
             //     account: account,
-            //     profile: profile,
+            //     profile: profile, //email verified
             //     email: email,
             //     credentials: credentials
             // })
 
-            /* TOTO - Verify if new user (Create account) */
+            /* TODO - Verify if new user (Create account) */
+
+            const request = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'email': user.email
+                })
+            }
+            
+
+            fetch('/api/database/checkAccount', request)
+            .then(res => res.json())
+            .then(resj => {
+                const res = resj as DatabaseResponse
+                if(res.success) {
+                   console.log('got back ok')
+                } else {
+                    console.log('in the else statement')
+                }
+            })
+            
+        
+            //If email is verified return false
 
             return true
           },
