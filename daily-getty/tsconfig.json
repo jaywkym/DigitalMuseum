@@ -19,11 +19,6 @@
       "@/*": ["./*"]
     },
   },
-<<<<<<< HEAD
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/*.tsx"],
-  "exclude": ["node_modules"]
-=======
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "tools"]
->>>>>>> dbdd516d12d6b185f5aede2a6708fb44c82a72a1
 }
