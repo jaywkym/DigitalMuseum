@@ -58,6 +58,7 @@ async function checkExistence(email: string) {
     const dbRef = ref(getDatabase());
     get(child(dbRef, `Users/${email}`)).then((snapshot) => {
         if (snapshot.exists()) {
+            console.log("User exists")
             console.log(snapshot.val());
             return true;
         } else {
