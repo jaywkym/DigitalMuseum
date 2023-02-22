@@ -1,10 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DalleError, 
     DalleResponse,
-    ImageResponse
+    ImageResponse,
+   
 }  from "../../../types/DalleResponseTypes";
+
+import type { 
+    DatabaseImage
+}  from "../../../types/FirebaseResponseTypes";
 
 const DALLE_API_KEY = process.env.DALLE_API_KEY
 const url = 'https://api.openai.com/v1/images/generations'
@@ -52,6 +57,16 @@ export default async function request_image_handler(
 
         return;
     } 
+
+    console.log(image);
+
+    
+
+    // const userAccount: DatabaseImage = {
+    //     id: 
+      
+    // }
+
 
     /* Respond with image information */
     res.status(200).json(generateImageResponse(true, amount, image))

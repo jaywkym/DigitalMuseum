@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react'
 import useImage from '../dalle/images'
+import useFriends from '../database/utils';
 import Image from 'next/image';
 
 function SignInPage() {
@@ -8,6 +9,8 @@ function SignInPage() {
     const [prompt, setPrompt] = useState('')
     const [amount, setAmount] = useState('')
     const [ b64_image, error, generateImage ] = useImage(prompt, amount);
+    const {data: session, status} = useSession()
+    const [friends, loading, pullFriends] = useFriends(session? (session.user as any).id: 0)
 
     return (
         <>
@@ -35,9 +38,7 @@ function SignInPage() {
     )
 }
 
-function test() {
-
-    
+function test(id) {
 
     const request = {
         method: 'POST',
@@ -45,11 +46,14 @@ function test() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-
+            id: id,
+            friend_id: 12342
         })
     }
 
-    fetch('/api/database/testdb', request)
+    console.log(request)
+
+    fetch('http://localhost:3000/api/database/addFriend', request)
     .then(res => res.json())
     .then(res => {
        console.log(res)

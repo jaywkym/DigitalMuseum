@@ -1,13 +1,13 @@
 import { database } from "../../../firebase/clientApp";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
     DatabaseResponse,
-    DatabaseUser
+    DatabaseFriends
 }  from "../../../types/FirebaseResponseTypes";
 
-export default async function checkUser (
+export default async function getFriends (
     req: NextApiRequest,
     res: NextApiResponse<DatabaseResponse>
   ) {
@@ -24,67 +24,87 @@ export default async function checkUser (
         return;
     }
 
-    const body = req.body as DatabaseUser;
-    const user_email = body.email;
+    const user_id = req.body.id;
+    const friend_id = req.body.friend_id
 
-    if(user_email === undefined) {
+    // const db = database;
+    // const dbref = ref(db, `friends/${user_id}`)
+    const friends_obj: DatabaseFriends = await getFriendsForUserById(user_id)
+
+    console.log(friends_obj)
+    if(!friends_obj.friends)
+        friends_obj.friends = [];
+
+    if(friends_obj.friends.includes(friend_id)) {
         res.status(200).json(
             generateDbResponse(
                 false,
-                generateError(-10, 'No user email')
+                generateError(-100, "User is already a friend")
             )
         )
-
         return;
     }
 
+
+    friends_obj.friends.push(friend_id)
+    console.log(friends_obj)
+
     const db = database;
-    const dbref = ref(db, 'users/')
-    const users = await asyncOnValue(dbref);
-
-     /* Check all users if email is attached to user */
-    for(let user_id in users) {
-        
-        let user: DatabaseUser = users[user_id]
-
-        if(user.email === user_email) {
-            res.status(200).json(
-                generateDbResponse(
-                    true,
-                    {} as DatabaseError
-                )
-            )
-
-            return;
-        }
-    }
+    set(ref(db, `friends/${user_id}`), friends_obj)
 
     res.status(200).json(
         generateDbResponse(
-            false,
-            generateError(-2, 'No account')
+            true,
+            {} as DatabaseError
         )
     )
+   
+  
+}
+
+async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: id
+        })
+    }
+    
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/database/getFriends', request)
+        .then(res => res.json())
+        .then(res => {
+           resolve(res.friends)
+        })
+        .catch(err => {
+            reject(err)
+        })
+    })
 
 }
 
-function asyncOnValue(ref): Promise<DatabaseUser> {
+
+function asyncOnValue(ref): Promise<DatabaseFriends> {
 
     return new Promise((resolve) => {
         onValue(ref, (snapshot) => {
             const data = snapshot.val();
-            resolve(data as DatabaseUser)
+            resolve(data as DatabaseFriends)
         })
     })
 }
 
-/**
+  /**
  * 
- * generateImageResponse: Generates an ImageResponse object from given inputs.
+ * generateDbResponse: Generates an DatabaseResponse object from given inputs.
  * 
  * @param success Boolean to determine successful response
+ * @param user A DatabaseUser object filled with user information
  * @param error A DatabaseError Object filled with error information
- * @returns ImageResponse
+ * @returns DatabaseResponse
  */
 function generateDbResponse(
     success: boolean, 
