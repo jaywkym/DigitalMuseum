@@ -5,7 +5,11 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import FacebookProvider from "next-auth/providers/facebook"
 import GoogleProvider from "next-auth/providers/google";
 import InstagramProvider from "next-auth/providers/instagram";
-import TwitterProvider from "next-auth/providers/twitter"
+import TwitterProvider from "next-auth/providers/twitter";
+import type { 
+    DatabaseResponse,
+    DatabaseUser
+}  from "../../../types/FirebaseResponseTypes";
 
 type LoginCredentials = {
     username: string
@@ -121,19 +125,32 @@ const authOptions: NextAuthOptions = {
             // console.log({
             //     user: user,
             //     account: account,
-            //     profile: profile,
+            //     profile: profile, //email verified
             //     email: email,
             //     credentials: credentials
             // })
 
-            /* TOTO - Verify if new user (Create account) */
+            /* TODO - Verify if new user (Create account) */
 
-            /* TODO - Check if user has account (use google id/ google email) */
+           console.log("GOT HERE 1")
+            const account_exists = await check_user_exists(profile.email);
+            console.log(account_exists)
 
-            /* TODO - Pull account info from the database */
+            /* Log in user if their account exists */
+            if(account_exists)
+                return true;
 
-            /* TODO - If account does not exist --> Create account from google info */
+            const userAccount: DatabaseUser = {
+                id: randomUUID?.() ?? randomBytes(32).toString("hex"),
+                name: profile.name,
+                email: profile.email,
+                googleId: null
 
+            }
+
+            /* Create user account if it does not exist */
+            await create_account(userAccount)
+            
             return true
           },
         //   async redirect({ url, baseUrl }) {
@@ -182,4 +199,56 @@ const authOptions: NextAuthOptions = {
     }
 }
 
+async function check_user_exists(email: string): Promise<boolean> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'email': email
+        })
+    }
+
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/database/checkForUser', request)
+        .then(res => res.json())
+        .then((resj) => {
+            const res = resj as DatabaseResponse
+            console.log(res)
+            /* Log in user if account exists */
+            if(res.success) 
+               resolve(true)
+
+            resolve(false)
+        })
+        .catch(err => {
+            reject(false);
+        })
+    })
+    
+}
+
+function create_account(userAccount: DatabaseUser) {
+    const create_account_req = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userAccount)
+    }
+
+    fetch('http://localhost:3000/api/database/createUser', create_account_req)
+    .then(res => res.json())
+    .then(resj => {
+
+        const res = resj as DatabaseResponse;
+        console.log(res)
+    })
+    .catch(err => {
+        console.log(err);
+    })
+}
+
 export default NextAuth(authOptions)
+
