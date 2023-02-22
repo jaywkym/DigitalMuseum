@@ -1,5 +1,5 @@
 import { database } from "../../../firebase/clientApp";
-import { getDatabase, push, ref, set, get, child, onValue } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
@@ -39,11 +39,10 @@ export default async function checkUser (
     }
 
     const db = database;
-
     const dbref = ref(db, 'users/')
-
     const users = await asyncOnValue(dbref);
 
+    /* Check all users if email is attached to user */
     for(let user_id in users) {
         
         let user: DatabaseUser = users[user_id]
@@ -81,11 +80,11 @@ function asyncOnValue(ref): Promise<DatabaseUser> {
 
 /**
  * 
- * generateImageResponse: Generates an ImageResponse object from given inputs.
+ * generateDbResponse: Generates an DatabaseResponse object from given inputs.
  * 
  * @param success Boolean to determine successful response
  * @param error A DatabaseError Object filled with error information
- * @returns ImageResponse
+ * @returns DatabaseResponse
  */
 function generateDbResponse(
     success: boolean, 
