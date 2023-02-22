@@ -193,7 +193,7 @@ const authOptions: NextAuthOptions = {
 
     /* Custom pages that will direct the user to the provider's login page */
     pages: {
-        // signIn: '/auth/signin',
+         signIn: '/auth/signin',
         /* TODO - Add custom sign in pages for multiple providers. Add error
                   and sign out pages if needed */
     }

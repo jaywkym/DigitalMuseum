@@ -30,6 +30,7 @@ function SignInPage() {
             <br></br>
 
             <Image src={b64_image !== null? b64_image : "/"} alt={"Base 64 Image"} width={500} height={500}></Image>
+
         </>
     )
 }

@@ -1,7 +1,9 @@
 import * as React from 'react';
+import useImage from './dalle/images';
 import Head from 'next/head'
 import { green } from '@mui/material/colors';
 import Box from '@mui/material/Box';
+import Image from 'next/image';
 import CssBaseline from '@mui/material/CssBaseline';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -18,6 +20,10 @@ export default function NewMuse() {
     const [loading, setLoading] = React.useState(false); //Loading ARTWORK
     const [success, setSuccess] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
     const timer = React.useRef<number>();
+    const [prompt, setPrompt] = React.useState('');
+    const [b64_image, error, loading1, generateImage] = useImage(prompt, "1");
+
+    console.log(b64_image);
 
     React.useEffect(() => {
         return () => {
@@ -38,16 +44,16 @@ export default function NewMuse() {
         }),
     };
 
-    const handleButtonClick = () => {
-        if (!loading) {
-            setSuccess(false);
-            setLoading(true);
-            timer.current = window.setTimeout(() => {
-                setSuccess(true);
-                setLoading(false);
-            }, 2000);
-        }
-    };
+    // const handleButtonClick = () => {
+    //     if (!loading) {
+    //         setSuccess(false);
+    //         setLoading(true);
+    //         timer.current = window.setTimeout(() => {
+    //             setSuccess(true);
+    //             setLoading(false);
+    //         }, 2000);
+    //     }
+    // };
 
     return (
         <>
@@ -63,29 +69,29 @@ export default function NewMuse() {
                         </h1>
                         <FormControl>
                             <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
-                            <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required />
+                            <TextField id="prompt-answer" onChange={ (e) => {setPrompt(e.target.value)} } label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required />
                             <FormHelperText id="prompt-helper" color='info'>Limit your answer to 100 words or less.</FormHelperText>
                         </FormControl>
                     </Container>
                     <Container fixed>
                         <FormControl>
-                            <FormLabel id="art-style">Choose an art style</FormLabel>
+                            {/* <FormLabel id="art-style">Choose an art style</FormLabel> */}
                             <RadioGroup
                                 aria-labelledby="art-style-radio"
                                 name="art-style-radio"
                                 value={value}
                                 onChange={handleChange}
                             >
-                                <FormControlLabel value="realism" control={<Radio />} label="Realism" />
+                                {/* <FormControlLabel value="realism" control={<Radio />} label="Realism" />
                                 <FormControlLabel value="animated" control={<Radio />} label="Animated" />
                                 <FormControlLabel value="pop art" control={<Radio />} label="Pop Art" />
                                 <FormControlLabel value="abstract" control={<Radio />} label="Abstract" />
-                                <FormControlLabel value="retro" control={<Radio />} label="Retro" />
+                                <FormControlLabel value="retro" control={<Radio />} label="Retro" /> */}
                             </RadioGroup>
                         </FormControl>
                     </Container>
                     <Container fixed>
-                        <Button variant="contained" color="success" onClick={handleButtonClick}>
+                        <Button variant="contained" color="success" onClick={generateImage}>
                             Submit Prompt for Your Muse!
                         </Button>
                         {loading && (
@@ -100,6 +106,11 @@ export default function NewMuse() {
                                 }}
                             />
                         )}
+                    </Container>
+                    <br>
+                    </br>
+                    <Container>
+                        <Image alt="image" height={500} width={500} src={b64_image}></Image>
                     </Container>
                     <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
                         <BottomNavigation
