@@ -132,6 +132,7 @@ const authOptions: NextAuthOptions = {
 
             /* TODO - Verify if new user (Create account) */
 
+<<<<<<< HEAD
            console.log("GOT HERE 1")
             const account_exists = await check_user_exists(profile.email);
             console.log(account_exists)
@@ -151,6 +152,14 @@ const authOptions: NextAuthOptions = {
             /* Create user account if it does not exist */
             await create_account(userAccount)
             
+=======
+            /* TODO - Check if user has account (use google id/ google email) */
+
+            /* TODO - Pull account info from the database */
+
+            /* TODO - If account does not exist --> Create account from google info */
+
+>>>>>>> dbdd516d12d6b185f5aede2a6708fb44c82a72a1
             return true
           },
         //   async redirect({ url, baseUrl }) {
