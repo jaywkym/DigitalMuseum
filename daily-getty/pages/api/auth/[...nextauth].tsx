@@ -132,7 +132,7 @@ const authOptions: NextAuthOptions = {
 
             /* TODO - Verify if new user (Create account) */
 
-           console.log("GOT HERE 1")
+           
             const account_exists = await check_user_exists(profile.email);
             console.log(account_exists)
 
@@ -145,7 +145,6 @@ const authOptions: NextAuthOptions = {
                 name: profile.name,
                 email: profile.email,
                 googleId: null
-
             }
 
             /* Create user account if it does not exist */
