@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react'
 import useImage from '../dalle/images'
-import { useFriends } from '../database/utils';
+import useFriends from '../database/utils';
 import Image from 'next/image';
 
 function SignInPage() {

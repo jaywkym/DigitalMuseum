@@ -1,8 +1,7 @@
-import {useState, useEffect, Dispatch } from "react";
-import { DatabaseFriends } from "@/types/FirebaseResponseTypes";
+import { useState } from "react";
 
 
-export function useFriends(id: string):
+export default function useFriends(id: string):
     [string[], boolean, () => void]{
     
     const [friends, setFriends] = useState([]);
