@@ -10,10 +10,17 @@ export type DatabaseResponse = {
   error  : DatabaseError,
 }
 
+export type DatabaseUserResponse = {
+  success: boolean,
+  user   : DatabaseUser,
+  error  : DatabaseError
+}
+
 export type DatabaseUser = {
   id: string,
   name: string,
   email: string,
+  image: string,
   googleId: string,
 }
 

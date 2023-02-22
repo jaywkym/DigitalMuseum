@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Head from 'next/head'
+import { useSession } from 'next-auth/react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -76,6 +77,7 @@ const handleShare = () => { } //Overlay Share Window
 export default function HomeFeed() {
 
     const [value, setValue] = React.useState(0);
+
 
     return (
         <>
