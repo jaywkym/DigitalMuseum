@@ -93,27 +93,9 @@ export default function SignIn() {
               Sign In
             </Button> */}
 
-<<<<<<< HEAD
-            <Button
-
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-
-                onClick={() =>{
-                    signIn();
-                }}
-                >
-
-                Sign In With Google
-            
-            </Button>
-=======
     <GoogleButton
       onClick={() => { signIn('google', {callbackUrl: '/homefeed'} )}}
     />
->>>>>>> ff876cc (image display working)
 
             <Grid container>
               <Grid item xs>
