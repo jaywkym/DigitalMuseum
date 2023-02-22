@@ -8,7 +8,8 @@ import InstagramProvider from "next-auth/providers/instagram";
 import TwitterProvider from "next-auth/providers/twitter";
 import type { 
     DatabaseResponse,
-    DatabaseUser
+    DatabaseUser,
+    DatabaseUserResponse
 }  from "../../../types/FirebaseResponseTypes";
 
 type LoginCredentials = {
@@ -121,7 +122,7 @@ const authOptions: NextAuthOptions = {
 
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
-            // console.log("Signin")
+  
             // console.log({
             //     user: user,
             //     account: account,
@@ -130,11 +131,12 @@ const authOptions: NextAuthOptions = {
             //     credentials: credentials
             // })
 
-            /* TODO - Verify if new user (Create account) */
+            /* Reject login if email is not verified */
+            if(!(profile as any).email_verified)
+                return false;
 
-           console.log("GOT HERE 1")
-            const account_exists = await check_user_exists(profile.email);
-            console.log(account_exists)
+            /* Verify if new user (Create account) */
+            const account_exists = await check_user_exists(user.email);
 
             /* Log in user if their account exists */
             if(account_exists)
@@ -142,9 +144,10 @@ const authOptions: NextAuthOptions = {
 
             const userAccount: DatabaseUser = {
                 id: randomUUID?.() ?? randomBytes(32).toString("hex"),
-                name: profile.name,
-                email: profile.email,
-                googleId: null
+                name: user.name,
+                email: user.email,
+                image: user.image,
+                googleId: user.id
 
             }
 
@@ -153,35 +156,45 @@ const authOptions: NextAuthOptions = {
             
             return true
           },
-        //   async redirect({ url, baseUrl }) {
-        //     console.log(url)
-        //     return url
-        //   },
+
         /* Callback whenever a session token is created/updated */
           async session( {session, token} ) {
 
-            // console.log("Session updated!")
+
+            /* No updating needed if user id is set */
+            if((session as CustomSession).user.id !== undefined)
+                return session;
+
+            const user = {
+                id: null,
+                name: token.name,
+                email: token.email,
+                image: token.image,
+                googleId: token.id
+            } as DatabaseUser;
+
+
+            let user_obj = await pull_user(user);
 
             /* Create new session object */
             const new_session = {
                 user: {
-                    name: token.name,
-                    email: token.email,
-                    image: token.picture,
-                    id: token.id
+                    name: user_obj.name,
+                    email: user_obj.email,
+                    image: user_obj.image,
+                    id: user_obj.id
                 },
                 expires: session.expires
             } as CustomSession;
 
-            // console.log(new_session)
+            console.log("New session")
+            console.log(new_session)
 
             return new_session
           },
 
           /* Callback whenever jwt token is created/ updated */
           async jwt( {token, user}) {
-            
-            // console.log("JWT updated")
  
             /* Update token id from user id */
             if(user)
@@ -194,9 +207,43 @@ const authOptions: NextAuthOptions = {
     /* Custom pages that will direct the user to the provider's login page */
     pages: {
          signIn: '/auth/signin',
-        /* TODO - Add custom sign in pages for multiple providers. Add error
-                  and sign out pages if needed */
     }
+}
+
+/**
+ * pull_user: Takes in an incomplete user object and fills the rest of the
+ *            information missing.
+ * 
+ * @param user An incomplete user object
+ * @returns A complete user object with all parameters filled
+ */
+async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user)
+    }
+
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/database/getUserAccount', request)
+        .then(res => res.json())
+        .then((resj) => {
+            const res = resj as DatabaseUserResponse;
+
+            if(res.success)
+                resolve(res.user)
+
+            resolve(res.user)
+            
+        })
+        .catch(err => {
+            console.log("GOT ERR")
+            reject(err);
+        })
+    })
+
 }
 
 async function check_user_exists(email: string): Promise<boolean> {
@@ -215,7 +262,7 @@ async function check_user_exists(email: string): Promise<boolean> {
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseResponse
-            console.log(res)
+
             /* Log in user if account exists */
             if(res.success) 
                resolve(true)
@@ -243,7 +290,7 @@ function create_account(userAccount: DatabaseUser) {
     .then(resj => {
 
         const res = resj as DatabaseResponse;
-        console.log(res)
+
     })
     .catch(err => {
         console.log(err);
