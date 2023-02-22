@@ -28,7 +28,13 @@ export default async function createUser (
 
     const db = database;
 
+    const friends_obj = {
+        id: data.id,
+        friends: []
+    }
+
     set(ref(db, 'users/' + data.id), data)
+    set(ref(db, `friends/${data.id}`), friends_obj)
 
 
     res.status(200).json(generateDbResponse(true, {} as DatabaseError));

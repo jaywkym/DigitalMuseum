@@ -33,5 +33,16 @@ export type DatabaseImage = {
   likes: number,
 }
 
+export type DatabaseFriendsResponse = {
+  success: boolean,
+  friends: DatabaseFriends,
+  error: DatabaseError
+}
+
+export type DatabaseFriends = {
+  id: string,
+  friends: string[]
+}
+
 
 

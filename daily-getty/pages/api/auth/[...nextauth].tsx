@@ -45,7 +45,6 @@ const authOptions: NextAuthOptions = {
 
     jwt: {
         maxAge: 60 * 60 * 24 * 30,
-        // You can define your own encode/decode functions for signing and encryption
     },
 
     callbacks: {
@@ -93,6 +92,7 @@ const authOptions: NextAuthOptions = {
             if((session as CustomSession).user.id !== undefined)
                 return session;
 
+            /* Create new session for user with updated profile information */
             const user = {
                 id: null,
                 name: token.name,
@@ -100,7 +100,6 @@ const authOptions: NextAuthOptions = {
                 image: token.image,
                 googleId: token.id
             } as DatabaseUser;
-
 
             let user_obj = await pull_user(user);
 
@@ -114,9 +113,6 @@ const authOptions: NextAuthOptions = {
                 },
                 expires: session.expires
             } as CustomSession;
-
-            console.log("New session")
-            console.log(new_session)
 
             return new_session
           },
@@ -163,7 +159,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
             if(res.success)
                 resolve(res.user)
 
-            resolve(res.user)
+            resolve({} as DatabaseUser)
             
         })
         .catch(err => {

@@ -8,6 +8,9 @@ function SignInPage() {
     const [prompt, setPrompt] = useState('')
     const [amount, setAmount] = useState('')
     const [ b64_image, error, generateImage ] = useImage(prompt, amount);
+    const {data: session, status} = useSession()
+
+    console.log(session)
 
     return (
         <>
@@ -24,7 +27,9 @@ function SignInPage() {
 
             <input type={'text'} value={prompt} onChange={(e) => setPrompt(e.target.value)} />
             <input type={'number'} step={'1'} value={amount} onChange={(e) => setAmount(e.target.value)} />
-            <input type={'button'} onClick={test} value={'Generate Image'} />
+            <input type={'button'} onClick={() => {
+                test((session.user as any).id)
+            }} value={'Generate Image'} />
 
             <br></br>
             <br></br>
@@ -34,9 +39,7 @@ function SignInPage() {
     )
 }
 
-function test() {
-
-    
+function test(id) {
 
     const request = {
         method: 'POST',
@@ -44,11 +47,14 @@ function test() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-
+            id: id,
+            friend_id: 12342
         })
     }
 
-    fetch('/api/database/testdb', request)
+    console.log(request)
+
+    fetch('http://localhost:3000/api/database/addFriend', request)
     .then(res => res.json())
     .then(res => {
        console.log(res)
