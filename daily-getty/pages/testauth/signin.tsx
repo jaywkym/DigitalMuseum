@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react'
 import useImage from '../dalle/images'
-import useFriends from '../database/utils';
+import useFriends, {useAddFriend} from '../database/utils';
 import Image from 'next/image';
 
 function SignInPage() {
@@ -11,8 +11,10 @@ function SignInPage() {
     const [ b64_image, error, generateImage ] = useImage(prompt, amount);
     const {data: session, status} = useSession()
     const [friends, loading, pullFriends] = useFriends(session? (session.user as any).id: 0)
+    const [success, addFriendLoading, addFriend] = useAddFriend(session? (session.user as any).id: 0, '452a49cc-7940-4d78-b7a0-3c1ef2ea60b1')
 
     console.log(friends)
+    console.log(session)
 
     return (
         <>
@@ -29,6 +31,7 @@ function SignInPage() {
 
             <input type={'text'} value={prompt} onChange={(e) => setPrompt(e.target.value)} />
             <input type={'number'} step={'1'} value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <input type={'button'} onClick={addFriend} value={'Generate Image'} />
             <input type={'button'} onClick={pullFriends} value={'Generate Image'} />
 
             <br></br>
