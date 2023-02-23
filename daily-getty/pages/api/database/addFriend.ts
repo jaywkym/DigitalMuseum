@@ -28,12 +28,15 @@ export default async function getFriends (
     const friend_id = req.body.friend_id
 
     let friends_obj: DatabaseFriends = await getFriendsForUserById(user_id)
-    
+
     if(!friends_obj)
         friends_obj = {
             id: user_id,
             friends: []
         } as DatabaseFriends
+
+    if(!friends_obj.friends)
+        friends_obj.friends = []
 
     if(friends_obj.friends.includes(friend_id)) {
         res.status(200).json(
