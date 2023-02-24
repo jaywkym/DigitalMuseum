@@ -1,121 +1,225 @@
-import { Sign } from "crypto";
-import { Session } from "inspector";
+import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
 import type { NextAuthOptions } from "next-auth" 
 import CredentialsProvider from "next-auth/providers/credentials"
 import FacebookProvider from "next-auth/providers/facebook"
 import GoogleProvider from "next-auth/providers/google";
 import InstagramProvider from "next-auth/providers/instagram";
-import TwitterProvider from "next-auth/providers/twitter"
+import TwitterProvider from "next-auth/providers/twitter";
+import type { 
+    DatabaseResponse,
+    DatabaseUser,
+    DatabaseUserResponse
+}  from "../../../types/FirebaseResponseTypes";
 
-type LoginCredentials = {
-    username: string
-    password: string
-}
-
-type SignInResponse = {
-    user: string,
-    account: string,
-    profile: string,
-    email: string,
-    credentials: string
+type CustomSession = {
+    user: {
+        name: string,
+        email: string,
+        image: string,
+        id: string,
+    },
+    expires: string
 }
 
 /**
  * authOptions: Configuration for authentication through next. 
  */
 const authOptions: NextAuthOptions = {  
-   // TODO - Get Jay to add a secret key to sign session/ JWT tokens
-
     /* Defines the types of ways that a user can login to the platform */
     providers: [    
-        CredentialsProvider({
-            name: 'Credentials',
-            credentials: {
-                username: { label: "Username or Phone Number", type: "text", placeholder: "username or phone" },
-                password: { label: "Password", type: "password", placeholder: "**********" }
-            },
-            async authorize(credentials, req) {
-                const { username, password } = credentials as LoginCredentials
-
-                /* TODO - pull user from database. Reject if not known or
-                          redirect to register page                           */
-
-                /* TODO - DO THE LOGIN MAGIC */
-
-                return {id: '1234'}
-            }
-        }),
-        FacebookProvider({
-            clientId: process.env.FACEBOOK_CLIENT_ID as string,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string
-        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
         }),
-        InstagramProvider({
-            clientId: process.env.INSTAGRAM_CLIENT_ID as string,
-            clientSecret: process.env.INSTAGRAM_CLIENT_SECRET as string
-        }),
-        TwitterProvider({
-            clientId: process.env.TWITTER_CLIENT_ID as string,
-            clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
-            version: "2.0",
-        })
     ],
 
     session: {
-        // jwt: true,
-        // maxAge: 30 * 24 * 60 * 60, // 30 days
-        // updateAge: 24 * 60 * 60, // 24 hours
+        strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        updateAge: 24 * 60 * 60, // 24 hours
+        generateSessionToken: () => {
+            return randomUUID?.() ?? randomBytes(32).toString("hex")
+          }
     },
 
     jwt: {
-        secret: "taslkvnsdajksnfjkvvnladv"
+        maxAge: 60 * 60 * 24 * 30,
     },
 
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
-            console.log("Signin")
+  
             // console.log({
             //     user: user,
             //     account: account,
-            //     profile: profile,
+            //     profile: profile, //email verified
             //     email: email,
             //     credentials: credentials
             // })
+
+            /* Reject login if email is not verified */
+            if(!(profile as any).email_verified)
+                return false;
+
+            /* Verify if new user (Create account) */
+            const account_exists = await check_user_exists(user.email);
+
+            /* Log in user if their account exists */
+            if(account_exists)
+                return true;
+
+            const userAccount: DatabaseUser = {
+                id: randomUUID?.() ?? randomBytes(32).toString("hex"),
+                name: user.name,
+                email: user.email,
+                image: user.image,
+                googleId: user.id
+
+            }
+
+            /* Create user account if it does not exist */
+            await create_account(userAccount)
+            
             return true
           },
-        //   async redirect({ url, baseUrl }) {
-        //     console.log(url)
-        //     return url
-        //   },
-          async session( {session, user, token} ) {
 
-            console.log("Session updated!")
-            
-            // if(session.user)
-            //     session.user.id = token.id
+        /* Callback whenever a session token is created/updated */
+          async session( {session, token} ) {
 
-            return session
+
+            /* No updating needed if user id is set */
+            if((session as CustomSession).user.id !== undefined)
+                return session;
+
+            /* Create new session for user with updated profile information */
+            const user = {
+                id: null,
+                name: token.name,
+                email: token.email,
+                image: token.image,
+                googleId: token.id
+            } as DatabaseUser;
+
+            let user_obj = await pull_user(user);
+
+            /* Create new session object */
+            const new_session = {
+                user: {
+                    name: user_obj.name,
+                    email: user_obj.email,
+                    image: user_obj.image,
+                    id: user_obj.id
+                },
+                expires: session.expires
+            } as CustomSession;
+
+            return new_session
           },
-          async jwt( {token, user, account, profile, isNewUser }) {
-            
-            console.log("JWT updated")
 
+          /* Callback whenever jwt token is created/ updated */
+          async jwt( {token, user}) {
+ 
+            /* Update token id from user id */
             if(user)
                 token.id = user.id
 
-            return token
+            return token;
           }
     },
 
     /* Custom pages that will direct the user to the provider's login page */
     pages: {
-        /* TODO - Add custom sign in pages for multiple providers. Add error
-                  and sign out pages if needed */
+         signIn: '/auth/signin',
     }
 }
 
+/**
+ * pull_user: Takes in an incomplete user object and fills the rest of the
+ *            information missing.
+ * 
+ * @param user An incomplete user object
+ * @returns A complete user object with all parameters filled
+ */
+async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user)
+    }
+
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/database/getUserAccount', request)
+        .then(res => res.json())
+        .then((resj) => {
+            const res = resj as DatabaseUserResponse;
+
+            if(res.success)
+                resolve(res.user)
+
+            resolve({} as DatabaseUser)
+            
+        })
+        .catch(err => {
+            console.log("GOT ERR")
+            reject(err);
+        })
+    })
+
+}
+
+async function check_user_exists(email: string): Promise<boolean> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'email': email
+        })
+    }
+
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/database/checkForUser', request)
+        .then(res => res.json())
+        .then((resj) => {
+            const res = resj as DatabaseResponse
+
+            /* Log in user if account exists */
+            if(res.success) 
+               resolve(true)
+
+            resolve(false)
+        })
+        .catch(err => {
+            reject(false);
+        })
+    })
+    
+}
+
+function create_account(userAccount: DatabaseUser) {
+    const create_account_req = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userAccount)
+    }
+
+    fetch('http://localhost:3000/api/database/createUser', create_account_req)
+    .then(res => res.json())
+    .then(resj => {
+
+        const res = resj as DatabaseResponse;
+
+    })
+    .catch(err => {
+        console.log(err);
+    })
+}
+
 export default NextAuth(authOptions)
+
