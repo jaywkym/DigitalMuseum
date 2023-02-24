@@ -3,6 +3,9 @@ import { green } from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress } from '@mui/material';
 import { Container } from '@mui/system';
+import Image from 'next/image';
+import useImage from '@/pages/dalle/images';
+
 
 const MuseForm = () => {
 
@@ -30,6 +33,7 @@ const MuseForm = () => {
         }),
     };
 
+    /*
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
@@ -40,14 +44,22 @@ const MuseForm = () => {
             }, 2000);
         }
     };
+    */
+
+    const [prompt, setPrompt] = React.useState('');
+    const [b64_image, error, loading1, generateImage] = useImage(prompt, "1");
+    console.log(b64_image);
 
     return (
         <Box>
             <Box sx={{ m: 5, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                <Container>
+                    <Image alt="image" height={500} width={500} src={b64_image}></Image>
+                </Container>
                 <Container fixed>
                     <FormControl>
                         <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
-                        <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required />
+                        <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required onChange={(e) => { setPrompt(e.target.value) }} />
                         <FormHelperText id="prompt-helper" color='info'>Limit your answer to 100 words or less.</FormHelperText>
                     </FormControl>
                 </Container>
@@ -73,7 +85,7 @@ const MuseForm = () => {
             </Box>
             <Box sx={{ m: 5 }}>
                 <Container fixed>
-                    <Button variant="contained" color="success" onClick={handleButtonClick}>
+                    <Button variant="contained" color="success" onClick={generateImage}>
                         Generate Muse
                     </Button>
                     {loading && (
