@@ -30,25 +30,7 @@ export default function HomeFeed() {
                             <Post></Post>
                         </List>
                     </Container>
-                    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-                        <BottomNavigation
-                            showLabels
-                            value={value}
-                            onChange={(event, newValue) => {
-                                setValue(newValue);
-                            }}
-                        >
-                            <Link href="/homefeed">
-                                <BottomNavigationAction label="Feed" icon={<HomeIcon />} />
-                            </Link>
-                            <Link href="/newmuse">
-                                <BottomNavigationAction label="Make a Muse" icon={<AddAPhotoIcon />} />
-                            </Link>
-                            <Link href="/profile">
-                                <BottomNavigationAction label="Profile" icon={<AccountCircleIcon />} />
-                            </Link>
-                        </BottomNavigation>
-                    </Paper>
+                    <NavBar />
                 </Box>
             </main>
         </>
