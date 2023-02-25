@@ -4,8 +4,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
     DatabaseResponse,
-    DatabaseUser,
-    DatabaseImage
+    DatabaseImage,
+    DatabaseImage2
 }  from "../../../types/FirebaseResponseTypes";
 
 export default async function addPost (
@@ -13,23 +13,30 @@ export default async function addPost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
-     /* Only accept POST requests */
-     if(req.method !== 'PUT') {
-        res.status(405).json(
-            generateDbResponse(
-                false, 
-                generateError(405, 'Invalid request method')
-            )
-        )
+    // console.log("did i even ge tin")
+    //  /* Only accept POST requests */
+    //  if(req.method !== 'PUT') {
+    //     res.status(405).json(
+    //         generateDbResponse(
+    //             false, 
+    //             generateError(405, 'Invalid request method')
+    //         )
+    //     )
         
-        return;
-    }
+    //     return;
+    // }
 
-    const data = req.body as DatabaseImage;
+    //const data = req.body as DatabaseImage2;
 
-    const db = database;
+    //console.log("This is whats being put in")
+    //console.log(data)
 
-    set(ref(db, 'posts/' + data.userId + '/' + data.id), data)
+    console.log("fucking testing")
+    //console.log(data.id[0])
+   // const db = database;
+
+    console.log("i am here in addPost");
+    //set(ref(db, 'posts/' + data.userId + '/' + data.creationDate), data)
 
 
     res.status(200).json(generateDbResponse(true, {} as DatabaseError));

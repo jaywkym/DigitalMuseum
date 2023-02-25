@@ -26,7 +26,7 @@ type CustomSession = {
 /**
  * authOptions: Configuration for authentication through next. 
  */
-const authOptions: NextAuthOptions = {  
+export const authOptions: NextAuthOptions = {  
     /* Defines the types of ways that a user can login to the platform */
     providers: [    
         GoogleProvider({

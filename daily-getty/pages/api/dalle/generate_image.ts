@@ -1,14 +1,23 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { database, storage } from "../../../firebase/clientApp";
+import { getDatabase,ref, push, set, get, child, onValue } from "firebase/database";
+import { uploadBytes } from "firebase/storage"
+import { authOptions } from 'pages/api/auth/[...nextauth]'
+import { getServerSession } from "next-auth/next"
 import type { 
     DalleError, 
     DalleResponse,
     ImageResponse,
-   
 }  from "../../../types/DalleResponseTypes";
 
 import type { 
-    DatabaseImage
+    DatabaseImage,
+    DatabaseResponse,
+    DatabaseUser,
+    DatabaseUserResponse,
+    DatabaseImage2,
+    DatabaseImageUpload
 }  from "../../../types/FirebaseResponseTypes";
 
 const DALLE_API_KEY = process.env.DALLE_API_KEY
@@ -48,7 +57,11 @@ export default async function request_image_handler(
     const prompt = req.body.prompt;
     const amount = req.body.amount;
 
+    
+
+
     const image  = await requestToDalleAPI(prompt, amount);
+   
 
     /* ERROR generating image for various reasons */
     if(!image.success) {
@@ -58,17 +71,79 @@ export default async function request_image_handler(
         return;
     } 
 
-    console.log(image);
+    //console.log(image);
+    const session = await getServerSession(req, res, authOptions);
+
+    const userGet = {
+        id: null,
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+        googleId: null
+    } as DatabaseUser;
+
+    let user_obj = await pull_user(userGet);
+
+   // console.log("the image is...");
+   // console.log(image.data[0].b64_json);
+    // console.log(user_obj);
+
+    const userAccount: DatabaseImage2 = {
+        id: image.data[0],
+        userId: user_obj.id,
+        creationDate: image.created,
+        userPrompt: null,
+        givenPrompt: null,
+        likes: null,
+    }
+
+    const db = database;
+
+    const buffer = Buffer.from(image.data[0].b64_json, "base64");
+    
+    //console.log(buffer)
+    const fs = require("fs");
+
+    let filename = "imagesMade/" + image.created +".jpg"
+
+    fs.writeFileSync(filename, buffer);
+
+    // let imageObject = getFile()
+    
+    // const storageRef = ref(storage, "images/new-4.jpg");
+
+    // uploadBytes(storageRef, 'imagesMade/new-4.jpg').then((snapshot) => {
+    //     console.log('Uploaded a blob or file!');
+    //   });
+      
+    const uploadInfo: DatabaseImageUpload = {
+        imagePath: filename,
+        userId: user_obj.id,
+        creationDate: image.created,
+        userPrompt: prompt,
+        givenPrompt: null,
+        likes: null,
+    }
 
     
+    set(ref(db, 'posts/' + uploadInfo.userId + '/' + uploadInfo.creationDate), uploadInfo)
 
-    // const userAccount: DatabaseImage = {
-    //     id: 
-      
-    // }
+    // uploadString(dbref, image.data[0].b64_json, 'base64').then((snapshot) => {
+    //     console.log('Uploaded a base64url string!');
+    //   });
 
 
-    /* Respond with image information */
+
+
+    // firebase.storage().ref('/your/path/here').child('file_name').putString(image.data[0].b64_json, ‘base64’, {contentType:’image/jpg’});
+
+     // console.log(userAccount);
+   // console.log("before add Post");
+    //console.log(userAccount);
+    //await addPost(userAccount);
+
+
+    /* Respond with image information */    
     res.status(200).json(generateImageResponse(true, amount, image))
     
 }
@@ -121,6 +196,28 @@ async function requestToDalleAPI(prompt: string, amount: string) {
     }
 }
 
+function addPost(imageData: DatabaseImage2) {
+    const create_post_req = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(imageData)
+    }
+
+    fetch('http://localhost:3000/api/database/addPost', create_post_req)
+    .then(res => res.json())
+    .then(resj => {
+
+        const res = resj as DatabaseResponse;
+        console.log(res.success);
+    })
+    .catch(err => {
+        console.log("in add post error")
+        console.log(err);
+    })
+}
+
 /**
  * 
  * generateImageResponse: Generates an ImageResponse object from given inputs.
@@ -160,4 +257,36 @@ function generateError(code: number, message: string, param = '', type = ''): Da
         param: param,
         type: type 
     }
+}
+
+/**
+ * pull_user: Takes in an incomplete user object and fills the rest of the
+ *            information missing.
+ * 
+ * @param user An incomplete user object
+ * @returns A complete user object with all parameters filled
+ */
+async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user)
+    }
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/database/getUserAccount', request)
+        .then(res => res.json())
+        .then((resj) => {
+            const res = resj as DatabaseUserResponse;
+            if(res.success)
+                resolve(res.user)
+            resolve(res.user)
+            
+        })
+        .catch(err => {
+            console.log("GOT ERR")
+            reject(err);
+        })
+    })
 }

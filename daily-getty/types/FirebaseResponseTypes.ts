@@ -33,6 +33,25 @@ givenPrompt: string,
 likes: number,
 }
 
+export type DatabaseImage2 = {
+  id: string,
+  userId: string,
+  creationDate: number,
+  userPrompt: string,
+  givenPrompt: string,
+  likes: number,
+  }
+
+  export type DatabaseImageUpload = {
+    imagePath: string,
+    userId: string,
+    creationDate: number,
+    userPrompt: string,
+    givenPrompt: string,
+    likes: number,
+    }
+
+
 export type DatabaseFriendsResponse = {
 success: boolean,
 friends: DatabaseFriends,

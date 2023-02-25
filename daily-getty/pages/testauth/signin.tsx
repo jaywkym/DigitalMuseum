@@ -40,6 +40,9 @@ function SignInPage() {
 
 function test(id) {
 
+    console.log("inside test function");
+    console.log(id);
+
     const request = {
         method: 'POST',
         headers: {
