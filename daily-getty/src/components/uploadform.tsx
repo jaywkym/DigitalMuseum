@@ -3,6 +3,7 @@ import { green } from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress } from '@mui/material';
 import { Container } from '@mui/system';
+import { Modal, Typography } from '@mui/material';
 import Image from 'next/image';
 import useImage from '@/pages/dalle/images';
 
@@ -15,6 +16,10 @@ const MuseForm = () => {
     const timer = React.useRef<number>();
 
     React.useEffect(() => {
+        if (!loadingImage && !error) {
+            setSuccess(true);
+            setLoading(false);
+        }
         return () => {
             clearTimeout(timer.current);
         };
@@ -33,29 +38,44 @@ const MuseForm = () => {
         }),
     };
 
-    /*
     const handleButtonClick = () => {
-        if (!loading) {
+        //Call Generate Image
+        generateImage;
+        if (loadingImage) {
             setSuccess(false);
             setLoading(true);
             timer.current = window.setTimeout(() => {
                 setSuccess(true);
                 setLoading(false);
-            }, 2000);
+            }, 2000000);
         }
     };
-    */
 
+    const handleClose = () => {
+    };
+
+    //DallE API CALL
     const [prompt, setPrompt] = React.useState('');
-    const [b64_image, error, loading1, generateImage] = useImage(prompt, "1");
+    const [b64_image, error, loadingImage, generateImage] = useImage(prompt, "1"); //INCORPORATE ERROR HANDLING
     console.log(b64_image);
+
+    const style = {
+        position: 'absolute' as 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        pt: 2,
+        px: 4,
+        pb: 3,
+    };
 
     return (
         <Box>
             <Box sx={{ m: 5, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                <Container>
-                    <Image alt="image" height={500} width={500} src={b64_image}></Image>
-                </Container>
                 <Container fixed>
                     <FormControl>
                         <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
@@ -85,9 +105,28 @@ const MuseForm = () => {
             </Box>
             <Box sx={{ m: 5 }}>
                 <Container fixed>
-                    <Button variant="contained" color="success" onClick={generateImage}>
+                    <Button variant="contained" color="success" onClick={handleButtonClick}>
                         Generate Muse
                     </Button>
+                    {/*IMAGE GENERATED MODAL */}
+                    {/* 
+                    <Modal
+                        open={success}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={style}>
+                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                                Your Muse of the Day
+                            </Typography>
+                            <Container>
+                                <Image alt="image" height={500} width={500} src={b64_image}></Image>
+                            </Container>
+                        </Box>
+                    </Modal>
+                    */}
+                    <Image alt="image" height={500} width={500} src={b64_image}></Image>
                     {loading && (
                         <CircularProgress
                             size={68}
