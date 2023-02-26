@@ -1,8 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { database, storage } from "../../../firebase/clientApp";
-import { getDatabase,ref, push, set, get, child, onValue } from "firebase/database";
-import { uploadBytes } from "firebase/storage"
+import { database } from "../../../firebase/clientApp";
+import { ref, push, set, get, child, onValue } from "firebase/database";
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { getServerSession } from "next-auth/next"
 import type { 
@@ -12,8 +11,6 @@ import type {
 }  from "../../../types/DalleResponseTypes";
 
 import type { 
-    DatabaseImage,
-    DatabaseResponse,
     DatabaseUser,
     DatabaseUserResponse,
     DatabaseImage2,
@@ -56,10 +53,6 @@ export default async function request_image_handler(
 
     const prompt = req.body.prompt;
     const amount = req.body.amount;
-
-    
-
-
     const image  = await requestToDalleAPI(prompt, amount);
    
 
@@ -107,14 +100,6 @@ export default async function request_image_handler(
     let filename = "imagesMade/" + image.created +".jpg"
 
     fs.writeFileSync(filename, buffer);
-
-    // let imageObject = getFile()
-    
-    // const storageRef = ref(storage, "images/new-4.jpg");
-
-    // uploadBytes(storageRef, 'imagesMade/new-4.jpg').then((snapshot) => {
-    //     console.log('Uploaded a blob or file!');
-    //   });
       
     const uploadInfo: DatabaseImageUpload = {
         imagePath: filename,
@@ -127,21 +112,6 @@ export default async function request_image_handler(
 
     
     set(ref(db, 'posts/' + uploadInfo.userId + '/' + uploadInfo.creationDate), uploadInfo)
-
-    // uploadString(dbref, image.data[0].b64_json, 'base64').then((snapshot) => {
-    //     console.log('Uploaded a base64url string!');
-    //   });
-
-
-
-
-    // firebase.storage().ref('/your/path/here').child('file_name').putString(image.data[0].b64_json, ‘base64’, {contentType:’image/jpg’});
-
-     // console.log(userAccount);
-   // console.log("before add Post");
-    //console.log(userAccount);
-    //await addPost(userAccount);
-
 
     /* Respond with image information */    
     res.status(200).json(generateImageResponse(true, amount, image))
@@ -194,28 +164,6 @@ async function requestToDalleAPI(prompt: string, amount: string) {
     } catch (err: any) {
         return generateError(1, 'unknown error');
     }
-}
-
-function addPost(imageData: DatabaseImage2) {
-    const create_post_req = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(imageData)
-    }
-
-    fetch('http://localhost:3000/api/database/addPost', create_post_req)
-    .then(res => res.json())
-    .then(resj => {
-
-        const res = resj as DatabaseResponse;
-        console.log(res.success);
-    })
-    .catch(err => {
-        console.log("in add post error")
-        console.log(err);
-    })
 }
 
 /**

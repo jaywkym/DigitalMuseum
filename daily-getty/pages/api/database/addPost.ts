@@ -13,18 +13,18 @@ export default async function addPost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
-    // console.log("did i even ge tin")
-    //  /* Only accept POST requests */
-    //  if(req.method !== 'PUT') {
-    //     res.status(405).json(
-    //         generateDbResponse(
-    //             false, 
-    //             generateError(405, 'Invalid request method')
-    //         )
-    //     )
+   
+     /* Only accept POST requests */
+     if(req.method !== 'PUT') {
+        res.status(405).json(
+            generateDbResponse(
+                false, 
+                generateError(405, 'Invalid request method')
+            )
+        )
         
-    //     return;
-    // }
+        return;
+    }
 
     //const data = req.body as DatabaseImage2;
 
