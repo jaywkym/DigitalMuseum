@@ -16,10 +16,6 @@ const MuseForm = () => {
     const timer = React.useRef<number>();
 
     React.useEffect(() => {
-        if (!loadingImage && !error) {
-            setSuccess(true);
-            setLoading(false);
-        }
         return () => {
             clearTimeout(timer.current);
         };
@@ -41,17 +37,21 @@ const MuseForm = () => {
     const handleButtonClick = () => {
         //Call Generate Image
         generateImage;
+        setSuccess(true);
+        /*
         if (loadingImage) {
             setSuccess(false);
             setLoading(true);
             timer.current = window.setTimeout(() => {
-                setSuccess(true);
-                setLoading(false);
+                setSuccess(false);
+                setLoading(true);
             }, 2000000);
         }
+        */
     };
 
     const handleClose = () => {
+        setSuccess(false);
     };
 
     //DallE API CALL
@@ -109,7 +109,6 @@ const MuseForm = () => {
                         Generate Muse
                     </Button>
                     {/*IMAGE GENERATED MODAL */}
-                    {/* 
                     <Modal
                         open={success}
                         onClose={handleClose}
@@ -125,8 +124,6 @@ const MuseForm = () => {
                             </Container>
                         </Box>
                     </Modal>
-                    */}
-                    <Image alt="image" height={500} width={500} src={b64_image}></Image>
                     {loading && (
                         <CircularProgress
                             size={68}
