@@ -24,8 +24,8 @@ const ProfileHeader = () => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    <Chip label="Followers" />
-                    <Chip label="Following" variant="outlined" />
+                    <Chip label="Followers 456" />
+                    <Chip label="Following 395" variant="outlined" />
                 </Stack>
             </Box>
         </Container>

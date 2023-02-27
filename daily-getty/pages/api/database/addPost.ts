@@ -5,7 +5,8 @@ import type {
     DatabaseError, 
     DatabaseResponse,
     DatabaseImage,
-    DatabaseImage2
+    DatabaseImage2,
+    DatabaseImageUpload
 }  from "../../../types/FirebaseResponseTypes";
 
 export default async function addPost (
@@ -13,7 +14,7 @@ export default async function addPost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
-   
+    console.log("did i even ge tin")
      /* Only accept POST requests */
      if(req.method !== 'PUT') {
         res.status(405).json(
@@ -26,18 +27,12 @@ export default async function addPost (
         return;
     }
 
-    //const data = req.body as DatabaseImage2;
+    const data = req.body as DatabaseImageUpload;
 
-    //console.log("This is whats being put in")
-    //console.log(data)
+    const db = database;
 
-    console.log("fucking testing")
-    //console.log(data.id[0])
-   // const db = database;
-
-    console.log("i am here in addPost");
     //set(ref(db, 'posts/' + data.userId + '/' + data.creationDate), data)
-
+    set(ref(db, 'posts/' + data.userId + '/' + data.creationDate), data)
 
     res.status(200).json(generateDbResponse(true, {} as DatabaseError));
 

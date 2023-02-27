@@ -25,10 +25,11 @@ const Prompt = () => {
             <Container fixed>
                 <Box sx={{ m: 5 }}>
                     <Typography variant="h3">Prompt of the Day</Typography>
+                    <Typography variant="h6">What two animals would make the cutest hybird? Add two animals and the word hybrid!</Typography>
                 </Box>
-                <Box>
+                {/* <Box>
                     <Typography variant="h5">{randomPrompt}</Typography>
-                </Box>
+                </Box> */}
             </Container>
         </Box>
     );

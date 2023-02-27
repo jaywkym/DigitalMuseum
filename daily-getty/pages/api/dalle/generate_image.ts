@@ -110,8 +110,9 @@ export default async function request_image_handler(
         likes: null,
     }
 
-    
-    set(ref(db, 'posts/' + uploadInfo.userId + '/' + uploadInfo.creationDate), uploadInfo)
+    addPostApi(uploadInfo);
+
+    //set(ref(db, 'posts/' + uploadInfo.userId + '/' + uploadInfo.creationDate), uploadInfo)
 
     /* Respond with image information */    
     res.status(200).json(generateImageResponse(true, amount, image))
@@ -224,6 +225,38 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
     }
     return new Promise((resolve, reject) => {
         fetch('http://localhost:3000/api/database/getUserAccount', request)
+        .then(res => res.json())
+        .then((resj) => {
+            const res = resj as DatabaseUserResponse;
+            if(res.success)
+                resolve(res.user)
+            resolve(res.user)
+            
+        })
+        .catch(err => {
+            console.log("GOT ERR")
+            reject(err);
+        })
+    })
+}
+
+/**
+ * pull_user: Takes in an incomplete user object and fills the rest of the
+ *            information missing.
+ * 
+ * @param user An incomplete user object
+ * @returns A complete user object with all parameters filled
+ */
+async function addPostApi(info: DatabaseImageUpload) {
+    const request = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(info)
+    }
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/database/addPost', request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
