@@ -77,7 +77,7 @@ async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
     }
     
     return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/database/getFriends', request)
+        fetch(`${process.env.URL}/api/database/getFriends`, request)
         .then(res => res.json())
         .then(res => {
            resolve(res.friends)

@@ -108,7 +108,7 @@ const MuseForm = () => {
                     <Button variant="contained" color="success" onClick={handleButtonClick}>
                         Generate Muse
                     </Button>
-                    {/*IMAGE GENERATED MODAL */}
+                    {/*IMAGE GENERATED MODAL 
                     <Modal
                         open={success}
                         onClose={handleClose}
@@ -124,6 +124,7 @@ const MuseForm = () => {
                             </Container>
                         </Box>
                     </Modal>
+                    */}
                     {loading && (
                         <CircularProgress
                             size={68}
