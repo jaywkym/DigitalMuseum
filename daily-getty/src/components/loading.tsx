@@ -4,7 +4,7 @@ import Skeleton from '@mui/material/Skeleton';
 const Loading = ({ children }) => {
   return (
       <>
-        <Skeleton>{children}</Skeleton>
+        <Skeleton width={500} height={500}>{children}</Skeleton>
     </>
   )
 }

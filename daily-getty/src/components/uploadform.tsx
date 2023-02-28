@@ -1,12 +1,15 @@
 import * as React from 'react';
 import { green } from '@mui/material/colors';
+import { display } from '@mui/system';
 import Box from '@mui/material/Box';
+import { useState, useEffect } from 'react';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress } from '@mui/material';
 import { Container } from '@mui/system';
 import { Modal, Typography } from '@mui/material';
 import Image from 'next/image';
 import useImage from '@/pages/dalle/images';
-import Loading from './loading'
+import Loading from './loading';
+import setImage from '@/pages/dalle/images';
 import setLoading from "@/pages/dalle/images";
 
 
@@ -108,13 +111,15 @@ const MuseForm = () => {
                 </Container>
             </Box>
             */}
+            
             {loadingImage ? 
-                <Loading>
-                    <Image alt="image" height={500} width={500} src={b64_image}></Image>
-                </Loading>
-            :
-                <Image alt="image" height={500} width={500} src={b64_image}></Image>
+                    <Loading>
+                        <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                    </Loading>
+                :
+                    <Image id="image" alt="image" height={500} width={500} src={b64_image}></Image>
             }
+
             <Box sx={{ m: 5 }}>
                 <Container fixed>
                     <Button variant="contained" color="success" onClick={generateImage}>
