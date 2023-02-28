@@ -21,6 +21,7 @@ export default function Profile() {
             <main>
                 <Box sx={{ flexGrow: 1, m: 10 }}>
                     <Button onClick={() => { signOut(); }}>Logout</Button>
+                    <CssBaseline />
                     <ProfileHeader />
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                         <List>
