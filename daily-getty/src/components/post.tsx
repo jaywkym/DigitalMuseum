@@ -41,11 +41,13 @@ const Post = () => {
                     height="280"
                     image="/static/sunflower_example.png"
                 />
-                <CardActions>{/*Like Button*/}
+                {/*
+                <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
                     <Button endIcon={
                         <IosShareIcon onClick={handleShare} />} />
                 </CardActions>
+                */}
             </Card>
         </Box>
     );

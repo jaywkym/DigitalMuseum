@@ -84,6 +84,7 @@ const MuseForm = () => {
                     </FormControl>
                 </Container>
             </Box>
+            {/*
             <Box sx={{ m: 5, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                 <Container fixed>
                     <FormControl>
@@ -103,6 +104,7 @@ const MuseForm = () => {
                     </FormControl>
                 </Container>
             </Box>
+            */}
             <Box sx={{ m: 5 }}>
                 <Container fixed>
                     <Button variant="contained" color="success" onClick={handleButtonClick}>
