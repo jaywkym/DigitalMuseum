@@ -60,6 +60,8 @@ const authOptions: NextAuthOptions = {
             //     credentials: credentials
             // })
 
+            return true;
+
             /* Reject login if email is not verified */
             if(!(profile as any).email_verified)
                 return false;
@@ -88,6 +90,8 @@ const authOptions: NextAuthOptions = {
 
         /* Callback whenever a session token is created/updated */
           async session( {session, token} ) {
+
+            return session
 
 
             /* No updating needed if user id is set */
