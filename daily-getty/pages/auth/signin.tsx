@@ -40,20 +40,20 @@ export default function SignIn() {
     });
   };
 
-  
+
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-         <Box
+        <Box
           sx={{
             marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}
-        > 
+        >
           {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           </Avatar> */}
           {/* <Typography component="h1" variant="h5">
@@ -93,11 +93,14 @@ export default function SignIn() {
               Sign In
             </Button> */}
 
+
     <GoogleButton
       onClick={() => { signIn('google', {callbackUrl: '/homefeed', redirect: false} )}}
     />
 
-            <Grid container>
+
+            {/*
+ <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
@@ -109,6 +112,7 @@ export default function SignIn() {
                 </Link>
               </Grid>
             </Grid>
+ */}
           </Box>
         </Box>
       </Container>

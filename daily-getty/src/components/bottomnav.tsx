@@ -4,6 +4,7 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
 import Paper from '@mui/material/Paper';
 import Link from 'next/link';
 
@@ -24,7 +25,7 @@ const NavBar = () => {
                     <BottomNavigationAction label="Feed" icon={<HomeIcon />} />
                 </Link>
                 <Link href="/newmuse">
-                    <BottomNavigationAction label="Make a Muse" icon={<AddAPhotoIcon />} />
+                    <BottomNavigationAction label="Make a Muse" icon={<ColorLensIcon />} />
                 </Link>
                 <Link href="/profile">
                     <BottomNavigationAction label="Profile" icon={<AccountCircleIcon />} />
