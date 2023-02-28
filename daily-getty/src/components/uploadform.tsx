@@ -6,6 +6,8 @@ import { Container } from '@mui/system';
 import { Modal, Typography } from '@mui/material';
 import Image from 'next/image';
 import useImage from '@/pages/dalle/images';
+import Loading from './loading'
+import setLoading from "@/pages/dalle/images";
 
 
 const MuseForm = () => {
@@ -58,6 +60,7 @@ const MuseForm = () => {
     const [prompt, setPrompt] = React.useState('');
     const [b64_image, error, loadingImage, generateImage] = useImage(prompt, "1"); //INCORPORATE ERROR HANDLING
     console.log(b64_image);
+    console.log(loadingImage);
 
     const style = {
         position: 'absolute' as 'absolute',
@@ -105,7 +108,13 @@ const MuseForm = () => {
                 </Container>
             </Box>
             */}
-            <Image alt="image" height={500} width={500} src={b64_image}></Image>
+            {loadingImage ? 
+                <Loading>
+                    <Image alt="image" height={500} width={500} src={b64_image}></Image>
+                </Loading>
+            :
+                <Image alt="image" height={500} width={500} src={b64_image}></Image>
+            }
             <Box sx={{ m: 5 }}>
                 <Container fixed>
                     <Button variant="contained" color="success" onClick={generateImage}>
