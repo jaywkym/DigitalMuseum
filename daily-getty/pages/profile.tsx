@@ -5,9 +5,11 @@ import { Avatar } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import List from '@mui/material/List';
 import { Container } from '@mui/system';
+import { Button } from '@mui/material';
 import Post from '@/src/components/post';
 import NavBar from '@/src/components/bottomnav';
 import ProfileHeader from '@/src/components/profileheader';
+import { signOut } from 'next-auth/react';
 
 export default function Profile() {
 
@@ -18,6 +20,7 @@ export default function Profile() {
             </Head>
             <main>
                 <Box sx={{ flexGrow: 1, m: 10 }}>
+                    <Button onClick={() => { signOut(); }}>Logout</Button>
                     <ProfileHeader />
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                         <List>
