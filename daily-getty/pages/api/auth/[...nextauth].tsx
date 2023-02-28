@@ -26,6 +26,7 @@ type CustomSession = {
  * authOptions: Configuration for authentication through next. 
  */
 const authOptions: NextAuthOptions = {  
+    secret: process.env.NEXTAUTH_SECRET,
     /* Defines the types of ways that a user can login to the platform */
     providers: [    
         GoogleProvider({
