@@ -16,7 +16,7 @@ export default function NewMuse() {
                 <title>Home Feed</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1, m: 8 }}>
                     <CssBaseline />
                     <Prompt />
                     <MuseForm />
