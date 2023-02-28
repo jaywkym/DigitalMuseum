@@ -25,7 +25,7 @@ export default function useFriends(id: string):
         }
     
     
-        fetch('http://localhost:3000/api/database/getFriends', request)
+        fetch(`${process.env.URL}/api/database/getFriends`, request)
         .then(res => res.json())
         .then(res => {
             let friends = res.friends.friends
@@ -65,7 +65,7 @@ export function useAddFriend(id: string, friend_id: string):
             }
         
         
-            fetch('http://localhost:3000/api/database/addFriend', request)
+            fetch(`${process.env.URL}/api/database/addFriend`, request)
             .then(res => res.json())
             .then(res => {
             setLoading(false)
