@@ -81,11 +81,12 @@ const HomeSearch = () => {
                     variant="h6"
                     noWrap
                     component="div"
-                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, alignContent: 'center' }}
                 >
                     DailyMuse
                 </Typography>
-                <Search>
+                {/*
+<Search>
                     <SearchIconWrapper>
                         <SearchIcon />
                     </SearchIconWrapper>
@@ -102,6 +103,7 @@ const HomeSearch = () => {
                         </ul>
                     )}
                 </Search>
+                 */}
             </Toolbar>
         </AppBar>
     );

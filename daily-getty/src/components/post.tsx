@@ -27,13 +27,13 @@ const Post = () => {
         <Box sx={{ m: 3 }}>
             <Card raised>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
-                    <Button onClick={visitProfile}>
-                        <Avatar alt="Jay Kim" src="/static/avatar.png" />
-                        <div></div>
-                        <Typography gutterBottom variant="body1" component="div" >
-                            @jaywkym
-                        </Typography>
-                    </Button>
+                    {/*<Button onClick={visitProfile}>*/}
+                    <Avatar alt="Jay Kim" src="/static/avatar.png" />
+                    <div></div>
+                    <Typography gutterBottom variant="body1" component="div" >
+                        @jaywkym
+                    </Typography>
+                    {/* </Button>*/}
                 </Box>
                 < CardMedia
                     component="img"
