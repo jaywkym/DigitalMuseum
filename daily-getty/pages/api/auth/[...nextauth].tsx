@@ -26,6 +26,7 @@ type CustomSession = {
  * authOptions: Configuration for authentication through next. 
  */
 const authOptions: NextAuthOptions = {  
+
     secret: process.env.NEXTAUTH_SECRET,
     /* Defines the types of ways that a user can login to the platform */
     providers: [    
@@ -152,7 +153,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
     }
 
     return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/database/getUserAccount', request)
+        fetch(`${process.env.URL}/api/database/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
@@ -183,7 +184,7 @@ async function check_user_exists(email: string): Promise<boolean> {
     }
 
     return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/database/checkForUser', request)
+        fetch(`${process.env.URL}/api/database/checkForUser`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseResponse
@@ -210,7 +211,7 @@ function create_account(userAccount: DatabaseUser) {
         body: JSON.stringify(userAccount)
     }
 
-    fetch('http://localhost:3000/api/database/createUser', create_account_req)
+    fetch(`${process.env.URL}/api/database/createUser`, create_account_req)
     .then(res => res.json())
     .then(resj => {
 
