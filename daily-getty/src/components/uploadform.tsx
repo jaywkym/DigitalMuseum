@@ -105,7 +105,7 @@ const MuseForm = () => {
             </Box>
             <Box sx={{ m: 5 }}>
                 <Container fixed>
-                    <Button variant="contained" color="success" onClick={generateImage}>
+                    <Button variant="contained" color="success" onClick={handleButtonClick}>
                         Generate Muse
                     </Button>
                     {/*IMAGE GENERATED MODAL 

@@ -30,6 +30,7 @@ export default function HomeFeed() {
                             <Post></Post>
                         </List>
                     </Container>
+                    <Box sx={{ m: 5 }}></Box>
                     <NavBar />
                 </Box>
             </main>

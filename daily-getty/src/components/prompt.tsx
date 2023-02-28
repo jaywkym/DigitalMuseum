@@ -27,7 +27,7 @@ const Prompt = () => {
                     <Typography variant="h3">Prompt of the Day</Typography>
                 </Box>
                 <Box>
-                    <Typography variant="h5">{randomPrompt}</Typography>
+                    <Typography variant="h5">What is your spirit animal? Mythical Animals Count!</Typography>
                 </Box>
             </Container>
         </Box>
