@@ -24,8 +24,8 @@ const visitProfile = () => { } //Visit Profile
 
 const Post = () => {
     return (
-        <Box sx={{ m: 3 }}>
-            <Card raised>
+        <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
+            <Card raised sx={{ width: '356px' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
                     {/*<Button onClick={visitProfile}>*/}
                     <Avatar alt="Jay Kim" src="/static/avatar.png" />
