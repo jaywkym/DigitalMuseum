@@ -17,12 +17,14 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1, m: 10 }}>
                     <ProfileHeader />
-                    <List>
-                        <Post />
-                    </List>
-                    <Box sx={{ m: 15 }}></Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                        <List>
+                            <Post />
+                            <Post />
+                        </List>
+                    </Box>
                     <NavBar />
                 </Box>
             </main>

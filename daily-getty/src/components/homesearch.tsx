@@ -74,6 +74,7 @@ const HomeSearch = () => {
             'Result 3'
         ];
     };
+
     return (
         <AppBar position="static">
             <Toolbar>

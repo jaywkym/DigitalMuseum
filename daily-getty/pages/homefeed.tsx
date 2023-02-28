@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Head from 'next/head'
 import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import List from '@mui/material/List';
@@ -20,17 +19,18 @@ export default function HomeFeed() {
                 <title>Home Feed</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1, mb: 10 }}>
                     <HomeSearch />
                     <Container fixed>
                         <CssBaseline />
-                        <List>
-                            <Post></Post>
-                            <Post></Post>
-                            <Post></Post>
-                        </List>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            <List>
+                                <Post></Post>
+                                <Post></Post>
+                                <Post></Post>
+                            </List>
+                        </Box>
                     </Container>
-                    <Box sx={{ m: 5 }}></Box>
                     <NavBar />
                 </Box>
             </main>

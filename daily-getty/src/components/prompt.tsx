@@ -24,10 +24,10 @@ const Prompt = () => {
         <Box sx={{ m: 5 }}>
             <Container fixed>
                 <Box sx={{ m: 5 }}>
-                    <Typography variant="h3">Prompt of the Day</Typography>
+                    <Typography variant="h5">Prompt of the Day</Typography>
                 </Box>
                 <Box>
-                    <Typography variant="h5">What is your spirit animal? Mythical Animals Count!</Typography>
+                    <Typography variant="h6">What is your spirit animal? Mythical Animals Count!</Typography>
                 </Box>
             </Container>
         </Box>
