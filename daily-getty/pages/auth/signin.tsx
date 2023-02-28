@@ -94,10 +94,7 @@ export default function SignIn() {
             </Button> */}
 
     <GoogleButton
-      onClick={() => { signIn('google', {callbackUrl: `${URL}homefeed`, redirect: false} )
-    .then(res => {
-      console.log(res)
-    })}}
+      onClick={() => { signIn('google', {callbackUrl: '/homefeed', redirect: false} )}}
     />
 
             <Grid container>
