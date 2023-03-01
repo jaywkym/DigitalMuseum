@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
     DatabaseResponse,
-    DatabaseFriends
+    DatabasePost
 }  from "../../../types/FirebaseResponseTypes";
 
 export default async function createPost (
@@ -24,7 +24,18 @@ export default async function createPost (
         return;
     }
 
-    console.log(req.body)
+    const body = req.body;
+
+    const date = new Date();
+    console.log((new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)).getTime())
+
+    // const dbpost = {
+    //     id: (new Date(date.getFullYear(), date.getMonth(), date.getDate())).getTime(),
+    //     image: {
+    //         created: body.created,
+    //         image: body.b64_image
+    //     }
+    // } as DatabasePost
 
 
 
