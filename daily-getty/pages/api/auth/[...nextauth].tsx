@@ -157,7 +157,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
     }
 
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.URL}/api/database/getUserAccount`, request)
+        fetch(`${process.env.NEXTAUTH_URL}/api/database/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
@@ -188,7 +188,7 @@ async function check_user_exists(email: string): Promise<boolean> {
     }
 
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.URL}/api/database/checkForUser`, request)
+        fetch(`${process.env.NEXTAUTH_URL}/api/database/checkForUser`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseResponse
@@ -215,7 +215,7 @@ function create_account(userAccount: DatabaseUser) {
         body: JSON.stringify(userAccount)
     }
 
-    fetch(`${process.env.URL}/api/database/createUser`, create_account_req)
+    fetch(`${process.env.NEXTAUTH_URL}/api/database/createUser`, create_account_req)
     .then(res => res.json())
     .then(resj => {
 
