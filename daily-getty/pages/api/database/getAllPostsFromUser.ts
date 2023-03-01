@@ -30,7 +30,10 @@ export default async function createPost (
     const db = database;
     const dbref = ref(db, `posts/${user_id}`)
 
-    const posts = await asyncOnValue(dbref);
+    let posts = await asyncOnValue(dbref);
+
+    if(posts === null)
+        posts = {} as DatabasePost[]
 
     res.status(200).json(generateDbResponse(true, posts, {} as DatabaseError))
 
