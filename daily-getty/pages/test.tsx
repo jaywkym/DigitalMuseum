@@ -18,14 +18,39 @@ function SignInPage() {
             <br></br>
 
             <input type={'button'} onClick={() => {
-                test(session.user.id)
+                addPost(session.user.id)
             }} value={'Generate Image'} />
+            <input type={'button'} onClick={() => {
+                requestAllPostsFromUser(session.user.id)
+            }} value={'Get posts'} />
 
         </>
     )
 }
 
-async function test(id) {
+async function requestAllPostsFromUser(id) {
+
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: id,
+        })
+    }
+
+    fetch('http://localhost:3000/api/database/getAllPostsFromUser', request)
+    .then(res => res.json())
+    .then(res => {
+       console.log(res)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+
+async function addPost(id) {
 
     const json = await fetch(`/test/output.json`)
     const resp = await json.json()
@@ -40,7 +65,7 @@ async function test(id) {
             id: id,
             image: {
                 created: resp.created,
-                image: resp.data[0].b64_json
+                image: resp.data[1].b64_json
             }
         })
     }

@@ -3,20 +3,21 @@ import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
-    DatabaseResponse,
+    DatabaseUserPostsResponse,
     DatabasePost
 }  from "../../../types/FirebaseResponseTypes";
 
 export default async function createPost (
     req: NextApiRequest,
-    res: NextApiResponse<DatabaseResponse>
+    res: NextApiResponse<DatabaseUserPostsResponse>
   ) {
 
     /* Only accept POST requests */
-    if(req.method !== 'PUT') {
+    if(req.method !== 'POST') {
         res.status(405).json(
             generateDbResponse(
                 false, 
+                {} as DatabasePost[],
                 generateError(405, 'Invalid request method')
             )
         )
@@ -25,28 +26,28 @@ export default async function createPost (
     }
 
     const body = req.body;
-    const user_id = body.id
-    const date = new Date();
-    const post_id = `${date.getFullYear()}_${date.getMonth()}_${date.getDate()}`
-
-    const dbpost = {
-        id: post_id,
-        user_id: user_id,
-        image: {
-            created: body.image.created as Number,
-            b64: body.image.image as String
-        } as any
-    } as DatabasePost
-
+    const user_id = body.user_id
     const db = database;
+    const dbref = ref(db, `posts/${user_id}`)
 
-    set(ref(db, `posts/${user_id}/${post_id}`), dbpost)
+    const posts = await asyncOnValue(dbref);
 
-    res.status(200).json(generateDbResponse(true, {} as DatabaseError))
-  
+    res.status(200).json(generateDbResponse(true, posts, {} as DatabaseError))
+
 }
 
- /**
+function asyncOnValue(ref): Promise<DatabasePost[]> {
+
+    return new Promise((resolve) => {
+        onValue(ref, (snapshot) => {
+            const data = snapshot.val();
+            resolve(data as DatabasePost[])
+        })
+    })
+}
+
+
+  /**
  * 
  * generateDbResponse: Generates an DatabaseResponse object from given inputs.
  * 
@@ -57,10 +58,12 @@ export default async function createPost (
  */
 function generateDbResponse(
     success: boolean, 
-    error: DatabaseError): DatabaseResponse {
+    posts: DatabasePost[],
+    error: DatabaseError): DatabaseUserPostsResponse {
    
     return {
         success: success,
+        posts: posts,
         error: error
     }
 }
