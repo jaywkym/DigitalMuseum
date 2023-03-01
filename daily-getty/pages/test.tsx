@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { signIn, signOut, useSession } from 'next-auth/react'
+import React, { useState } from 'react';
+import { useSession } from 'next-auth/react'
 import { useAddPost, useGetAllPostsForUser } from './database/utils';
 
-function SignInPage() {
+function Test() {
 
     const [prompt, setPrompt] = useState('')
     const [amount, setAmount] = useState('')
     const {data: session, status} = useSession()
     
-    let user_id = session.user? (session.user as any).id : "";
+    let user_id = status === 'authenticated'? (session.user as any).id : "";
 
     const [postCreatedSuccess, postCreatedLoading, createPost] = useAddPost(user_id, 12345, "test");
     const [posts, getPostsSuccess, getPostsLoading, getAllPostsForUser] = useGetAllPostsForUser(user_id);
@@ -29,4 +29,4 @@ function SignInPage() {
     )
 }
 
-export default SignInPage;
+export default Test;
