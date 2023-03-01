@@ -68,12 +68,21 @@ export function useAddFriend(id: string, friend_id: string):
             fetch(`${process.env.URL}/api/database/addFriend`, request)
             .then(res => res.json())
             .then(res => {
-            setLoading(false)
+
+                setLoading(false)
+                setSuccess(true)
             })
             .catch(err => {
                 setLoading(false)
+                setSuccess(false)
             })
         }
 
     return [success, loading, addFriend];
+}
+
+export function useAddPost(user_id: string, created: number, b64: string) {
+
+        const [success, setSuccess] = useState(false)
+        const [loading, setLoading] = useState(false)
 }
