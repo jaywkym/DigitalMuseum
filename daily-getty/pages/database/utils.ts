@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { 
-    DatabasePost, DatabaseUserPostsResponse
+    DatabasePost, 
+    DatabaseUserPostsResponse,
+    DatabaseUserPostResponse
 }  from "../../types/FirebaseResponseTypes";
 
 
@@ -191,4 +193,63 @@ export function useGetAllPostsForUser(user_id: string):
     }
 
     return [posts, success, loading, getAllPosts];
+}
+
+export function useGetPostForUser(user_id: string, post_id: string):
+    [DatabasePost, boolean, boolean, () => void] {
+
+    const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [post, setPost] = useState({} as DatabasePost)
+    
+    function getPost() {
+
+        if(loading) {
+            setSuccess(false);
+            return;
+        }
+
+        if(user_id === undefined ||
+           post_id === undefined ||
+           user_id === '' ||
+           post_id === '') {
+
+            setSuccess(false);
+            return;
+        }
+
+        setLoading(true);
+        
+        const request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                post_id: post_id,
+            })
+        }
+    
+        fetch('http://localhost:3000/api/database/getPostFromUser', request)
+        .then(res => res.json())
+        .then(resj => {
+
+            const res = resj as DatabaseUserPostResponse
+
+            if(!res.success) {
+                setSuccess(false)
+                return;
+            }
+
+            setPost(res.post)
+            setSuccess(true)
+           
+        })
+        .catch(err => setSuccess(false))
+        .finally(() => setLoading(false))
+
+    }
+
+    return [post, success, loading, getPost];
 }

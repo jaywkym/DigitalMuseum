@@ -59,4 +59,10 @@ export type DatabaseUserPostsResponse = {
   error: DatabaseError
 }
 
+export type DatabaseUserPostResponse = {
+  success: boolean,
+  post : DatabasePost,
+  error: DatabaseError
+}
+
 
