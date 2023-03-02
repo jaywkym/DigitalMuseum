@@ -108,19 +108,9 @@ export function useDeleteFriend(user_id: string, friend_id: string):
         const [loading, setLoading] = useState(false)
         const [friends, friendsLoading, fetchFriends] = useFriends(user_id);
 
-        /* Update friends list on client side */
-        useMemo(() => {
-            fetchFriends()
-        }, [user_id, friend_id]);
-        
         function removeFriend() {
 
             if(loading) {
-                setSuccess(false)
-                return;
-            }
-
-            if(!friends.includes(friend_id)) {
                 setSuccess(false)
                 return;
             }

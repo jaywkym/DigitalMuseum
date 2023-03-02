@@ -22,12 +22,6 @@ function Test() {
         getFriends()
     }, [addFriendsSuccess, deleteFriendsSuccess])
 
-    console.log({
-        friends: friends,
-        addFriendSuccess: addFriendsSuccess,
-        deleteFriendSuccess: deleteFriendsSuccess
-    })
-
     return (
         <>
             <p>Testing Page</p>
