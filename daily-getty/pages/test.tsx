@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react'
 import useFriends, { useAddFriend, useAddPost, useDeleteFriend, useGetAllPostsForUser, useGetPostForUser } from './database/utils';
 
@@ -17,8 +17,8 @@ function Test() {
     const [friends, friendsLoading, getFriends] = useFriends(user_id)
     const [addFriendsSuccess, addFriendsLoading, addFriend] = useAddFriend(user_id, "1000")
 
-    useMemo(() => {
-        console.log("Retrieve friends")
+    /* Update friends list on frontend if friend added or remoed */
+    useEffect(() => {
         getFriends()
     }, [addFriendsSuccess, deleteFriendsSuccess])
 
