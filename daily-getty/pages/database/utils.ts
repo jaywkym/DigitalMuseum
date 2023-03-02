@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { 
     DatabasePost, 
     DatabaseUserPostsResponse,
-    DatabaseUserPostResponse
+    DatabaseUserPostResponse,
+    DatabaseResponse
 }  from "../../types/FirebaseResponseTypes";
+import { setServers } from "dns";
 
 
 export default function useFriends(id: string):
@@ -30,16 +32,14 @@ export default function useFriends(id: string):
         }
     
     
-        fetch(`${process.env.URL}/api/database/getFriends`, request)
+        fetch(`/api/database/getFriends`, request)
         .then(res => res.json())
         .then(res => {
             let friends = res.friends.friends
            setFriends(friends? friends : [])
-           setLoading(false)
         })
-        .catch(err => {
-            setLoading(false)
-        })
+        .catch(err => console.log(err))
+        .finally(() => setLoading(false))
     }
 
     return [friends, loading, pullFriends]
@@ -50,6 +50,7 @@ export function useAddFriend(id: string, friend_id: string):
 
         const [success, setSuccess] = useState(false);
         const [loading, setLoading] = useState(false);
+        //const [friends, friendsLoading, getFriends] = useFriends(id)
 
 
         function addFriend() {
@@ -57,6 +58,7 @@ export function useAddFriend(id: string, friend_id: string):
                 return;
 
             setLoading(true);
+            setSuccess(false);
 
             const request = {
                 method: 'POST',
@@ -69,21 +71,67 @@ export function useAddFriend(id: string, friend_id: string):
                 })
             }
         
-        
-            fetch(`${process.env.URL}/api/database/addFriend`, request)
+            fetch(`/api/database/addFriend`, request)
             .then(res => res.json())
-            .then(res => {
-
-                setLoading(false)
-                setSuccess(true)
-            })
-            .catch(err => {
-                setLoading(false)
-                setSuccess(false)
-            })
+            .then(res => setSuccess(true))
+            .catch(err => setSuccess(false))
+            .finally(() => setLoading(false))
         }
 
     return [success, loading, addFriend];
+}
+
+export function useDeleteFriend(user_id: string, friend_id: string):
+    [boolean, boolean, () => void] {
+
+        const [success, setSuccess] = useState(false)
+        const [loading, setLoading] = useState(false)
+        const [friends, friendsLoading, fetchFriends] = useFriends(user_id);
+
+        useMemo(() => {
+            fetchFriends()
+        }, [user_id, friend_id]);
+        
+        function removeFriend() {
+
+            if(loading) {
+                setSuccess(false)
+                return;
+            }
+
+            if(!friends.includes(friend_id)) {
+                setSuccess(false)
+                return;
+            }
+
+            setLoading(true);
+            setSuccess(false);
+
+            const request = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: user_id,
+                    friend_id: friend_id
+                })
+            }
+            
+        
+            fetch(`/api/database/removeFriend`, request)
+            .then(res => res.json())
+            .then(resj => {
+                const res = resj as DatabaseResponse;
+                if(!res.success) setSuccess(false)
+                else setSuccess(true)
+            })
+            .catch(err => console.log(err))
+            .finally(() => setLoading(false))
+            
+        }
+
+        return [success, loading, removeFriend];
 }
 
 export function useAddPost(user_id: string, created: number, b64: string):
@@ -109,6 +157,7 @@ export function useAddPost(user_id: string, created: number, b64: string):
             }
 
             setLoading(true)
+            setSuccess(false)
                 
             const request = {
                 method: 'PUT',
@@ -124,13 +173,12 @@ export function useAddPost(user_id: string, created: number, b64: string):
                 })
             }
         
-            console.log(request)
-        
-            fetch('/api/database/createPost', request)
+            fetch(`/api/database/createPost`, request)
             .then(res => res.json())
-            .then(res => {
-                
-                console.log(res)
+            .then(resj => {
+                const res = resj as DatabaseResponse;
+                if(!res.success) setSuccess(false)
+                else setSuccess(true)
             })
             .catch(err => console.log(err))
             .finally(() => setLoading(false))
@@ -162,6 +210,7 @@ export function useGetAllPostsForUser(user_id: string):
         }
 
         setLoading(true);
+        setSuccess(false);
         
         const request = {
             method: 'POST',
@@ -173,7 +222,7 @@ export function useGetAllPostsForUser(user_id: string):
             })
         }
     
-        fetch('http://localhost:3000/api/database/getAllPostsFromUser', request)
+        fetch(`/api/database/getAllPostsFromUser`, request)
         .then(res => res.json())
         .then(resj => {
 
@@ -219,6 +268,7 @@ export function useGetPostForUser(user_id: string, post_id: string):
         }
 
         setLoading(true);
+        setSuccess(false);
         
         const request = {
             method: 'POST',
@@ -231,7 +281,7 @@ export function useGetPostForUser(user_id: string, post_id: string):
             })
         }
     
-        fetch('http://localhost:3000/api/database/getPostFromUser', request)
+        fetch(`/api/database/getPostFromUser`, request)
         .then(res => res.json())
         .then(resj => {
 
