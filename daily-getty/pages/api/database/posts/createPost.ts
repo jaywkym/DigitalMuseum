@@ -1,23 +1,22 @@
-import { database } from "../../../firebase/clientApp";
+import { database } from "../../../../firebase/clientApp";
 import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
-    DatabaseUserPostsResponse,
+    DatabaseResponse,
     DatabasePost
-}  from "../../../types/FirebaseResponseTypes";
+}  from "../../../../types/FirebaseResponseTypes";
 
 export default async function createPost (
     req: NextApiRequest,
-    res: NextApiResponse<DatabaseUserPostsResponse>
+    res: NextApiResponse<DatabaseResponse>
   ) {
 
     /* Only accept POST requests */
-    if(req.method !== 'POST') {
+    if(req.method !== 'PUT') {
         res.status(405).json(
             generateDbResponse(
                 false, 
-                {} as DatabasePost[],
                 generateError(405, 'Invalid request method')
             )
         )
@@ -26,31 +25,28 @@ export default async function createPost (
     }
 
     const body = req.body;
-    const user_id = body.user_id
+    const user_id = body.id
+    const date = new Date();
+    const post_id = `${date.getFullYear()}_${date.getMonth()}_${date.getDate()}`
+
+    const dbpost = {
+        id: post_id,
+        user_id: user_id,
+        image: {
+            created: body.image.created as Number,
+            b64: body.image.image as String
+        } as any
+    } as DatabasePost
+
     const db = database;
-    const dbref = ref(db, `posts/${user_id}`)
 
-    let posts = await asyncOnValue(dbref);
+    set(ref(db, `posts/${user_id}/${post_id}`), dbpost)
 
-    if(posts === null)
-        posts = {} as DatabasePost[]
-
-    res.status(200).json(generateDbResponse(true, posts, {} as DatabaseError))
-
+    res.status(200).json(generateDbResponse(true, {} as DatabaseError))
+  
 }
 
-function asyncOnValue(ref): Promise<DatabasePost[]> {
-
-    return new Promise((resolve) => {
-        onValue(ref, (snapshot) => {
-            const data = snapshot.val();
-            resolve(data as DatabasePost[])
-        })
-    })
-}
-
-
-  /**
+ /**
  * 
  * generateDbResponse: Generates an DatabaseResponse object from given inputs.
  * 
@@ -61,12 +57,10 @@ function asyncOnValue(ref): Promise<DatabasePost[]> {
  */
 function generateDbResponse(
     success: boolean, 
-    posts: DatabasePost[],
-    error: DatabaseError): DatabaseUserPostsResponse {
+    error: DatabaseError): DatabaseResponse {
    
     return {
         success: success,
-        posts: posts,
         error: error
     }
 }

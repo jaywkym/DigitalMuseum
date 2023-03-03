@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react'
-import useFriends, { useAddFriend, useAddPost, useDeleteFriend, useGetAllPostsForUser, useGetPostForUser } from './database/utils';
+import { 
+    useFriends,
+    useAddFriend,
+    useDeleteFriend
+ } from './database/profile';
+
+ import {
+    useAddPost,
+    useGetAllPostsForUser,
+    useGetPostForUser
+ } from './database/posts'
 
 function Test() {
 

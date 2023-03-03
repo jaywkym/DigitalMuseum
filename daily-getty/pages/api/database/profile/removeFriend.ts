@@ -1,13 +1,13 @@
-import { database } from "../../../firebase/clientApp";
+import { database } from "../../../../firebase/clientApp";
 import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
     DatabaseResponse,
     DatabaseFriends
-}  from "../../../types/FirebaseResponseTypes";
+}  from "../../../../types/FirebaseResponseTypes";
 
-export default async function getFriends (
+export default async function removeFriend (
     req: NextApiRequest,
     res: NextApiResponse<DatabaseResponse>
   ) {
@@ -35,21 +35,29 @@ export default async function getFriends (
             friends: []
         } as DatabaseFriends
 
-    if(!friends_obj.friends)
-        friends_obj.friends = []
-
-    if(friends_obj.friends.includes(friend_id)) {
+    if(!friends_obj.friends) {
         res.status(200).json(
             generateDbResponse(
                 false,
-                generateError(-100, "User is already a friend")
+                generateError(-69, "You have no friends... dang...")
+            )
+        )
+        return;
+    }
+
+    if(!friends_obj.friends.includes(friend_id)) {
+        res.status(200).json(
+            generateDbResponse(
+                false,
+                generateError(-100, "User is not a friend")
             )
         )
         return;
     }
 
 
-    friends_obj.friends.push(friend_id)
+    const index = friends_obj.friends.indexOf(friend_id, 0)
+    friends_obj.friends.splice(index, 1);
 
     const db = database;
     set(ref(db, `friends/${user_id}`), friends_obj)
@@ -60,7 +68,6 @@ export default async function getFriends (
             {} as DatabaseError
         )
     )
-   
   
 }
 
@@ -76,7 +83,7 @@ async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
     }
     
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.URL}/api/database/getFriends`, request)
+        fetch(`${process.env.URL}/api/database/profile/getFriends`, request)
         .then(res => res.json())
         .then(res => {
            resolve(res.friends)
