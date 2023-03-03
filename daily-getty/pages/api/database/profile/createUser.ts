@@ -1,11 +1,11 @@
-import { database } from "../../../firebase/clientApp";
+import { database } from "../../../../firebase/clientApp";
 import { getDatabase, push, ref, set, get, child, onValue, Database } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
     DatabaseResponse,
     DatabaseUser,
-}  from "../../../types/FirebaseResponseTypes";
+}  from "../../../../types/FirebaseResponseTypes";
 
 export default async function createUser (
     req: NextApiRequest,
