@@ -47,6 +47,9 @@ export type DatabaseFriends = {
 export type DatabasePost = {
   id: string,
   user_id: string,
+  userPrompt: string,
+  givenPrompt: string,
+  likes: number,
   image: {
     created: number,
     b64: string,
