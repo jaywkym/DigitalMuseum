@@ -1,19 +1,21 @@
-import { database } from "../../../firebase/clientApp";
-import { ref, onValue } from "firebase/database";
+import { database } from "../../../../firebase/clientApp";
+import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
     DatabaseResponse,
+    DatabasePost,
+    DatabaseUserResponse,
     DatabaseUser
-}  from "../../../types/FirebaseResponseTypes";
+}  from "../../../../types/FirebaseResponseTypes";
 
-export default async function checkUser (
+export default async function createPost (
     req: NextApiRequest,
     res: NextApiResponse<DatabaseResponse>
   ) {
 
     /* Only accept POST requests */
-    if(req.method !== 'POST') {
+    if(req.method !== 'PUT') {
         res.status(405).json(
             generateDbResponse(
                 false, 
@@ -24,65 +26,43 @@ export default async function checkUser (
         return;
     }
 
-    const body = req.body as DatabaseUser;
-    const user_email = body.email;
+    const body = req.body;
+   
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate() ;
 
-    if(user_email === undefined) {
-        res.status(200).json(
-            generateDbResponse(
-                false,
-                generateError(-10, 'No user email')
-            )
-        )
-
-        return;
-    }
+    const post_id = year + "_" + month + "_" + day;
+    //const post_id = "2023_3_1";
+    //console.log(body);
+    
+    const dbpost = {
+        id: post_id,
+        user_id: body.user_id,
+        userPrompt: body.userPrompt,
+        givenPrompt: null,
+        likes: body.likes,
+        image: {
+            created: body.image.created as Number,
+            b64: body.image.b64 as String
+        } as any
+    } as DatabasePost
 
     const db = database;
-    const dbref = ref(db, 'users/')
-    const users = await asyncOnValue(dbref);
 
-    /* Check all users if email is attached to user */
-    for(let user_id in users) {
-        
-        let user: DatabaseUser = users[user_id]
+    set(ref(db, `posts/${dbpost.user_id}/${post_id}`), dbpost)
 
-        if(user.email === user_email) {
-            res.status(200).json(
-                generateDbResponse(
-                    true,
-                    {} as DatabaseError
-                )
-            )
-
-            return;
-        }
-    }
-
-    res.status(200).json(
-        generateDbResponse(
-            false,
-            generateError(-2, 'No account')
-        )
-    )
-
+    res.status(200).json(generateDbResponse(true, {} as DatabaseError))
+  
 }
 
-function asyncOnValue(ref): Promise<DatabaseUser> {
-
-    return new Promise((resolve) => {
-        onValue(ref, (snapshot) => {
-            const data = snapshot.val();
-            resolve(data as DatabaseUser)
-        })
-    })
-}
-
-/**
+ /**
  * 
  * generateDbResponse: Generates an DatabaseResponse object from given inputs.
  * 
  * @param success Boolean to determine successful response
+ * @param user A DatabaseUser object filled with user information
  * @param error A DatabaseError Object filled with error information
  * @returns DatabaseResponse
  */
@@ -113,3 +93,12 @@ function generateError(code: number, message: string, param = '', type = ''): Da
         type: type 
     }
 }
+
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '10mb',
+      },
+    },
+  }
+  

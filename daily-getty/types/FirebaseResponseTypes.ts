@@ -44,5 +44,28 @@ export type DatabaseFriends = {
   friends: string[]
 }
 
+export type DatabasePost = {
+  id: string,
+  user_id: string,
+  userPrompt: string,
+  givenPrompt: string,
+  likes: number,
+  image: {
+    created: number,
+    b64: string,
+  }
+}
+
+export type DatabaseUserPostsResponse = {
+  success: boolean,
+  posts : DatabasePost[],
+  error: DatabaseError
+}
+
+export type DatabaseUserPostResponse = {
+  success: boolean,
+  post : DatabasePost,
+  error: DatabaseError
+}
 
 

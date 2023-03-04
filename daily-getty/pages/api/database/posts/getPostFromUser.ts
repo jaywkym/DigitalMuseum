@@ -1,23 +1,23 @@
-import { database } from "../../../firebase/clientApp";
-import { ref, onValue, Database } from "firebase/database";
+import { database } from "../../../../firebase/clientApp";
+import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
-    DatabaseFriendsResponse,
-    DatabaseFriends
-}  from "../../../types/FirebaseResponseTypes";
+    DatabaseUserPostResponse,
+    DatabasePost
+}  from "../../../../types/FirebaseResponseTypes";
 
-export default async function getFriends (
+export default async function getPost (
     req: NextApiRequest,
-    res: NextApiResponse<DatabaseFriendsResponse>
+    res: NextApiResponse<DatabaseUserPostResponse>
   ) {
 
     /* Only accept POST requests */
     if(req.method !== 'POST') {
         res.status(405).json(
-            generateDbFriendsResponse(
+            generateDbResponse(
                 false, 
-                {} as DatabaseFriends,
+                {} as DatabasePost,
                 generateError(405, 'Invalid request method')
             )
         )
@@ -25,32 +25,31 @@ export default async function getFriends (
         return;
     }
 
-    const user_id = req.body.id;
-
+    const body = req.body;
+    const user_id = body.user_id
+    const post_id = body.post_id
     const db = database;
-    const dbref = ref(db, `friends/${user_id}`)
-    const friends_obj = await asyncOnValue(dbref);
+    const dbref = ref(db, `posts/${user_id}/${post_id}`)
 
-    res.status(200).json(
-        generateDbFriendsResponse(
-            true,
-            friends_obj,
-            {} as DatabaseError
-        )
-    )
-   
-  
+    let post = await asyncOnValue(dbref);
+
+    if(post === null)
+        post = {} as DatabasePost
+
+    res.status(200).json(generateDbResponse(true, post, {} as DatabaseError))
+
 }
 
-function asyncOnValue(ref): Promise<DatabaseFriends> {
+function asyncOnValue(ref): Promise<DatabasePost> {
 
     return new Promise((resolve) => {
         onValue(ref, (snapshot) => {
             const data = snapshot.val();
-            resolve(data as DatabaseFriends)
+            resolve(data as DatabasePost)
         })
     })
 }
+
 
   /**
  * 
@@ -61,14 +60,14 @@ function asyncOnValue(ref): Promise<DatabaseFriends> {
  * @param error A DatabaseError Object filled with error information
  * @returns DatabaseResponse
  */
-function generateDbFriendsResponse(
+function generateDbResponse(
     success: boolean, 
-    friends: DatabaseFriends,
-    error: DatabaseError): DatabaseFriendsResponse {
+    post: DatabasePost,
+    error: DatabaseError): DatabaseUserPostResponse {
    
     return {
         success: success,
-        friends: friends,
+        post: post,
         error: error
     }
 }
@@ -90,3 +89,12 @@ function generateError(code: number, message: string, param = '', type = ''): Da
         type: type 
     }
 }
+
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '10mb',
+      },
+    },
+  }
+  

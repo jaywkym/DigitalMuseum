@@ -1,21 +1,32 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { getServerSession } from "next-auth/next"
-import type { 
-    DalleError, 
-    DalleResponse,
-    ImageResponse,
-}  from "../../../types/DalleResponseTypes";
-import type { 
-   DatabasePost,
-   DatabaseUserResponse,
-   DatabaseUser
-}  from "../../../types/FirebaseResponseTypes";
 
+require('dotenv').config()
 
 const DALLE_API_KEY = process.env.DALLE_API_KEY
 const url = 'https://api.openai.com/v1/images/generations'
+
+type DalleResponse = {
+    created: number,
+    data   : {
+        b64_json: string
+    }[],
+    success: boolean
+}
+
+type DalleError = {
+    code: number,
+    message: string,
+    param: string,
+    type: string 
+}
+
+type ImageResponse = {
+  success: boolean,
+  amount : number,
+  image  : DalleResponse,
+  error  : DalleError,
+}
 
 /**
  * 
@@ -51,7 +62,7 @@ export default async function request_image_handler(
     const prompt = req.body.prompt;
     const amount = req.body.amount;
 
-    const image  = await requestToDalleAPI(prompt, amount);
+    const image  = await requestDalleImages(prompt, amount);
 
     /* ERROR generating image for various reasons */
     if(!image.success) {
@@ -60,38 +71,6 @@ export default async function request_image_handler(
 
         return;
     } 
-
-    const session = await getServerSession(req, res, authOptions);
-
-    console.log(session)
-
-
-    const userGet = {
-        id: null,
-        name: session.user.name,
-        email: session.user.email,
-        image: session.user.image,
-        googleId: null
-    } as DatabaseUser;
-
-    let user_obj = await pull_user(userGet);
-
-    //console.log(user_obj);
-
-    const uploadInfo: DatabasePost = {
-        id: null,
-        user_id: user_obj.id,
-        userPrompt: prompt,
-        givenPrompt: null, 
-        likes: 0,
-        image: {
-            created: image.created as Number,
-            b64: image.data[0].b64_json as String
-        } as any
-    }
-
-    await addPostApi(uploadInfo);
-
 
     /* Respond with image information */
     res.status(200).json(generateImageResponse(true, amount, image))
@@ -108,7 +87,7 @@ export default async function request_image_handler(
  * @param amount Amount of images to request from DALLE
  * @returns DalleResponse representing a successful or error response from DALLE
  */
-async function requestToDalleAPI(prompt: string, amount: string) {
+async function requestDalleImages(prompt: string, amount: string) {
 
     /* Generate dalle post request information */
     const dalle_request = {
@@ -194,68 +173,4 @@ export const config = {
       },
     },
   }
-
-
-  /**
- * addPostAPI: Takes in an incomplete user object and fills the rest of the
- *            information missing.
- * 
- * @param user An incomplete user object
- * @returns A complete user object with all parameters filled
- */
-async function addPostApi(info: DatabasePost) {
-    const request = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(info)
-    }
-    return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/database/posts/createPost', request)
-        .then(res => res.json())
-        .then((resj) => {
-            const res = resj as DatabaseUserResponse;
-            if(res.success)
-                resolve(res.user)
-            resolve(res.user)
-            
-        })
-        .catch(err => {
-            console.log("GOT ERR")
-            reject(err);
-        })
-    })
-}
-
-  /**
- * pull_user: Takes in an incomplete user object and fills the rest of the
- *            information missing.
- * 
- * @param user An incomplete user object
- * @returns A complete user object with all parameters filled
- */
-  async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
-    const request = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user)
-    }
-    return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/database/profile/getUserAccount', request)
-        .then(res => res.json())
-        .then((resj) => {
-            const res = resj as DatabaseUserResponse;
-            if(res.success)
-                resolve(res.user)
-            resolve(res.user)
-            
-        })
-        .catch(err => {
-            console.log("GOT ERR")
-            reject(err);
-        })
-    })
-} 
+  

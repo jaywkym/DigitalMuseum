@@ -7,6 +7,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import NavBar from '@/src/components/bottomnav';
 import MuseForm from '@/src/components/uploadform';
 import Prompt from '@/src/components/prompt';
+import Loading from '@/src/components/loading';
+import loading from './dalle/images';
 
 export default function NewMuse() {
 
