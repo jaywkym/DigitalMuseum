@@ -16,8 +16,7 @@ import setLoading from "@/pages/dalle/images";
 const MuseForm = () => {
 
     const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
-    const [loading, setLoading] = React.useState(false); //Loading ARTWORK
-    const [success, setSuccess] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
+    const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
     const timer = React.useRef<number>();
 
     React.useEffect(() => {
@@ -30,33 +29,12 @@ const MuseForm = () => {
         setValue((event.target as HTMLInputElement).value);
     };
 
-    const buttonSx = {
-        ...(success && {
-            bgcolor: green[500],
-            '&:hover': {
-                bgcolor: green[700],
-            },
-        }),
-    };
-
     const handleButtonClick = () => {
-        //Call Generate Image
-        generateImage;
-        setSuccess(true);
-        /*
-        if (loadingImage) {
-            setSuccess(false);
-            setLoading(true);
-            timer.current = window.setTimeout(() => {
-                setSuccess(false);
-                setLoading(true);
-            }, 2000000);
-        }
-        */
+        setGenerate(true);
     };
 
     const handleClose = () => {
-        setSuccess(false);
+        setGenerate(false);
     };
 
     //DallE API CALL
@@ -111,13 +89,13 @@ const MuseForm = () => {
                 </Container>
             </Box>
             */}
-            
-            {loadingImage ? 
-                    <Loading>
-                        <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                    </Loading>
+
+            {loadingImage ?
+                <Loading>
+                    <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                </Loading>
                 :
-                    <Image id="image" alt="image" height={500} width={500} src={b64_image}></Image>
+                <Image id="image" alt="image" height={500} width={500} src={b64_image}></Image>
             }
 
             <Box sx={{ m: 5 }}>
@@ -126,8 +104,9 @@ const MuseForm = () => {
                         Generate Muse
                     </Button>
                     {/*IMAGE GENERATED MODAL 
+                    */}
                     <Modal
-                        open={success}
+                        open={generate}
                         onClose={handleClose}
                         aria-labelledby="modal-modal-title"
                         aria-describedby="modal-modal-description"
@@ -141,8 +120,7 @@ const MuseForm = () => {
                             </Container>
                         </Box>
                     </Modal>
-                    */}
-                    {loading && (
+                    {loadingImage && (
                         <CircularProgress
                             size={68}
                             sx={{
