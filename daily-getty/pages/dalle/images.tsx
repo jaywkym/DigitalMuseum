@@ -47,6 +47,7 @@ const useImage = (prompt: string, amount: string):
         .then(res => res.json())
         .then(resj => {
             const res = resj as ImageResponse
+            console.log(res)
             if(res.success) {
                 setImage(`data:image/png;base64, ${res.image.data[0].b64_json}`)
             } else {
