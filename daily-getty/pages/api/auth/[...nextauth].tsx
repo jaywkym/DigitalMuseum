@@ -62,7 +62,8 @@ export const authOptions: NextAuthOptions = {
             //     credentials: credentials
             // })
 
-            // return true;
+            console.log("Signin")
+            return true;
 
             console.log("TEST")
             console.log("Checking email verified")
