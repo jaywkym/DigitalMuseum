@@ -64,6 +64,7 @@ export const authOptions: NextAuthOptions = {
 
             // return true;
 
+            console.log("TEST")
             console.log("Checking email verified")
 
             // /* Reject login if email is not verified */
