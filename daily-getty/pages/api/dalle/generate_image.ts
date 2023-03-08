@@ -64,36 +64,36 @@ export default async function request_image_handler(
         return;
     } 
 
-    const session = await getServerSession(req, res, authOptions);
+    // const session = await getServerSession(req, res, authOptions);
 
-    console.log(session)
+    // console.log(session)
 
 
-    const userGet = {
-        id: null,
-        name: session.user.name,
-        email: session.user.email,
-        image: session.user.image,
-        googleId: null
-    } as DatabaseUser;
+    // const userGet = {
+    //     id: null,
+    //     name: session.user.name,
+    //     email: session.user.email,
+    //     image: session.user.image,
+    //     googleId: null
+    // } as DatabaseUser;
 
-    let user_obj = await pull_user(userGet);
+    // let user_obj = await pull_user(userGet);
 
-    //console.log(user_obj);
+    // //console.log(user_obj);
 
-    const uploadInfo: DatabasePost = {
-        id: null,
-        user_id: user_obj.id,
-        userPrompt: prompt,
-        givenPrompt: null, 
-        likes: 0,
-        image: {
-            created: image.created as Number,
-            b64: image.data[0].b64_json as String
-        } as any
-    }
+    // const uploadInfo: DatabasePost = {
+    //     id: null,
+    //     user_id: user_obj.id,
+    //     userPrompt: prompt,
+    //     givenPrompt: null, 
+    //     likes: 0,
+    //     image: {
+    //         created: image.created as Number,
+    //         b64: image.data[0].b64_json as String
+    //     } as any
+    // }
 
-    await addPostApi(uploadInfo);
+    // await addPostApi(uploadInfo);
 
 
     /* Respond with image information */
