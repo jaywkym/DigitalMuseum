@@ -100,8 +100,8 @@ a {
   text-decoration: none;
 }
 
-/* @media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: feSpotLight) {
   html {
     color-scheme: light;
   }
-} */
+}
