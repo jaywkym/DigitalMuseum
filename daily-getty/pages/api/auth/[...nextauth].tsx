@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
 
             /* Reject login if email is not verified */
             if(!(profile as any).email_verified)
-                return false;
+                return true;
 
             /* Verify if new user (Create account) */
             const account_exists = await check_user_exists(user.email);
