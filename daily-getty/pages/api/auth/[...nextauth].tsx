@@ -60,7 +60,7 @@ const authOptions: NextAuthOptions = {
             //     credentials: credentials
             // })
 
-            // return true;
+            return true;
 
             /* Reject login if email is not verified */
             if(!(profile as any).email_verified)
