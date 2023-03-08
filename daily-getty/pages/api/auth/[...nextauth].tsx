@@ -52,21 +52,26 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
 
-            console.log(process.env)
+            // console.log(process.env)
   
-            console.log({
-                user: user,
-                account: account,
-                profile: profile, //email verified
-                email: email,
-                credentials: credentials
-            })
+            // console.log({
+            //     user: user,
+            //     account: account,
+            //     profile: profile, //email verified
+            //     email: email,
+            //     credentials: credentials
+            // })
 
             // return true;
+
+            console.log("Checking email verified")
 
             /* Reject login if email is not verified */
             if(!(profile as any).email_verified)
                 return true;
+
+            console.log("Email verified")
+            console.log("Checking account exists")
 
             /* Verify if new user (Create account) */
             const account_exists = await check_user_exists(user.email);
@@ -74,6 +79,8 @@ export const authOptions: NextAuthOptions = {
             /* Log in user if their account exists */
             if(account_exists)
                 return true;
+
+            console.log("Account does not exist")
 
             const userAccount: DatabaseUser = {
                 id: randomUUID?.() ?? randomBytes(32).toString("hex"),
@@ -84,8 +91,12 @@ export const authOptions: NextAuthOptions = {
 
             }
 
+            console.log(userAccount)
+
             /* Create user account if it does not exist */
             await create_account(userAccount)
+
+            console.log("Account created")
             
             return true
           },
@@ -179,6 +190,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
 }
 
 async function check_user_exists(email: string): Promise<boolean> {
+    console.log("Checking for user")
     const request = {
         method: 'POST',
         headers: {
@@ -194,6 +206,8 @@ async function check_user_exists(email: string): Promise<boolean> {
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseResponse
+            console.log("Received...")
+            console.log(res)
 
             /* Log in user if account exists */
             if(res.success) 
@@ -217,7 +231,7 @@ function create_account(userAccount: DatabaseUser) {
         body: JSON.stringify(userAccount)
     }
 
-    fetch(`${process.env.NEXTAUTH_URL}/api/database/profile/createUser`, create_account_req)
+    fetch(`${process.env.NEXTAUTH_URL}api/database/profile/createUser`, create_account_req)
     .then(res => res.json())
     .then(resj => {
 
