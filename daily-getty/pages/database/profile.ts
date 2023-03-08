@@ -140,7 +140,3 @@ export function useDeleteFriend(user_id: string, friend_id: string):
 
         return [success, loading, removeFriend];
 }
-
-export default function DoNothing() {
-    console.log("Nothing")
-}

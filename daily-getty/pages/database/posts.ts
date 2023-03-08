@@ -199,7 +199,3 @@ export function useGetPostForUser(user_id: string, post_id: string):
 
     return [post, success, loading, getPost];
 }
-
-export default function DoNothing() {
-    console.log("Nothing")
-}
