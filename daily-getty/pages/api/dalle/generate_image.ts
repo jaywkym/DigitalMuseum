@@ -133,6 +133,8 @@ async function requestToDalleAPI(prompt: string, amount: string) {
         const resp = await fetch(url, dalle_request);
         const json = await resp.json()
 
+        console.log("GOt response")
+
         /* TODO - Handle error for successful request but invalid parameters (Invalid api key, invalid request...) */
         if(json.error) {
             json.error.success = false
@@ -144,6 +146,7 @@ async function requestToDalleAPI(prompt: string, amount: string) {
 
     /* Return error if an error occured fetching the DALLE api */
     } catch (err: any) {
+        console.log(err)
         return generateError(1, 'unknown error');
     }
 }
