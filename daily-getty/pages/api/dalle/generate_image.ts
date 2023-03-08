@@ -94,6 +94,7 @@ async function requestToDalleAPI(prompt: string, amount: string) {
         const json = await resp.json()
 
         console.log("GOt response")
+        console.log(json)
 
         /* TODO - Handle error for successful request but invalid parameters (Invalid api key, invalid request...) */
         if(json.error) {
