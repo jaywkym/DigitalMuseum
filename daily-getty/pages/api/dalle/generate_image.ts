@@ -85,6 +85,8 @@ async function requestToDalleAPI(prompt: string, amount: string) {
         })
     }
 
+    console.log(dalle_request)
+
     try {
 
         /* Fetch images from DALLE api */
