@@ -62,8 +62,11 @@ export const authOptions: NextAuthOptions = {
             //     credentials: credentials
             // })
 
-            console.log("Signin")
-            return true;
+            // return true;
+
+            /* Reject login if email is not verified */
+            if(!(profile as any).email_verified)
+                return false;
 
             console.log("TEST")
             console.log("Checking email verified")
