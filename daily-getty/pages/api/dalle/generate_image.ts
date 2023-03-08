@@ -212,7 +212,7 @@ async function addPostApi(info: DatabasePost) {
         body: JSON.stringify(info)
     }
     return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/database/posts/createPost', request)
+        fetch(`${process.env.NEXTAUTH_URL}/api/database/posts/createPost`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
@@ -244,7 +244,7 @@ async function addPostApi(info: DatabasePost) {
         body: JSON.stringify(user)
     }
     return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/database/profile/getUserAccount', request)
+        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
