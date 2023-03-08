@@ -49,6 +49,8 @@ export default async function createPost (
         } as any
     } as DatabasePost
 
+    console.log(dbpost)
+
     const db = database;
 
     set(ref(db, `posts/${dbpost.user_id}/${post_id}`), dbpost)
