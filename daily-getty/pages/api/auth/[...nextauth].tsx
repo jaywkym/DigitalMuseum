@@ -66,37 +66,37 @@ export const authOptions: NextAuthOptions = {
 
             console.log("Checking email verified")
 
-            /* Reject login if email is not verified */
-            if(!(profile as any).email_verified)
-                return true;
+            // /* Reject login if email is not verified */
+            // if(!(profile as any).email_verified)
+            //     return true;
 
-            console.log("Email verified")
-            console.log("Checking account exists")
+            // console.log("Email verified")
+            // console.log("Checking account exists")
 
-            /* Verify if new user (Create account) */
-            const account_exists = await check_user_exists(user.email);
+            // /* Verify if new user (Create account) */
+            // const account_exists = await check_user_exists(user.email);
 
-            /* Log in user if their account exists */
-            if(account_exists)
-                return true;
+            // /* Log in user if their account exists */
+            // if(account_exists)
+            //     return true;
 
-            console.log("Account does not exist")
+            // console.log("Account does not exist")
 
-            const userAccount: DatabaseUser = {
-                id: randomUUID?.() ?? randomBytes(32).toString("hex"),
-                name: user.name,
-                email: user.email,
-                image: user.image,
-                googleId: user.id
+            // const userAccount: DatabaseUser = {
+            //     id: randomUUID?.() ?? randomBytes(32).toString("hex"),
+            //     name: user.name,
+            //     email: user.email,
+            //     image: user.image,
+            //     googleId: user.id
 
-            }
+            // }
 
-            console.log(userAccount)
+            // console.log(userAccount)
 
-            /* Create user account if it does not exist */
-            await create_account(userAccount)
+            // /* Create user account if it does not exist */
+            // await create_account(userAccount)
 
-            console.log("Account created")
+            // console.log("Account created")
             
             return true
           },
