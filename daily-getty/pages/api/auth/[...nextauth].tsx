@@ -60,6 +60,7 @@ const authOptions: NextAuthOptions = {
             //     credentials: credentials
             // })
 
+            console.log("Signin")
             return true;
 
             /* Reject login if email is not verified */
