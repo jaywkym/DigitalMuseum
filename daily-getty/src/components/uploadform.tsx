@@ -42,6 +42,7 @@ const MuseForm = () => {
     const [b64_image, error, loadingImage, generateImage] = useImage(prompt, "1"); //INCORPORATE ERROR HANDLING
     console.log(b64_image);
     console.log(loadingImage);
+    console.log(error)
 
     const style = {
         position: 'absolute' as 'absolute',
