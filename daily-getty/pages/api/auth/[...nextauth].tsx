@@ -51,14 +51,16 @@ export const authOptions: NextAuthOptions = {
 
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
+
+            console.log(process.env)
   
-            // console.log({
-            //     user: user,
-            //     account: account,
-            //     profile: profile, //email verified
-            //     email: email,
-            //     credentials: credentials
-            // })
+            console.log({
+                user: user,
+                account: account,
+                profile: profile, //email verified
+                email: email,
+                credentials: credentials
+            })
 
             // return true;
 
@@ -157,7 +159,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
     }
 
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.NEXTAUTH_URL}/api/database/profile/getUserAccount`, request)
+        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
@@ -188,7 +190,7 @@ async function check_user_exists(email: string): Promise<boolean> {
     }
 
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.NEXTAUTH_URL}/api/database/profile/checkForUser`, request)
+        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseResponse
