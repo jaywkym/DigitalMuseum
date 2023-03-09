@@ -10,6 +10,7 @@ import { Avatar } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Container } from '@mui/system';
+import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 
 
 interface PostProps {
@@ -22,16 +23,17 @@ const handleLike = () => { } //Handle Adding Like to DataBase
 const handleShare = () => { } //Overlay Share Window
 const visitProfile = () => { } //Visit Profile
 
-const Post = () => {
+const Post = ({userObj, post}) => {
+
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
             <Card raised sx={{ width: '356px' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
                     {/*<Button onClick={visitProfile}>*/}
-                    <Avatar alt="Jay Kim" src="/static/avatar.png" />
+                    <Avatar alt={userObj.name} src={userObj.image} />
                     <div></div>
                     <Typography gutterBottom variant="body1" component="div" >
-                        @jaywkym
+                        @{userObj.name}
                     </Typography>
                     {/* </Button>*/}
                 </Box>
@@ -39,7 +41,7 @@ const Post = () => {
                     component="img"
                     alt="post"
                     height="280"
-                    image="/static/sunflower_example.png"
+                    image={`data:image/png;base64, ${post.image.b64}`}
                 />
                 {/*
                 <CardActions>
