@@ -180,7 +180,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
     }
 
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.NEXTAUTH_URL}/api/database/profile/getUserAccount`, request)
+        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;

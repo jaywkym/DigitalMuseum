@@ -83,7 +83,7 @@ async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
     }
     
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.URL}/api/database/profile/getFriends`, request)
+        fetch(`${process.env.URL}api/database/profile/getFriends`, request)
         .then(res => res.json())
         .then(res => {
            resolve(res.friends)
