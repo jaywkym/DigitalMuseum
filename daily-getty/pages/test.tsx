@@ -30,7 +30,7 @@ function Test() {
     /* Update friends list on frontend if friend added or remoed */
     useEffect(() => {
         getFriends()
-    }, [addFriendsSuccess, deleteFriendsSuccess])
+    }, [addFriendsSuccess, deleteFriendsSuccess, getFriends])
 
     return (
         <>
