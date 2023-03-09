@@ -28,8 +28,6 @@ export default function Profile() {
 
     let posts_map = posts? posts : {}
 
-    console.log(user)
-
     return (
         <>
             <Head>

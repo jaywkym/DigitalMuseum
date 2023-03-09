@@ -36,16 +36,61 @@ export default async function getHomefeed (
 
     const user_id = (session.user as any).id
 
-    
-    const db = database;
-    const dbref = ref(db, `posts/${user_id}`)
+    const resp = await getAllPostsForUsers(user_id);
 
-    let posts = await asyncOnValue(dbref);
+    let posts = resp.posts
+
+    console.log(posts)
+    
+    // const db = database;
+    // const dbref = ref(db, `posts/${user_id}`)
+
+    // let posts = await asyncOnValue(dbref);
 
     if(posts === null)
         posts = {} as DatabasePost[]
 
     res.status(200).json(generateDbResponse(true, posts, {} as DatabaseError))
+
+}
+
+function getAllPostsForUsers(user_id: string): Promise<DatabaseUserPostsResponse> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+        })
+    }
+
+    console.log(request)
+
+    return new Promise((resolve, reject) => {
+        fetch(`${process.env.NEXTAUTH_URL}api/database/posts/getAllPostsFromUser`, request)
+        .then(res => res.json())
+        .then(resj => {
+
+            const res = resj as DatabaseUserPostsResponse
+
+            console.log(res)
+            if(!res.success) {
+                resolve(res)
+            }
+
+            console.log("Received post")
+            console.log(res)
+
+            resolve(res)
+
+           
+        })
+        .catch(err => {
+            console.log(err)
+            resolve({} as DatabaseUserPostsResponse)
+        })
+    })
 
 }
 

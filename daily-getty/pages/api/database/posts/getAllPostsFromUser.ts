@@ -30,10 +30,14 @@ export default async function createPost (
     const db = database;
     const dbref = ref(db, `posts/${user_id}`)
 
-    let posts = await asyncOnValue(dbref);
+    let posts = await asyncOnValue(dbref) as DatabasePost[];
 
     if(posts === null)
         posts = {} as DatabasePost[]
+
+    Object.keys(posts).forEach((post_id) => {
+        posts[post_id].image.b64 = ''
+    })
 
     res.status(200).json(generateDbResponse(true, posts, {} as DatabaseError))
 

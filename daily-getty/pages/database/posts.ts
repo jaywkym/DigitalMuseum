@@ -3,8 +3,10 @@ import type {
     DatabasePost, 
     DatabaseUserPostsResponse,
     DatabaseUserPostResponse,
-    DatabaseResponse
+    DatabaseResponse,
+    DatabaseUser
 }  from "../../types/FirebaseResponseTypes";
+import { useSession } from "next-auth/react";
 
 /**
  * useAddPost: Saves a post to the database for the user. Only a single post
@@ -81,7 +83,7 @@ export function useGetAllPostsForUser(user_id: string):
 
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [posts, setPosts] = useState({} as DatabasePost[])
+    const [posts, setPosts] = useState([] as DatabasePost[])
     
     function getAllPosts() {
 
@@ -99,6 +101,7 @@ export function useGetAllPostsForUser(user_id: string):
 
         setLoading(true);
         setSuccess(false);
+        setPosts([] as DatabasePost[])
         
         const request = {
             method: 'POST',
@@ -121,7 +124,38 @@ export function useGetAllPostsForUser(user_id: string):
                 return;
             }
 
-            setPosts(res.posts)
+            Object.keys(res.posts).forEach((key) => {
+                const user_id = res.posts[key].user_id;
+                const post_id = key
+
+                const request = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: user_id,
+                        post_id: post_id,
+                    })
+                }
+            
+                fetch(`/api/database/posts/getPostFromUser`, request)
+                .then(res => res.json())
+                .then(resj => {
+        
+                    const res = resj as DatabaseUserPostResponse
+        
+                    if(!res.success) {
+                        return;
+                    }
+        
+                    setPosts(posts => [...posts, res.post])
+                   
+                })
+                .catch(err => console.log(err))
+
+
+            })
             setSuccess(true)
            
         })
@@ -200,43 +234,102 @@ export function useGetPostForUser(user_id: string, post_id: string):
     return [post, success, loading, getPost];
 }
 
-export function useGetHomefeed():
+export function useGetHomefeed(user_id: string):
     [DatabasePost[], boolean, boolean, () => void] {
 
-    const [homefeed, setHomefeed]  = useState({} as DatabasePost[])
+    const [homefeed, setHomefeed]  = useState([] as DatabasePost[])
     const [success, setSuccess]    = useState(false);
     const [loading, setLoading]    = useState(false);
 
     function getHomefeed() {
-        if(loading) {
+        if(loading || !user_id) {
             setSuccess(false);
             return;
         }
 
         setLoading(true);
         setSuccess(false);
+        setHomefeed([])
         
         const request = {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: user_id,
+            })
         }
     
-        fetch(`/api/database/posts/getHomefeed`, request)
+    
+        fetch(`/api/database/profile/getFriends`, request)
         .then(res => res.json())
-        .then(resj => {
+        .then(res => {
+            let friends = res.friends.friends
+            
+            friends.forEach((friend_id) => {
+                const request = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: friend_id,
+                    })
+                }
 
-            const res = resj as DatabaseUserPostsResponse
+                fetch(`/api/database/posts/getAllPostsFromUser`, request)
+                .then(res => res.json())
+                .then(resj => {
+        
+                    const res = resj as DatabaseUserPostsResponse
+        
+                    if(!res.success) {
+                        setSuccess(false)
+                        return;
+                    }
+        
+                    Object.keys(res.posts).forEach((key) => {
+                        const user_id = res.posts[key].user_id;
+                        const post_id = key
+        
+                        const request = {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                user_id: user_id,
+                                post_id: post_id,
+                            })
+                        }
+                    
+                        fetch(`/api/database/posts/getPostFromUser`, request)
+                        .then(res => res.json())
+                        .then(resj => {
+                
+                            const res = resj as DatabaseUserPostResponse
+                
+                            if(!res.success) {
+                                return;
+                            }
+                
+                            setHomefeed(homefeed => [...homefeed, res.post])
+                           
+                        })
+                        .catch(err => console.log(err))
+        
+        
+                    })
+                    setSuccess(true)
+                   
+                })
+                .catch(err => setSuccess(false))
+                .finally(() => setLoading(false))
+            })
 
-            if(!res.success) {
-                setSuccess(false)
-                return;
-            }
-
-            setHomefeed(res.posts)
-            setSuccess(true)
-           
         })
-        .catch(err => setSuccess(false))
-        .finally(() => setLoading(false))
+        .catch(err => console.log(err))
     }
 
     return [homefeed, success, loading, getHomefeed];

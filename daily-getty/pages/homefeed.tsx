@@ -17,17 +17,15 @@ import { useSession } from 'next-auth/react';
 export default function HomeFeed() {
 
     const [value, setValue] = React.useState(0);
-    const [homefeed, homefeedSuccess, homefeedLoading, getHomefeed] = useGetHomefeed();
     const {data: session, status} = useSession();
     const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+    const [homefeed, homefeedSuccess, homefeedLoading, getHomefeed] = useGetHomefeed(user.id);
 
     useEffect(() => {
         getHomefeed()
-    }, [])
+    }, [user])
 
     let homefeed_map = homefeed? homefeed : {}
-
-    console.log(homefeed_map)
 
     return (
         <>
