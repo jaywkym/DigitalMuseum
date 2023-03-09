@@ -48,10 +48,6 @@ export default function SignIn() {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-<<<<<<< HEAD
-        <Box>
-        <CssBaseline />
-=======
         <CssBaseline />
         <Box
           sx={{
@@ -96,7 +92,6 @@ export default function SignIn() {
               )}
             </Button>
           </Box>
->>>>>>> DO_NOT_TOUCH
           <Box sx={{ m: 2 }}>
             <GoogleButton
               onClick={() => { signIn('google', { callbackUrl: '/homefeed', redirect: false }) }}
