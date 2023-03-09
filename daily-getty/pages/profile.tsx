@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
-import { Avatar } from '@mui/material';
+import { Avatar, CircularProgress } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import List from '@mui/material/List';
 import { Container } from '@mui/system';
@@ -13,6 +13,7 @@ import { signOut } from 'next-auth/react';
 import { useGetAllPostsForUser } from '@/pages/database/posts';
 import { useSession } from 'next-auth/react';
 import { DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { green } from '@mui/material/colors';
 
 export default function Profile() {
 
@@ -40,12 +41,19 @@ export default function Profile() {
                     <CssBaseline />
                     <ProfileHeader user={user}/>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                    {getPostsLoading && !getPostsSuccess && (
+                        <CircularProgress
+                            size={68}
+                            sx={{
+                                color: green[500],
+                            }}
+                        />
+                    )}
                         <List>
                             {
-                                    Object.keys(posts_map).map((post) => (
-                                        <Post userObj={user} post={posts[post]} key={posts[post].id} />
-                                    ))
-                               
+                                !getPostsLoading && getPostsSuccess &&  Object.keys(posts_map).map((post) => (
+                                    <Post userObj={user} post={posts[post]} key={posts[post].id} />
+                                ))
                             }
                             
                         </List>

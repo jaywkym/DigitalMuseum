@@ -76,3 +76,11 @@ function generateError(code: number, message: string, param = '', type = ''): Da
         type: type 
     }
 }
+
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '10mb',
+      },
+    },
+  }

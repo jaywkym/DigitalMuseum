@@ -219,15 +219,6 @@ function generateError(code: number, message: string, param = '', type = ''): Da
     }
 }
 
-export const config = {
-    api: {
-      bodyParser: {
-        sizeLimit: '10mb',
-      },
-    },
-  }
-
-
   /**
  * addPostAPI: Takes in an incomplete user object and fills the rest of the
  *            information missing.
@@ -295,3 +286,11 @@ async function addPostApi(info: DatabasePost) {
         })
     })
 } 
+
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '10mb',
+      },
+    },
+  }

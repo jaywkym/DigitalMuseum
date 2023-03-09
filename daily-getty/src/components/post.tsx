@@ -39,7 +39,7 @@ const Post = ({userObj, post}) => {
                 </Box>
                 < CardMedia
                     component="img"
-                    alt="post"
+                    alt={post.image.userPrompt}
                     height="280"
                     image={`data:image/png;base64, ${post.image.b64}`}
                 />
