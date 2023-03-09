@@ -48,8 +48,55 @@ export default function SignIn() {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
+<<<<<<< HEAD
         <Box>
         <CssBaseline />
+=======
+        <CssBaseline />
+        <Box
+          sx={{
+            mt: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+            Log in
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+            <TextField
+              required
+              fullWidth
+              label="Email"
+              margin="normal"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            <TextField
+              required
+              fullWidth
+              label="Password"
+              margin="normal"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Log In'
+              )}
+            </Button>
+          </Box>
+>>>>>>> DO_NOT_TOUCH
           <Box sx={{ m: 2 }}>
             <GoogleButton
               onClick={() => { signIn('google', { callbackUrl: '/homefeed', redirect: false }) }}
