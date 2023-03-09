@@ -60,7 +60,12 @@ export default async function request_image_handler(
         return;
     } 
 
+    console.log("Pulling session")
+
     const session = await getServerSession(req, res, authOptions);
+
+    console.log("Received session")
+    console.log(session)
 
     /* Check for valid session */
     if(!session ||
@@ -271,6 +276,7 @@ async function addPostApi(info: DatabasePost) {
 
     console.log("Pull user requesT")
     console.log(request)
+
     return new Promise((resolve, reject) => {
         fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         .then(res => res.json())
