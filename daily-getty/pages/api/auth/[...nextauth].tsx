@@ -211,8 +211,11 @@ async function check_user_exists(email: string): Promise<boolean> {
         })
     }
 
+    console.log("Sending request in check_user_exists")
+    console.log(request)
+
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.NEXTAUTH_URL}/api/database/profile/checkForUser`, request)
+        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseResponse
@@ -224,8 +227,9 @@ async function check_user_exists(email: string): Promise<boolean> {
             resolve(false)
         })
         .catch(err => {
-            reject(false);
+            resolve(false);
             console.log("ERR: In fetch check_user_exists")
+            console.log(err)
         })
     })
     
