@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import Head from 'next/head'
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -8,10 +8,26 @@ import { Container } from '@mui/system';
 import HomeSearch from '@/src/components/homesearch';
 import Post from '@/src/components/post';
 import NavBar from '@/src/components/bottomnav';
+import { useGetHomefeed } from './database/posts';
+import { CircularProgress } from '@mui/material';
+import { green } from '@mui/material/colors';
+import { DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { useSession } from 'next-auth/react';
 
 export default function HomeFeed() {
 
     const [value, setValue] = React.useState(0);
+    const [homefeed, homefeedSuccess, homefeedLoading, getHomefeed] = useGetHomefeed();
+    const {data: session, status} = useSession();
+    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+
+    useEffect(() => {
+        getHomefeed()
+    }, [])
+
+    let homefeed_map = homefeed? homefeed : {}
+
+    console.log(homefeed_map)
 
     return (
         <>
@@ -24,11 +40,22 @@ export default function HomeFeed() {
                     <Container fixed>
                         <CssBaseline />
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                            <List>
-                                {/* <Post></Post>
-                                <Post></Post>
-                                <Post></Post> */}
-                            </List>
+                        {homefeedLoading && !homefeedSuccess && (
+                        <CircularProgress
+                            size={68}
+                            sx={{
+                                color: green[500],
+                            }}
+                        />
+                        )}
+                        <List>
+                            {
+                                !homefeedLoading && homefeedSuccess &&  Object.keys(homefeed_map).map((post) => (
+                                    <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
+                                ))
+                            }
+                            
+                        </List>
                         </Box>
                     </Container>
                     <NavBar />

@@ -200,6 +200,48 @@ export function useGetPostForUser(user_id: string, post_id: string):
     return [post, success, loading, getPost];
 }
 
+export function useGetHomefeed():
+    [DatabasePost[], boolean, boolean, () => void] {
+
+    const [homefeed, setHomefeed]  = useState({} as DatabasePost[])
+    const [success, setSuccess]    = useState(false);
+    const [loading, setLoading]    = useState(false);
+
+    function getHomefeed() {
+        if(loading) {
+            setSuccess(false);
+            return;
+        }
+
+        setLoading(true);
+        setSuccess(false);
+        
+        const request = {
+            method: 'POST',
+        }
+    
+        fetch(`/api/database/posts/getHomefeed`, request)
+        .then(res => res.json())
+        .then(resj => {
+
+            const res = resj as DatabaseUserPostsResponse
+
+            if(!res.success) {
+                setSuccess(false)
+                return;
+            }
+
+            setHomefeed(res.posts)
+            setSuccess(true)
+           
+        })
+        .catch(err => setSuccess(false))
+        .finally(() => setLoading(false))
+    }
+
+    return [homefeed, success, loading, getHomefeed];
+}
+
 export default function DoNothing() {
     console.log("Nothing")
 }
