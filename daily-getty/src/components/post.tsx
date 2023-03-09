@@ -25,6 +25,8 @@ const visitProfile = () => { } //Visit Profile
 
 const Post = ({userObj, post}) => {
 
+    const alt = post.image? post.image.userPrompt : "";
+    const src = post.image? `data:image/png;base64, ${post.image.b64}` : `data:image/png;base64`
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
             <Card raised sx={{ width: '356px' }}>
@@ -39,9 +41,9 @@ const Post = ({userObj, post}) => {
                 </Box>
                 < CardMedia
                     component="img"
-                    alt={post.image.userPrompt}
+                    alt={alt}
                     height="280"
-                    image={`data:image/png;base64, ${post.image.b64}`}
+                    image={src}
                 />
                 {/*
                 <CardActions>
