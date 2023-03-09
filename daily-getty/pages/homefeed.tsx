@@ -25,9 +25,9 @@ export default function HomeFeed() {
                         <CssBaseline />
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                             <List>
+                                {/* <Post></Post>
                                 <Post></Post>
-                                <Post></Post>
-                                <Post></Post>
+                                <Post></Post> */}
                             </List>
                         </Box>
                     </Container>
