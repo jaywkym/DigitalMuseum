@@ -53,48 +53,71 @@ export default async function request_image_handler(
 
     const image  = await requestToDalleAPI(prompt, amount);
 
-    console.log("GOT IMAGE")
-    console.log(image);
-
     /* ERROR generating image for various reasons */
     if(!image.success) {
-
         res.status(200).json(generateImageResponse(false, amount, undefined, image))
 
         return;
     } 
 
-    // const session = await getServerSession(req, res, authOptions);
+    const session = await getServerSession(req, res, authOptions);
 
-    // console.log(session)
+    /* Check for valid session */
+    if(!session ||
+       !session.user ||
+       !session.expires ||
+       !session.user.email ||
+       !session.user.name ||
+       !session.user.image ||
+       !(session.user as any).id) {
+        res.status(200).json(
+            generateImageResponse(
+                false,
+                0,
+                {} as DalleResponse,
+                generateError(-12, "Invalid Session")
+            )
+        );
+        return;
+       }
 
 
-    // const userGet = {
-    //     id: null,
-    //     name: session.user.name,
-    //     email: session.user.email,
-    //     image: session.user.image,
-    //     googleId: null
-    // } as DatabaseUser;
+    const userGet = {
+        id: (session.user as any).id,
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+        googleId: null // TODO - Add google id to user object
+    } as DatabaseUser;
 
-    // let user_obj = await pull_user(userGet);
+    let user_obj = await pull_user(userGet);
 
-    // //console.log(user_obj);
+    /* Make sure user is a valid user */
+    if(!user_obj) {
+        res.status(200).json(
+            generateImageResponse(
+                false,
+                0,
+                {} as DalleResponse,
+                generateError(-14, "User does not exist")
+            )
+        );
+        return;
+    }
 
-    // const uploadInfo: DatabasePost = {
-    //     id: null,
-    //     user_id: user_obj.id,
-    //     userPrompt: prompt,
-    //     givenPrompt: null, 
-    //     likes: 0,
-    //     image: {
-    //         created: image.created as Number,
-    //         b64: image.data[0].b64_json as String
-    //     } as any
-    // }
+    const uploadInfo: DatabasePost = {
+        id: null,
+        user_id: user_obj.id,
+        userPrompt: prompt,
+        givenPrompt: null, 
+        likes: 0,
+        image: {
+            created: image.created as Number,
+            b64: image.data[0].b64_json as String
+        } as any
+    }
 
-    // await addPostApi(uploadInfo);
-
+    const resp = await addPostApi(uploadInfo);
 
     /* Respond with image information */
     res.status(200).json(generateImageResponse(true, amount, image))
@@ -128,23 +151,17 @@ async function requestToDalleAPI(prompt: string, amount: string) {
         })
     }
 
-    console.log(dalle_request)
-
     try {
 
         /* Fetch images from DALLE api */
         const resp = await fetch(url, dalle_request);
         const json = await resp.json()
 
-        console.log("GOt response")
-
         /* TODO - Handle error for successful request but invalid parameters (Invalid api key, invalid request...) */
         if(json.error) {
             json.error.success = false
             return json.error
         }
-
-        console.log("SUCCESSFUL RESPONSE")
 
         json.success = true
         return json as DalleResponse
@@ -226,14 +243,12 @@ async function addPostApi(info: DatabasePost) {
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
-            if(res.success)
-                resolve(res.user)
-            resolve(res.user)
+            resolve(res.success)
             
         })
         .catch(err => {
-            console.log("GOT ERR")
-            reject(err);
+            console.log("ERR: Fetching in addPostApi")
+            resolve(false)
         })
     })
 }
@@ -253,18 +268,23 @@ async function addPostApi(info: DatabasePost) {
         },
         body: JSON.stringify(user)
     }
+
+    console.log("Pull user requesT")
+    console.log(request)
     return new Promise((resolve, reject) => {
         fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
+            console.log("Received response")
+            console.log(res)
             if(res.success)
                 resolve(res.user)
             resolve(res.user)
             
         })
         .catch(err => {
-            console.log("GOT ERR")
+            console.log("ERR: In pull_user fetching")
             reject(err);
         })
     })

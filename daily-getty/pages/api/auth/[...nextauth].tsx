@@ -68,40 +68,45 @@ export const authOptions: NextAuthOptions = {
             if(!(profile as any).email_verified)
                 return false;
 
-            console.log("TEST")
             console.log("Checking email verified")
 
-            // /* Reject login if email is not verified */
-            // if(!(profile as any).email_verified)
-            //     return true;
+            /* Reject login if email is not verified */
+            if(!(profile as any).email_verified)
+                return false;
 
-            // console.log("Email verified")
-            // console.log("Checking account exists")
+            console.log("Email verified")
+            console.log("Checking account exists")
 
-            // /* Verify if new user (Create account) */
-            // const account_exists = await check_user_exists(user.email);
+            /* Verify if new user (Create account) */
+            const account_exists = await check_user_exists(user.email);
 
-            // /* Log in user if their account exists */
-            // if(account_exists)
-            //     return true;
+            console.log("Account exists: " + account_exists)
+            /* Log in user if their account exists */
+            if(account_exists)
+                return true;
 
-            // console.log("Account does not exist")
+            const userAccount: DatabaseUser = {
+                id: randomUUID?.() ?? randomBytes(32).toString("hex"),
+                name: user.name,
+                email: user.email,
+                image: user.image,
+                googleId: user.id
 
-            // const userAccount: DatabaseUser = {
-            //     id: randomUUID?.() ?? randomBytes(32).toString("hex"),
-            //     name: user.name,
-            //     email: user.email,
-            //     image: user.image,
-            //     googleId: user.id
+            }
 
-            // }
+            console.log(userAccount)
 
-            // console.log(userAccount)
+            console.log("Creating account...")
 
-            // /* Create user account if it does not exist */
-            // await create_account(userAccount)
+            /* Create user account if it does not exist */
+            const resp = await create_account(userAccount)
 
-            // console.log("Account created")
+            if(!resp) {
+                console.log("ERR: Could not create account")
+                return false;
+            }
+
+            console.log("Account created")
             
             return true
           },
@@ -187,7 +192,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
             
         })
         .catch(err => {
-            console.log("GOT ERR")
+            console.log("ERR: In fetch pull_user")
             reject(err);
         })
     })
@@ -211,8 +216,6 @@ async function check_user_exists(email: string): Promise<boolean> {
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseResponse
-            console.log("Received...")
-            console.log(res)
 
             /* Log in user if account exists */
             if(res.success) 
@@ -222,12 +225,13 @@ async function check_user_exists(email: string): Promise<boolean> {
         })
         .catch(err => {
             reject(false);
+            console.log("ERR: In fetch check_user_exists")
         })
     })
     
 }
 
-function create_account(userAccount: DatabaseUser) {
+async function create_account(userAccount: DatabaseUser): Promise<Boolean> {
     const create_account_req = {
         method: 'PUT',
         headers: {
@@ -236,15 +240,20 @@ function create_account(userAccount: DatabaseUser) {
         body: JSON.stringify(userAccount)
     }
 
-    fetch(`${process.env.NEXTAUTH_URL}api/database/profile/createUser`, create_account_req)
-    .then(res => res.json())
-    .then(resj => {
 
-        const res = resj as DatabaseResponse;
-
-    })
-    .catch(err => {
-        console.log(err);
+    return new Promise((res, rej) => {
+        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/createUser`, create_account_req)
+        .then(res => res.json())
+        .then(resj => {
+    
+            const resp = resj as DatabaseResponse;
+            res(resp.success)
+    
+        })
+        .catch(err => {
+            console.error("ERR: In fetch from create_account")
+            res(false);
+        })
     })
 }
 
