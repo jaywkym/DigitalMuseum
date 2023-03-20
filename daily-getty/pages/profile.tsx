@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
 import { Avatar, CircularProgress } from '@mui/material';
@@ -22,9 +22,9 @@ export default function Profile() {
     const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
     const [posts, getPostsSuccess, getPostsLoading, getAllPostsForUser] = useGetAllPostsForUser(user.id);
 
-    useEffect(() => {
+    useMemo(() => {
         getAllPostsForUser()
-    }, [user])
+    }, [user.id])
 
     let posts_map = posts? posts : {}
 
