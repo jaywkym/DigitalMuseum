@@ -1,12 +1,10 @@
 import { database } from "../../../../firebase/clientApp";
-import { ref, onValue, set } from "firebase/database";
+import { ref, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
     DatabaseResponse,
-    DatabasePost,
-    DatabaseUserResponse,
-    DatabaseUser
+    DatabasePost
 }  from "../../../../types/FirebaseResponseTypes";
 
 export default async function createPost (
@@ -34,8 +32,9 @@ export default async function createPost (
     const day = date.getDate() ;
 
     const post_id = year + "_" + month + "_" + day;
-    //const post_id = "2023_3_1";
-    //console.log(body);
+    body.userPrompt = "test"
+    body.likes = 1
+    body.givenPrompt = "test"
     
     const dbpost = {
         id: post_id,
@@ -49,6 +48,8 @@ export default async function createPost (
         } as any
     } as DatabasePost
 
+
+    console.log("Attempting to store image in database")
     console.log(dbpost)
 
     const db = database;
