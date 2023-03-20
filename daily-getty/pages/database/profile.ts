@@ -11,7 +11,7 @@ import type {
  * @returns Nothing... Why does everyone always expect me to return something.
  */
 export function useFriends(user_id: string):
-    [string[], boolean, () => void]{
+    [string[], boolean, () => Promise<void>]{
     
     const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ export function useFriends(user_id: string):
  * @returns Still nothing LOL
  */
 export function useAddFriend(user_id: string, friend_id: string):
-    [boolean, boolean, () => void] {
+    [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false);
         const [loading, setLoading] = useState(false);
@@ -75,7 +75,7 @@ export function useAddFriend(user_id: string, friend_id: string):
  * @returns Your mom.
  */
 export function useDeleteFriend(user_id: string, friend_id: string):
-    [boolean, boolean, () => void] {
+    [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false)
         const [loading, setLoading] = useState(false)
@@ -100,7 +100,7 @@ export function useDeleteFriend(user_id: string, friend_id: string):
         return [success, loading, removeFriend];
 }
 
-async function requestRemoveFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
+export async function requestRemoveFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
 
     const request = {
         method: 'POST',
@@ -122,7 +122,7 @@ async function requestRemoveFriend(user_id: string, friend_id: string): Promise<
 
 }
 
-async function requestFriendsForUser(user_id: string): Promise<DatabaseFriendsResponse> {
+export async function requestFriendsForUser(user_id: string): Promise<DatabaseFriendsResponse> {
     const request = {
         method: 'POST',
         headers: {
@@ -142,7 +142,7 @@ async function requestFriendsForUser(user_id: string): Promise<DatabaseFriendsRe
 
 }
 
-async function requestAddFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
+export async function requestAddFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
     const request = {
         method: 'POST',
         headers: {

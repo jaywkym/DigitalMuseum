@@ -17,7 +17,7 @@ import type {
  * @returns Void. Like my cold dead heart...
  */
 export function useAddPost(user_id: string, created: number, b64: string):
-    [boolean, boolean, () => void] {
+    [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false)
         const [loading, setLoading] = useState(false)
@@ -58,7 +58,7 @@ export function useAddPost(user_id: string, created: number, b64: string):
  * @returns https://www.youtube.com/watch?v=dQw4w9WgXcQ
  */
 export function useGetAllPostsForUser(user_id: string):
-    [DatabasePost[], boolean, boolean, () => void] {
+    [DatabasePost[], boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -154,7 +154,7 @@ export function useGetAllPostsForUser(user_id: string):
  * @returns <INSERT MONKEY EMOJI HERE>
  */
 export function useGetPostForUser(user_id: string, post_id: string):
-    [DatabasePost, boolean, boolean, () => void] {
+    [DatabasePost, boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -294,7 +294,7 @@ export function useGetHomefeed(user_id: string):
     return [homefeed, success, loading, getHomefeed];
 }
 
-async function requestCreatePost(
+export async function requestCreatePost(
     user_id: string, 
     created: number,
     b64: string):
@@ -325,7 +325,7 @@ async function requestCreatePost(
             
 }
 
-async function requestPostFromUserById(user_id: string, post_id: string): Promise<DatabaseUserPostResponse> {
+export async function requestPostFromUserById(user_id: string, post_id: string): Promise<DatabaseUserPostResponse> {
 
     const request = {
         method: 'POST',
