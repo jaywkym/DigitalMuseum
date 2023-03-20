@@ -34,8 +34,6 @@ export default async function createPost (
     const day = date.getDate() ;
 
     const post_id = year + "_" + month + "_" + day;
-    //const post_id = "2023_3_1";
-    //console.log(body);
     
     const dbpost = {
         id: post_id,

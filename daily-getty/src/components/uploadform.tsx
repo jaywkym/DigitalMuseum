@@ -6,16 +6,21 @@ import { useState, useEffect } from 'react';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress, ImageList } from '@mui/material';
 import { Container } from '@mui/system';
 import { Modal, Typography } from '@mui/material';
-
 import Image from 'next/image';
 import useImage from '@/pages/dalle/images';
-import useAddPost from '@/pages/database/posts';
+import useAddPost from '@/pages/database/createPostFront';
 import Loading from './loading';
 import setImage from '@/pages/dalle/images';
 import setLoading from "@/pages/dalle/images";
+import { useSession } from 'next-auth/react'
 
 
 const MuseForm = () => {
+
+    const ref1 = React.createRef();
+    const ref2 = React.createRef();
+    const ref3 = React.createRef();
+
 
     const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
@@ -39,24 +44,35 @@ const MuseForm = () => {
         setGenerate(false);
     };
 
-    const imageClick = event => {
 
-        console.log(event.target)
-
-
-    };
 
     //DallE API CALL
     const [prompt, setPrompt] = React.useState('');
-    const [b64_image1, b64_image2, b64_image3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
+    const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
 
-    const [user_id, setUserId] = React.useState('');
-    const [created, setCreated] = React.useState('');
+   
+  
+    const {data: session, status} = useSession()
+    
+    let user_id = status === 'authenticated'? (session.user as any).id : "";
+
     const [b64, setB64] = React.useState('');
-    const [success, loading] = useAddPost(user_id, created, b64);
-    //console.log(b64_image);
+    const [created, setCreated] = React.useState('');
+
+    const [generatePost] = useAddPost(b64, user_id, prompt, created);
+    
     console.log(loadingImage);
     console.log(error)
+
+    const imageClick = event => {
+
+        console.log(event.target)
+        
+       
+
+        //generatePost();
+
+    };
 
     const style = {
         position: 'absolute' as 'absolute',
@@ -107,27 +123,27 @@ const MuseForm = () => {
 
             {loadingImage ?
                 <Loading>
-                    <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                    <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
                 </Loading>
                 :
-                <Image id="image" alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>      
+                <Image id={created1} alt="image" height={500} width={500} src={b64_image1}  onClick={imageClick}></Image>      
                 
             }
                 {loadingImage ?
                 <Loading>
-                    <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                    <Image id="2" alt="image" height={500} width={500} src='/placeholder.png'></Image>
                 </Loading>
                 :
-                <Image id="image" alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>      
+                <Image id={created2} alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>      
                 
             }
                 {loadingImage ?
                 <Loading>
-                    <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                    <Image id="3" alt="image" height={500} width={500} src='/placeholder.png'></Image>
                 </Loading>
                 :
                 <div>
-                    <Image id="image" alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>      
+                    <Image id={created3} alt="image" height={500} width={500} src={b64_image3}  onClick={imageClick}></Image>      
                 </div>
                 
                 

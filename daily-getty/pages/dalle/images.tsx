@@ -16,11 +16,14 @@ import type {
  *          loading boolean, and a function to generate the image.
  */
 const useImage = (prompt: string, amount: string): 
-    [string, string, string, DalleError, boolean, () => void] => {
+    [string, string, string, string, string, string, DalleError, boolean, () => void] => {
 
     const [b64_image1, setImage1]: [string, Dispatch<string>] = useState('');
     const [b64_image2, setImage2]: [string, Dispatch<string>] = useState('');
     const [b64_image3, setImage3]: [string, Dispatch<string>] = useState('');
+    const [created1, setCreated1]: [string, Dispatch<string>] = useState('');
+    const [created2, setCreated2]: [string, Dispatch<string>] = useState('');
+    const [created3, setCreated3]: [string, Dispatch<string>] = useState('');
     const [error    , setError]: [DalleError, Dispatch<DalleError>] = useState(null);
     const [loading  , setLoading] = useState(false);
 
@@ -48,12 +51,16 @@ const useImage = (prompt: string, amount: string):
         fetch('/api/dalle/generate_image', request)
         .then(res => res.json())
         .then(resj => {
-            const res = resj as ImageResponse
+            const res = resj
             console.log(res)
             if(res.success) {
-                setImage1(`data:image/png;base64, ${res.image.data[0].b64_json}`) //CHANGE HERE
+                console.log(res);
+                setImage1(`data:image/png;base64, ${res.image.data[0].b64_json}`) 
                 setImage2(`data:image/png;base64, ${res.image.data[1].b64_json}`)
                 setImage3(`data:image/png;base64, ${res.image.data[2].b64_json}`)
+                setCreated1(`${res.image.created}`) 
+                setCreated2(`${res.image.created}`)
+                setCreated3(`${res.image.created}`)
 
             } else {
                 setError(res.error)
@@ -63,7 +70,7 @@ const useImage = (prompt: string, amount: string):
         })
     };
     
-    return [b64_image1, b64_image2, b64_image3,  error, loading, generate];
+    return [b64_image1, b64_image2, b64_image3, created1, created2, created3,  error, loading, generate];
 }
 
 function checkParams(prompt: string, amount: number): boolean {
