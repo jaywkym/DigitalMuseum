@@ -3,11 +3,13 @@ import { green } from '@mui/material/colors';
 import { display } from '@mui/system';
 import Box from '@mui/material/Box';
 import { useState, useEffect } from 'react';
-import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress } from '@mui/material';
+import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress, ImageList } from '@mui/material';
 import { Container } from '@mui/system';
 import { Modal, Typography } from '@mui/material';
+
 import Image from 'next/image';
 import useImage from '@/pages/dalle/images';
+import useAddPost from '@/pages/database/posts';
 import Loading from './loading';
 import setImage from '@/pages/dalle/images';
 import setLoading from "@/pages/dalle/images";
@@ -37,10 +39,22 @@ const MuseForm = () => {
         setGenerate(false);
     };
 
+    const imageClick = event => {
+
+        console.log(event.target)
+
+
+    };
+
     //DallE API CALL
     const [prompt, setPrompt] = React.useState('');
-    const [b64_image, error, loadingImage, generateImage] = useImage(prompt, "1"); //INCORPORATE ERROR HANDLING
-    console.log(b64_image);
+    const [b64_image1, b64_image2, b64_image3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
+
+    const [user_id, setUserId] = React.useState('');
+    const [created, setCreated] = React.useState('');
+    const [b64, setB64] = React.useState('');
+    const [success, loading] = useAddPost(user_id, created, b64);
+    //console.log(b64_image);
     console.log(loadingImage);
     console.log(error)
 
@@ -96,7 +110,27 @@ const MuseForm = () => {
                     <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
                 </Loading>
                 :
-                <Image id="image" alt="image" height={500} width={500} src={b64_image}></Image>
+                <Image id="image" alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>      
+                
+            }
+                {loadingImage ?
+                <Loading>
+                    <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                </Loading>
+                :
+                <Image id="image" alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>      
+                
+            }
+                {loadingImage ?
+                <Loading>
+                    <Image id="image" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                </Loading>
+                :
+                <div>
+                    <Image id="image" alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>      
+                </div>
+                
+                
             }
 
             <Box sx={{ m: 5 }}>
@@ -116,8 +150,10 @@ const MuseForm = () => {
                             <Typography id="modal-modal-title" variant="h6" component="h2">
                                 Your Muse of the Day
                             </Typography>
-                            <Container>
-                                <Image alt="image" height={500} width={500} src={b64_image}></Image>
+                            <Container>                             
+                                    {/* <div onClick={imageClick}><Image alt="image1" height={500} width={500} src={b64_image1}></Image></div>
+                                    <div onClick={imageClick}><Image alt="image2" height={500} width={500} src={b64_image2}></Image></div>
+                                    <div onClick={imageClick}><Image alt="image3" height={500} width={500} src={b64_image3}></Image></div>                     */}
                             </Container>
                         </Box>
                     </Modal>

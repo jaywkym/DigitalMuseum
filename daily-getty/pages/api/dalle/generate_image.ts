@@ -110,6 +110,8 @@ export default async function request_image_handler(
         return;
     }
 
+
+    //THIS SHOULD ALL BE IN A DIFFERENT SECTION!!!
     const uploadInfo: DatabasePost = {
         id: null,
         user_id: user_obj.id,
@@ -122,7 +124,7 @@ export default async function request_image_handler(
         } as any
     }
 
-    const resp = await addPostApi(uploadInfo);
+    //const resp = await addPostApi(uploadInfo);
 
     /* Respond with image information */
     res.status(200).json(generateImageResponse(true, amount, image))
