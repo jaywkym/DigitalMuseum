@@ -1,4 +1,7 @@
 import React, {useEffect} from 'react';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+import Stack from '@mui/material/Stack';
 import Head from 'next/head'
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -46,14 +49,36 @@ export default function HomeFeed() {
                             }}
                         />
                         )}
-                        <List>
+
+                        {/* <center> */}
+                            <Stack spacing={4}>
+
+                                <ImageList cols={3} rowHeight={400}>
+
+                                    {
+                                        !homefeedLoading && homefeedSuccess &&  Object.keys(homefeed_map).map((post) => (
+                                            // <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
+                                                <ImageListItem key={homefeed[post].id} >
+                                                        <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
+                                                </ImageListItem>
+                                        ))
+                                    }
+
+                                </ImageList>
+
+                            </Stack>
+
+                        {/* </center> */}
+
+
+                        {/* <List>
                             {
                                 !homefeedLoading && homefeedSuccess &&  Object.keys(homefeed_map).map((post) => (
                                     <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
                                 ))
                             }
                             
-                        </List>
+                        </List> */}
                         </Box>
                     </Container>
                     <NavBar />
