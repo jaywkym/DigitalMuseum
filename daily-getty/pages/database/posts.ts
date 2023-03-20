@@ -4,9 +4,7 @@ import type {
     DatabaseUserPostsResponse,
     DatabaseUserPostResponse,
     DatabaseResponse,
-    DatabaseUser
 }  from "../../types/FirebaseResponseTypes";
-import { useSession } from "next-auth/react";
 
 /**
  * useAddPost: Saves a post to the database for the user. Only a single post
@@ -24,7 +22,7 @@ export function useAddPost(user_id: string, created: number, b64: string):
         const [success, setSuccess] = useState(false)
         const [loading, setLoading] = useState(false)
 
-        function addPost() {
+        async function addPost() {
 
             if(loading) {
                 setSuccess(false)
@@ -41,31 +39,12 @@ export function useAddPost(user_id: string, created: number, b64: string):
             }
 
             setLoading(true)
-            setSuccess(false)
-                
-            const request = {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: user_id,
-                    image: {
-                        created: created,
-                        image: b64
-                    }
-                })
-            }
-        
-            fetch(`/api/database/posts/createPost`, request)
-            .then(res => res.json())
-            .then(resj => {
-                const res = resj as DatabaseResponse;
-                if(!res.success) setSuccess(false)
-                else setSuccess(true)
-            })
-            .catch(err => console.log(err))
-            .finally(() => setLoading(false))
+
+            const dbResponse = await requestCreatePost(user_id, created, b64)
+
+            setSuccess(dbResponse.success)
+
+            setLoading(false);
             
         }
 
@@ -85,7 +64,7 @@ export function useGetAllPostsForUser(user_id: string):
     const [loading, setLoading] = useState(false);
     const [posts, setPosts] = useState([] as DatabasePost[])
     
-    function getAllPosts() {
+    async function getAllPosts() {
 
         if(loading) {
             setSuccess(false);
@@ -181,7 +160,7 @@ export function useGetPostForUser(user_id: string, post_id: string):
     const [loading, setLoading] = useState(false);
     const [post, setPost] = useState({} as DatabasePost)
     
-    function getPost() {
+    async function getPost() {
 
         if(loading) {
             setSuccess(false);
@@ -200,34 +179,14 @@ export function useGetPostForUser(user_id: string, post_id: string):
         setLoading(true);
         setSuccess(false);
         
-        const request = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                post_id: post_id,
-            })
-        }
-    
-        fetch(`/api/database/posts/getPostFromUser`, request)
-        .then(res => res.json())
-        .then(resj => {
+        const resp = await requestPostFromUserById(user_id, post_id);
 
-            const res = resj as DatabaseUserPostResponse
+        setSuccess(resp.success)
 
-            if(!res.success) {
-                setSuccess(false)
-                return;
-            }
+        if(resp.success)
+            setPost(resp.post)
 
-            setPost(res.post)
-            setSuccess(true)
-           
-        })
-        .catch(err => setSuccess(false))
-        .finally(() => setLoading(false))
+        setLoading(false)
 
     }
 
@@ -333,6 +292,59 @@ export function useGetHomefeed(user_id: string):
     }
 
     return [homefeed, success, loading, getHomefeed];
+}
+
+async function requestCreatePost(
+    user_id: string, 
+    created: number,
+    b64: string):
+    Promise<DatabaseResponse> {
+
+    const request = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+            image: {
+                created: created,
+                b64: b64
+            }
+        })
+    }
+
+    try {
+        const resp = await fetch(`/api/database/posts/createPost`, request)
+        
+        return await resp.json() as DatabaseResponse;
+   
+    } catch (err: any) {
+        return {success: false} as DatabaseResponse
+    }
+            
+}
+
+async function requestPostFromUserById(user_id: string, post_id: string): Promise<DatabaseUserPostResponse> {
+
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+            post_id: post_id,
+        })
+    }
+
+    try {
+        const resp = await fetch(`/api/database/posts/getPostFromUser`, request);
+        return await resp.json() as DatabaseUserPostResponse;
+    } catch (err: any) {
+        return {success: false} as DatabaseUserPostResponse;
+    }
+
 }
 
 export default function DoNothing() {
