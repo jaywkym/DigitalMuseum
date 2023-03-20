@@ -2,10 +2,7 @@ import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
 import type { NextAuthOptions } from "next-auth" 
 import CredentialsProvider from "next-auth/providers/credentials"
-import FacebookProvider from "next-auth/providers/facebook"
 import GoogleProvider from "next-auth/providers/google";
-import InstagramProvider from "next-auth/providers/instagram";
-import TwitterProvider from "next-auth/providers/twitter";
 import type { 
     DatabaseResponse,
     DatabaseUser,
@@ -31,19 +28,23 @@ export const authOptions: NextAuthOptions = {
     /* Defines the types of ways that a user can login to the platform */
     providers: [    
         CredentialsProvider({
-            name: 'credentails',
+            name: 'credentials',
             credentials: {
-                username: { label: "Username", type: "text", placeholder: "example@dailymuse.com" },
+                email: { label: "Email", type: "email", placeholder: "example@dailymuse.com" },
                 password: { label: "Password", type: "password" }
-              },
-              async authorize(credentials, req) {
+            },
+
+            async authorize(credentials, req) {
 
                 console.log(credentials)
-
-                const user = { id: "1", name: "J Smith", email: "jsmith@example.com" }
+ 
+                const user = {
+                    email: credentials.email,
+                    password: credentials.password
+                }
 
                 return user;
-              }
+            }
         }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -76,6 +77,10 @@ export const authOptions: NextAuthOptions = {
                 email: email,
                 credentials: credentials
             })
+
+            if(account.type === 'credentials') {
+                
+            }
 
             // return true;
 

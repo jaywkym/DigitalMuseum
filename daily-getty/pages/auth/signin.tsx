@@ -80,12 +80,26 @@ export default function SignIn() {
               onChange={(event) => setPassword(event.target.value)}
             />
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
-              onClick={() => { signIn('credentials', { callbackUrl: '/homefeed', redirect: false }) }}
+              onClick={async (event) => { 
+
+                console.log({
+                  email: email,
+                  password: password
+                })
+
+                await signIn('credentials', { 
+                  email: email,
+                  password: password,
+                  callbackUrl: '/homefeed', 
+                  redirect: false 
+                }) 
+                
+              }}
+              
             >
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
