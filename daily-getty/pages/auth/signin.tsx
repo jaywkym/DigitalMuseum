@@ -85,6 +85,7 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
+              onClick={() => { signIn('credentials', { callbackUrl: '/homefeed', redirect: false }) }}
             >
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
