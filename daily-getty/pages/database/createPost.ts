@@ -1,8 +1,12 @@
-import {useState, useEffect, Dispatch } from "react";
+import { useState } from "react";
 import type { 
-    DalleError, 
-    ImageResponse
-}  from "../../types/DalleResponseTypes";
+    DatabasePost, 
+    DatabaseUserPostsResponse,
+    DatabaseUserPostResponse,
+    DatabaseResponse,
+    DatabaseUser
+}  from "../../types/FirebaseResponseTypes";
+import { useSession } from "next-auth/react";
 
 /**
  * useImage: This hook provides the functionality to generate an image from
@@ -15,25 +19,11 @@ import type {
  * @returns [b64_image, error, loading, generate] A base64 encoded image, an error, a
  *          loading boolean, and a function to generate the image.
  */
-const useImage = (prompt: string, amount: string): 
-    [string, string, string, DalleError, boolean, () => void] => {
-
-    const [b64_image1, setImage1]: [string, Dispatch<string>] = useState('');
-    const [b64_image2, setImage2]: [string, Dispatch<string>] = useState('');
-    const [b64_image3, setImage3]: [string, Dispatch<string>] = useState('');
-    const [error    , setError]: [DalleError, Dispatch<DalleError>] = useState(null);
-    const [loading  , setLoading] = useState(false);
+const useAddPost = (b64: string): 
+    [() => void] => {
 
     function generate() {
-
-        if(!checkParams(prompt, Number.parseInt(amount)))
-            return;
-
-        if(loading)
-            return;
-
-        setLoading(true);
-
+ 
         const request = {
             method: 'POST',
             headers: {
@@ -80,4 +70,4 @@ function checkParams(prompt: string, amount: number): boolean {
 
 }
 
-export default useImage;
+export default useAddPost;
