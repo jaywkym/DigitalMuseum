@@ -30,6 +30,21 @@ export const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     /* Defines the types of ways that a user can login to the platform */
     providers: [    
+        CredentialsProvider({
+            name: 'credentails',
+            credentials: {
+                username: { label: "Username", type: "text", placeholder: "example@dailymuse.com" },
+                password: { label: "Password", type: "password" }
+              },
+              async authorize(credentials, req) {
+
+                console.log(credentials)
+
+                const user = { id: "1", name: "J Smith", email: "jsmith@example.com" }
+
+                return user;
+              }
+        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
@@ -54,13 +69,13 @@ export const authOptions: NextAuthOptions = {
 
             // console.log(process.env)
   
-            // console.log({
-            //     user: user,
-            //     account: account,
-            //     profile: profile, //email verified
-            //     email: email,
-            //     credentials: credentials
-            // })
+            console.log({
+                user: user,
+                account: account,
+                profile: profile, //email verified
+                email: email,
+                credentials: credentials
+            })
 
             // return true;
 
@@ -91,7 +106,6 @@ export const authOptions: NextAuthOptions = {
                 email: user.email,
                 image: user.image,
                 googleId: user.id
-
             }
 
             console.log(userAccount)
