@@ -14,19 +14,73 @@ import { useGetAllPostIds, requestPostFromUserById } from '@/pages/database/post
 import { useSession } from 'next-auth/react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
+import Test from './test';
 
 export default function Profile() {
 
     const {data: session, status} = useSession();
 
     const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
-    // const [posts, getPostsSuccess, getPostsLoading, getAllPostsForUser] = useGetAllPostsForUser(user.id);
-    const [posts, setPosts] = useState([]);
+
+    const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
+    const [freinds, setFriends] = useState([])
+
+    async function loadImages(blankPosts) {
+
+        blankPosts.forEach(async (post) => {
+
+            const postRequest = await requestPostFromUserById(user.id, post.id)
+            const rPost = postRequest.post;
+
+            if(!postRequest.success) {
+                console.error("ERROR: Could not fetch post")
+                console.error(postRequest);
+                return;
+            }
+            
+            const newPosts = blankPosts.map((newPost) => {
+                if(newPost.id === rPost.id)
+                    newPost.image.b64 = rPost.image.b64
+
+                return newPost;
+            })
+
+            setPosts(newPosts)
+        
+        })
+
+        setLoading(false);
+
+    }
+
+    async function loadBlankPosts() {
+
+        const request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+            })
+        }
+    
+        const resp = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
+        const dbResponse = await resp.json() as DatabaseUserPostsResponse;
+        const dbPosts = dbResponse.posts;
+
+        const blankPosts = Object.keys(dbPosts).map((id) => {
+            return dbPosts[id];
+        })
+
+        setPosts(blankPosts)
+
+        return blankPosts;
+
+    }
 
     useEffect(() => {
-
-        const fetchImages = async () => {
 
             if(!user.id) 
                 return;
@@ -34,47 +88,13 @@ export default function Profile() {
             setLoading(true);
             setPosts([])
             
-            const request = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    user_id: user.id,
-                })
-            }
-        
-            const resp = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
-            const dbResponse = await resp.json() as DatabaseUserPostsResponse;
-            const dbPosts = dbResponse.posts;
-
-            Object.keys(dbPosts).forEach(async (post) => {
-
-                const postRequest = await requestPostFromUserById(user.id, dbPosts[post].id)
-
-                if(!postRequest.success) {
-                    console.error("ERROR: Could not fetch post")
-                    console.error(postRequest);
-                    return;
-                }
-        
-                if(!posts.includes(postRequest.post))
-                    setPosts(posts => [...posts, postRequest.post])
-
-            })
-
-            setLoading(false);
-        }
-
-        fetchImages()
-        .catch(err => {
-            console.log(err)
-        })
+            loadBlankPosts()
+            .then(loadImages)
+            .catch(err => console.error(err))
 
     }, [user.id])
 
     let posts_map = posts? posts : {}
-    console.log(posts_map)
 
     return (
         <>

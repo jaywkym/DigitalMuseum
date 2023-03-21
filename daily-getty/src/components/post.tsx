@@ -27,7 +27,7 @@ const Post = ({userObj, post}) => {
 
     const alt = post.image? post.image.userPrompt : "";
     const src = post.image? `data:image/png;base64, ${post.image.b64}` : ``
-    console.log(src)
+
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
             <Card raised sx={{ width: '356px' }}>
@@ -40,8 +40,8 @@ const Post = ({userObj, post}) => {
                     </Typography>
                     {/* </Button>*/}
                 </Box>
-                { src === `` && <Skeleton variant="rectangular" animation="pulse" height={280} />}
-                {src !== `data:image/png;base64` && < CardMedia
+                { src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} />}
+                {src !== `data:image/png;base64, ` && < CardMedia
                     component="img"
                     alt={alt}
                     height="280"
