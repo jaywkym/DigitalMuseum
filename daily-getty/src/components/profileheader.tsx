@@ -31,7 +31,7 @@ const ProfileHeader = ({user}) => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    <Chip label={`Friends ${friends.length}`} />
+                    {!loading && <Chip label={`Friends ${friends.length}`} />}
                     {/* <Chip label="Following 312" variant="outlined" /> // Took out this since we only have capabilities for friends */}
                 </Stack>
             </Box>
