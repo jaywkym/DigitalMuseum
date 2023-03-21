@@ -15,6 +15,7 @@ import { useSession } from 'next-auth/react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
 import Test from './test';
+import HomeSearch from '@/src/components/homesearch';
 
 export default function Profile() {
 
@@ -102,8 +103,10 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
+                <HomeSearch />
                 <Box sx={{ flexGrow: 1, m: 10 }}>
-                    <Button onClick={() => { signOut(); }}>Logout</Button>
+                    {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
+                   
                     <CssBaseline />
                     <ProfileHeader user={user}/>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>

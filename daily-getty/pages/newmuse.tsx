@@ -9,6 +9,7 @@ import MuseForm from '@/src/components/uploadform';
 import Prompt from '@/src/components/prompt';
 import Loading from '@/src/components/loading';
 import loading from './dalle/images';
+import HomeSearch from '@/src/components/homesearch';
 
 export default function NewMuse() {
 
@@ -18,7 +19,9 @@ export default function NewMuse() {
                 <title>Home Feed</title>
             </Head>
             <main>
+                <HomeSearch />
                 <Box sx={{ flexGrow: 1, m: 8 }}>
+                    
                     <CssBaseline />
                     <Prompt />
                     <MuseForm />
