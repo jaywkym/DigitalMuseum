@@ -4,9 +4,8 @@ import type {
     DatabaseUserPostsResponse,
     DatabaseUserPostResponse,
     DatabaseResponse,
-    DatabaseUser
 }  from "../../types/FirebaseResponseTypes";
-import { useSession } from "next-auth/react";
+import { StringDecoder } from "string_decoder";
 
 /**
  * useAddPost: Saves a post to the database for the user. Only a single post
@@ -19,12 +18,12 @@ import { useSession } from "next-auth/react";
  * @returns Void. Like my cold dead heart...
  */
 export function useAddPost(user_id: string, created: number, b64: string):
-    [boolean, boolean, () => void] {
+    [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false)
         const [loading, setLoading] = useState(false)
 
-        function addPost() {
+        async function addPost() {
 
             if(loading) {
                 setSuccess(false)
@@ -41,31 +40,12 @@ export function useAddPost(user_id: string, created: number, b64: string):
             }
 
             setLoading(true)
-            setSuccess(false)
-                
-            const request = {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: user_id,
-                    image: {
-                        created: created,
-                        image: b64
-                    }
-                })
-            }
-        
-            fetch(`/api/database/posts/createPost`, request)
-            .then(res => res.json())
-            .then(resj => {
-                const res = resj as DatabaseResponse;
-                if(!res.success) setSuccess(false)
-                else setSuccess(true)
-            })
-            .catch(err => console.log(err))
-            .finally(() => setLoading(false))
+
+            const dbResponse = await requestCreatePost(user_id, created, b64)
+
+            setSuccess(dbResponse.success)
+
+            setLoading(false);
             
         }
 
@@ -78,14 +58,14 @@ export function useAddPost(user_id: string, created: number, b64: string):
  * @param user_id ID of the user
  * @returns https://www.youtube.com/watch?v=dQw4w9WgXcQ
  */
-export function useGetAllPostsForUser(user_id: string):
-    [DatabasePost[], boolean, boolean, () => void] {
+export function useGetAllPostIds(user_id: string):
+    [string[], boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [posts, setPosts] = useState([] as DatabasePost[])
+    const [post_ids, setPostIds] = useState([] as string[])
     
-    function getAllPosts() {
+    async function getAllPostsIds() {
 
         if(loading) {
             setSuccess(false);
@@ -101,7 +81,7 @@ export function useGetAllPostsForUser(user_id: string):
 
         setLoading(true);
         setSuccess(false);
-        setPosts([] as DatabasePost[])
+        setPostIds([] as string[])
         
         const request = {
             method: 'POST',
@@ -124,38 +104,10 @@ export function useGetAllPostsForUser(user_id: string):
                 return;
             }
 
-            Object.keys(res.posts).forEach((key) => {
-                const user_id = res.posts[key].user_id;
-                const post_id = key
-
-                const request = {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        user_id: user_id,
-                        post_id: post_id,
-                    })
-                }
-            
-                fetch(`/api/database/posts/getPostFromUser`, request)
-                .then(res => res.json())
-                .then(resj => {
-        
-                    const res = resj as DatabaseUserPostResponse
-        
-                    if(!res.success) {
-                        return;
-                    }
-        
-                    setPosts(posts => [...posts, res.post])
-                   
-                })
-                .catch(err => console.log(err))
-
-
+            res.posts.forEach((post) => {
+                setPostIds(posts => [...post_ids, post.id])
             })
+            
             setSuccess(true)
            
         })
@@ -163,7 +115,7 @@ export function useGetAllPostsForUser(user_id: string):
         .finally(() => setLoading(false))
     }
 
-    return [posts, success, loading, getAllPosts];
+    return [post_ids, success, loading, getAllPostsIds];
 }
 
 /**
@@ -175,13 +127,13 @@ export function useGetAllPostsForUser(user_id: string):
  * @returns <INSERT MONKEY EMOJI HERE>
  */
 export function useGetPostForUser(user_id: string, post_id: string):
-    [DatabasePost, boolean, boolean, () => void] {
+    [DatabasePost, boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
     const [post, setPost] = useState({} as DatabasePost)
     
-    function getPost() {
+    async function getPost() {
 
         if(loading) {
             setSuccess(false);
@@ -200,34 +152,14 @@ export function useGetPostForUser(user_id: string, post_id: string):
         setLoading(true);
         setSuccess(false);
         
-        const request = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                post_id: post_id,
-            })
-        }
-    
-        fetch(`/api/database/posts/getPostFromUser`, request)
-        .then(res => res.json())
-        .then(resj => {
+        const resp = await requestPostFromUserById(user_id, post_id);
 
-            const res = resj as DatabaseUserPostResponse
+        setSuccess(resp.success)
 
-            if(!res.success) {
-                setSuccess(false)
-                return;
-            }
+        if(resp.success)
+            setPost(resp.post)
 
-            setPost(res.post)
-            setSuccess(true)
-           
-        })
-        .catch(err => setSuccess(false))
-        .finally(() => setLoading(false))
+        setLoading(false)
 
     }
 
@@ -333,6 +265,59 @@ export function useGetHomefeed(user_id: string):
     }
 
     return [homefeed, success, loading, getHomefeed];
+}
+
+export async function requestCreatePost(
+    user_id: string, 
+    created: number,
+    b64: string):
+    Promise<DatabaseResponse> {
+
+    const request = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+            image: {
+                created: created,
+                b64: b64
+            }
+        })
+    }
+
+    try {
+        const resp = await fetch(`/api/database/posts/createPost`, request)
+        
+        return await resp.json() as DatabaseResponse;
+   
+    } catch (err: any) {
+        return {success: false} as DatabaseResponse
+    }
+            
+}
+
+export async function requestPostFromUserById(user_id: string, post_id: string): Promise<DatabaseUserPostResponse> {
+
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+            post_id: post_id,
+        })
+    }
+
+    try {
+        const resp = await fetch(`/api/database/posts/getPostFromUser`, request);
+        return await resp.json() as DatabaseUserPostResponse;
+    } catch (err: any) {
+        return {success: false} as DatabaseUserPostResponse;
+    }
+
 }
 
 export default function DoNothing() {
