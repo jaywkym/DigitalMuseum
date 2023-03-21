@@ -1,7 +1,9 @@
 import { useState } from "react";
 import type { 
     DatabaseFriendsResponse,
-    DatabaseResponse
+    DatabaseResponse,
+    DatabaseUser,
+    DatabaseUserResponse
 }  from "../../types/FirebaseResponseTypes";
 
 /**
@@ -162,6 +164,40 @@ export async function requestAddFriend(user_id: string, friend_id: string): Prom
         return await resp.json() as DatabaseResponse;
     } catch (err: any) {
         return {success: false} as DatabaseResponse;
+    }
+
+}
+
+/**
+ * pull_user: Takes in an incomplete user object and fills the rest of the
+ *            information missing.
+ * 
+ * @param user An incomplete user object
+ * @returns A complete user object with all parameters filled
+ */
+export async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user)
+    }
+
+    try {
+        const resp = await fetch(`/api/database/profile/getUserAccount`, request)
+        const json = await resp.json() as DatabaseUserResponse;
+        console.log(json)
+        if(json.error)
+            return json.user;
+
+        return {} as DatabaseUser;
+    } catch (err: any) {
+
+        console.error("ERR in pull_user")
+        console.error(err)
+
+        return {} as DatabaseUser
     }
 
 }
