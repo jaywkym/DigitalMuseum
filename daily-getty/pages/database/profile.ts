@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { 
+    DatabaseFriendsResponse,
     DatabaseResponse
 }  from "../../types/FirebaseResponseTypes";
 
@@ -10,37 +11,29 @@ import type {
  * @returns Nothing... Why does everyone always expect me to return something.
  */
 export function useFriends(user_id: string):
-    [string[], boolean, () => void]{
+    [string[], boolean, () => Promise<void>]{
     
     const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    function pullFriends() {
+    async function pullFriends() {
 
         if(loading)
             return;
 
         setLoading(true);
 
-        const request = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: user_id,
-            })
+        const dbFriendsResponse = await requestFriendsForUser(user_id);
+
+        if(dbFriendsResponse.success) {
+            console.log(dbFriendsResponse)
+            if(dbFriendsResponse.friends)
+                setFriends(dbFriendsResponse.friends.friends)
+            else
+                setFriends([]);
         }
-    
-    
-        fetch(`/api/database/profile/getFriends`, request)
-        .then(res => res.json())
-        .then(res => {
-            let friends = res.friends.friends
-           setFriends(friends? friends : [])
-        })
-        .catch(err => console.log(err))
-        .finally(() => setLoading(false))
+
+       setLoading(false);
     }
 
     return [friends, loading, pullFriends]
@@ -54,38 +47,24 @@ export function useFriends(user_id: string):
  * @returns Still nothing LOL
  */
 export function useAddFriend(user_id: string, friend_id: string):
-    [boolean, boolean, () => void] {
+    [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false);
         const [loading, setLoading] = useState(false);
 
-        function addFriend() {
+        async function addFriend() {
             if(loading)
                 return;
 
             setLoading(true);
             setSuccess(false);
 
-            const request = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: user_id,
-                    friend_id: friend_id
-                })
-            }
-        
-            fetch(`/api/database/profile/addFriend`, request)
-            .then(res => res.json())
-            .then(resj => {
-                const res = resj as DatabaseResponse
-                if(res.success) setSuccess(true)
-                else setSuccess(false)
-            })
-            .catch(err => setSuccess(false))
-            .finally(() => setLoading(false))
+            const dbResponse = await requestAddFriend(user_id, friend_id);
+
+            setSuccess(dbResponse.success)
+
+            setLoading(false)
+            
         }
 
     return [success, loading, addFriend];
@@ -99,13 +78,12 @@ export function useAddFriend(user_id: string, friend_id: string):
  * @returns Your mom.
  */
 export function useDeleteFriend(user_id: string, friend_id: string):
-    [boolean, boolean, () => void] {
+    [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false)
         const [loading, setLoading] = useState(false)
-        const [friends, friendsLoading, fetchFriends] = useFriends(user_id);
 
-        function removeFriend() {
+        async function removeFriend() {
 
             if(loading) {
                 setSuccess(false)
@@ -115,30 +93,77 @@ export function useDeleteFriend(user_id: string, friend_id: string):
             setLoading(true);
             setSuccess(false);
 
-            const request = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: user_id,
-                    friend_id: friend_id
-                })
-            }
-            
-            fetch(`/api/database/profile/removeFriend`, request)
-            .then(res => res.json())
-            .then(resj => {
-                const res = resj as DatabaseResponse;
-                if(!res.success) setSuccess(false)
-                else setSuccess(true)
-            })
-            .catch(err => console.log(err))
-            .finally(() => setLoading(false))
+            const dbResponse = await requestRemoveFriend(user_id, friend_id);
+
+            setSuccess(dbResponse.success)
+            setLoading(false)
             
         }
 
         return [success, loading, removeFriend];
+}
+
+export async function requestRemoveFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
+
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: user_id,
+            friend_id: friend_id
+        })
+    }
+    
+    try {
+        const resp = await fetch(`/api/database/profile/removeFriend`, request)
+        return await resp.json() as DatabaseResponse;
+    } catch (err: any) {
+        return {success: false} as DatabaseResponse;
+    }
+
+}
+
+export async function requestFriendsForUser(user_id: string): Promise<DatabaseFriendsResponse> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: user_id,
+        })
+    }
+
+    try {
+        const resp = await fetch(`/api/database/profile/getFriends`, request)
+        return await resp.json() as DatabaseFriendsResponse
+    } catch (err: any) {
+        return {success: false} as DatabaseFriendsResponse
+    }
+
+}
+
+export async function requestAddFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: user_id,
+            friend_id: friend_id
+        })
+    }
+
+    try {
+        const resp = await fetch(`/api/database/profile/addFriend`, request);
+        return await resp.json() as DatabaseResponse;
+    } catch (err: any) {
+        return {success: false} as DatabaseResponse;
+    }
+
 }
 
 export default function DoNothing() {

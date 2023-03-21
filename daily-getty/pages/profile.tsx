@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
 import { Avatar, CircularProgress } from '@mui/material';
@@ -10,21 +10,89 @@ import Post from '@/src/components/post';
 import NavBar from '@/src/components/bottomnav';
 import ProfileHeader from '@/src/components/profileheader';
 import { signOut } from 'next-auth/react';
-import { useGetAllPostsForUser } from '@/pages/database/posts';
+import { useGetAllPostIds, requestPostFromUserById } from '@/pages/database/posts';
 import { useSession } from 'next-auth/react';
-import { DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
+import Test from './test';
 
 export default function Profile() {
 
     const {data: session, status} = useSession();
 
     const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
-    const [posts, getPostsSuccess, getPostsLoading, getAllPostsForUser] = useGetAllPostsForUser(user.id);
+
+    const [posts, setPosts] = useState([] as DatabasePost[]);
+    const [loading, setLoading] = useState(false);
+    const [freinds, setFriends] = useState([])
+
+    async function loadImages(blankPosts) {
+
+        blankPosts.forEach(async (post) => {
+
+            const postRequest = await requestPostFromUserById(user.id, post.id)
+            const rPost = postRequest.post;
+
+            if(!postRequest.success) {
+                console.error("ERROR: Could not fetch post")
+                console.error(postRequest);
+                return;
+            }
+            
+            const newPosts = blankPosts.map((newPost) => {
+                if(newPost.id === rPost.id)
+                    newPost.image.b64 = rPost.image.b64
+
+                return newPost;
+            })
+
+            setPosts(newPosts)
+        
+        })
+
+        setLoading(false);
+
+    }
+
+    async function loadBlankPosts() {
+
+        const request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+            })
+        }
+    
+        const resp = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
+        const dbResponse = await resp.json() as DatabaseUserPostsResponse;
+        const dbPosts = dbResponse.posts;
+
+        const blankPosts = Object.keys(dbPosts).map((id) => {
+            return dbPosts[id];
+        })
+
+        setPosts(blankPosts)
+
+        return blankPosts;
+
+    }
 
     useEffect(() => {
-        getAllPostsForUser()
-    }, [user])
+
+            if(!user.id) 
+                return;
+
+            setLoading(true);
+            setPosts([])
+            
+            loadBlankPosts()
+            .then(loadImages)
+            .catch(err => console.error(err))
+
+    }, [user.id])
 
     let posts_map = posts? posts : {}
 
@@ -39,7 +107,7 @@ export default function Profile() {
                     <CssBaseline />
                     <ProfileHeader user={user}/>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                    {getPostsLoading && !getPostsSuccess && (
+                    {loading && (
                         <CircularProgress
                             size={68}
                             sx={{
@@ -49,7 +117,7 @@ export default function Profile() {
                     )}
                         <List>
                             {
-                                !getPostsLoading && getPostsSuccess &&  Object.keys(posts_map).map((post) => (
+                                Object.keys(posts_map).map((post) => (
                                     <Post userObj={user} post={posts[post]} key={posts[post].id} />
                                 ))
                             }
