@@ -1,7 +1,6 @@
 import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
 import type { NextAuthOptions } from "next-auth" 
-import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google";
 import type { 
     DatabaseResponse,
@@ -25,27 +24,9 @@ type CustomSession = {
 export const authOptions: NextAuthOptions = {  
 
     secret: process.env.NEXTAUTH_SECRET,
+
     /* Defines the types of ways that a user can login to the platform */
     providers: [    
-        CredentialsProvider({
-            name: 'credentials',
-            credentials: {
-                email: { label: "Email", type: "email", placeholder: "example@dailymuse.com" },
-                password: { label: "Password", type: "password" }
-            },
-
-            async authorize(credentials, req) {
-
-                console.log(credentials)
- 
-                const user = {
-                    email: credentials.email,
-                    password: credentials.password
-                }
-
-                return user;
-            }
-        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
@@ -67,22 +48,6 @@ export const authOptions: NextAuthOptions = {
 
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
-
-            // console.log(process.env)
-  
-            console.log({
-                user: user,
-                account: account,
-                profile: profile, //email verified
-                email: email,
-                credentials: credentials
-            })
-
-            if(account.type === 'credentials') {
-                
-            }
-
-            // return true;
 
             /* Reject login if email is not verified */
             if(!(profile as any).email_verified)
@@ -130,11 +95,8 @@ export const authOptions: NextAuthOptions = {
             return true
           },
 
-        /* Callback whenever a session token is created/updated */
+            /* Callback whenever a session token is created/updated */
           async session( {session, token} ) {
-
-            // return session
-
 
             /* No updating needed if user id is set */
             if((session as CustomSession).user.id !== undefined)
@@ -198,23 +160,20 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
         body: JSON.stringify(user)
     }
 
-    return new Promise((resolve, reject) => {
-        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
-        .then(res => res.json())
-        .then((resj) => {
-            const res = resj as DatabaseUserResponse;
+    try {
+        const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
+        const json = await resp.json() as DatabaseUserResponse;
+        if(json.error)
+            return json.user;
 
-            if(res.success)
-                resolve(res.user)
+        return {} as DatabaseUser;
+    } catch (err: any) {
 
-            resolve({} as DatabaseUser)
-            
-        })
-        .catch(err => {
-            console.log("ERR: In fetch pull_user")
-            reject(err);
-        })
-    })
+        console.error("ERR in pull_user")
+        console.error(err)
+
+        return {} as DatabaseUser
+    }
 
 }
 
@@ -233,24 +192,17 @@ async function check_user_exists(email: string): Promise<boolean> {
     console.log("Sending request in check_user_exists")
     console.log(request)
 
-    return new Promise((resolve, reject) => {
-        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request)
-        .then(res => res.json())
-        .then((resj) => {
-            const res = resj as DatabaseResponse
+    try {
+        const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request);
+        const dbResponse = await resp.json() as DatabaseResponse;
 
-            /* Log in user if account exists */
-            if(res.success) 
-               resolve(true)
+        return dbResponse.success;
 
-            resolve(false)
-        })
-        .catch(err => {
-            resolve(false);
-            console.log("ERR: In fetch check_user_exists")
-            console.log(err)
-        })
-    })
+    } catch (err: any) {
+        console.error("ERR: In fetch check_user_exists")
+        console.error(err)
+        return false;
+    }
     
 }
 
@@ -263,22 +215,17 @@ async function create_account(userAccount: DatabaseUser): Promise<Boolean> {
         body: JSON.stringify(userAccount)
     }
 
+    try {
+        const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/createUser`, create_account_req)
+        const dbResponse = await resp.json() as DatabaseResponse;
 
-    return new Promise((res, rej) => {
-        fetch(`${process.env.NEXTAUTH_URL}api/database/profile/createUser`, create_account_req)
-        .then(res => res.json())
-        .then(resj => {
-    
-            const resp = resj as DatabaseResponse;
-            res(resp.success)
-    
-        })
-        .catch(err => {
-            console.error("ERR: In fetch from create_account")
-            res(false);
-        })
-    })
+        return dbResponse.success;
+    } catch (err: any) {
+        console.error("ERR: In fetch from create_account")
+        console.error(err);
+
+        return false;
+    }
 }
 
 export default NextAuth(authOptions)
-
