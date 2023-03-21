@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head';
 import React, {useEffect, useMemo, useState} from 'react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
-import { pull_user } from './database/profile';
+import { pull_user, useFriends } from './database/profile';
 import { profile } from 'console';
 import { requestPostFromUserById } from './database/posts';
 import { Box, Button, CircularProgress, CssBaseline, List } from '@mui/material';
@@ -15,9 +15,13 @@ import NavBar from '@/src/components/bottomnav';
 export default function Profile() {
 
     const {data: session, status} = useSession();
+
+    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+
     const [pageProfile, setPageProfile] = useState({} as DatabaseUser)
     const [posts, setPosts] = useState([] as DatabasePost[]);
-    const [loading, setLoading] = useState(false);
+    const [postsLoading, setLoading] = useState(false);
+    const [alreadyFriends, setAlreadyFriends] = useState(true);
     
     const router = useRouter();
 
@@ -48,11 +52,10 @@ export default function Profile() {
             loadBlankPosts()
             .then(loadImages)
             .catch(console.error)
-    }, [router.query.profile, pageProfile.id])
+    }, [router.query.profile, pageProfile.id, user.id])
 
     async function loadImages(blankPosts) {
 
-        console.log(blankPosts)
         blankPosts.forEach(async (post) => {
 
             const postRequest = await requestPostFromUserById(pageProfile.id, post.id)
@@ -118,7 +121,7 @@ export default function Profile() {
                     <CssBaseline />
                     <ProfileHeader user={pageProfile}/>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                    {loading && (
+                    {postsLoading && (
                         <CircularProgress
                             size={68}
                             sx={{
