@@ -5,6 +5,7 @@ import type {
     DatabaseUserPostResponse,
     DatabaseResponse,
 }  from "../../types/FirebaseResponseTypes";
+import { StringDecoder } from "string_decoder";
 
 /**
  * useAddPost: Saves a post to the database for the user. Only a single post
@@ -57,14 +58,14 @@ export function useAddPost(user_id: string, created: number, b64: string):
  * @param user_id ID of the user
  * @returns https://www.youtube.com/watch?v=dQw4w9WgXcQ
  */
-export function useGetAllPostsForUser(user_id: string):
-    [DatabasePost[], boolean, boolean, () => Promise<void>] {
+export function useGetAllPostIds(user_id: string):
+    [string[], boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [posts, setPosts] = useState([] as DatabasePost[])
+    const [post_ids, setPostIds] = useState([] as string[])
     
-    async function getAllPosts() {
+    async function getAllPostsIds() {
 
         if(loading) {
             setSuccess(false);
@@ -80,7 +81,7 @@ export function useGetAllPostsForUser(user_id: string):
 
         setLoading(true);
         setSuccess(false);
-        setPosts([] as DatabasePost[])
+        setPostIds([] as string[])
         
         const request = {
             method: 'POST',
@@ -103,38 +104,10 @@ export function useGetAllPostsForUser(user_id: string):
                 return;
             }
 
-            Object.keys(res.posts).forEach((key) => {
-                const user_id = res.posts[key].user_id;
-                const post_id = key
-
-                const request = {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        user_id: user_id,
-                        post_id: post_id,
-                    })
-                }
-            
-                fetch(`/api/database/posts/getPostFromUser`, request)
-                .then(res => res.json())
-                .then(resj => {
-        
-                    const res = resj as DatabaseUserPostResponse
-        
-                    if(!res.success) {
-                        return;
-                    }
-        
-                    setPosts(posts => [...posts, res.post])
-                   
-                })
-                .catch(err => console.log(err))
-
-
+            res.posts.forEach((post) => {
+                setPostIds(posts => [...post_ids, post.id])
             })
+            
             setSuccess(true)
            
         })
@@ -142,7 +115,7 @@ export function useGetAllPostsForUser(user_id: string):
         .finally(() => setLoading(false))
     }
 
-    return [posts, success, loading, getAllPosts];
+    return [post_ids, success, loading, getAllPostsIds];
 }
 
 /**

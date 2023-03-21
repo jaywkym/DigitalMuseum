@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Avatar } from '@mui/material';
+import { Avatar, Skeleton } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Container } from '@mui/system';
@@ -26,7 +26,8 @@ const visitProfile = () => { } //Visit Profile
 const Post = ({userObj, post}) => {
 
     const alt = post.image? post.image.userPrompt : "";
-    const src = post.image? `data:image/png;base64, ${post.image.b64}` : `data:image/png;base64`
+    const src = post.image? `data:image/png;base64, ${post.image.b64}` : ``
+    console.log(src)
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
             <Card raised sx={{ width: '356px' }}>
@@ -39,12 +40,13 @@ const Post = ({userObj, post}) => {
                     </Typography>
                     {/* </Button>*/}
                 </Box>
-                < CardMedia
+                { src === `` && <Skeleton variant="rectangular" animation="pulse" height={280} />}
+                {src !== `data:image/png;base64` && < CardMedia
                     component="img"
                     alt={alt}
                     height="280"
                     image={src}
-                />
+                />}
                 {/*
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
