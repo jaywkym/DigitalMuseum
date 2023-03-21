@@ -56,12 +56,14 @@ const MuseForm = () => {
     
     let user_id = status === 'authenticated'? (session.user as any).id : "";
 
-    const [b64, setB64] = React.useState('');
-    const [created, setCreated] = React.useState('');
-
     let b64Static;
     let createdStatic;
     
+    const [b64, setB64] = React.useState('');
+    const [created, setCreated] = React.useState();
+    const [generatePost] = useAddPost(b64, user_id, prompt, created);
+
+  
     
     console.log(loadingImage);
     console.log(error)
@@ -72,14 +74,12 @@ const MuseForm = () => {
 
       
         let splitB64 = event.target.src.split(',')[1];
+        setB64(splitB64);
         
-        b64Static = splitB64;
         createdStatic = event.target.id;
-        const [generatePost] = useAddPost(b64Static, user_id, prompt, createdStatic);
-
-        generatePost();
-
-        
+        setCreated(createdStatic);
+       
+        //generatePost();
 
     };
 

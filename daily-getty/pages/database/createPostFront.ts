@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react";
  * @returns [b64_image, error, loading, generate] A base64 encoded image, an error, a
  *          loading boolean, and a function to generate the image.
  */
-const useAddPost = (b64: string, user_id: string, user_prompt: string, created: number): 
+const useAddPost = (b64: string, user_id: string, user_prompt: string, created: Number): 
     [() => void] => {
 
     function generatePost() {
@@ -41,19 +41,19 @@ const useAddPost = (b64: string, user_id: string, user_prompt: string, created: 
             } as any
         }
     
-        const request = {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(uploadInfo)
-        }
+        // const request = {
+        //     method: 'PUT',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(uploadInfo)
+        // }
     
-        fetch('/api/database/posts/createPost', request)
-        .then(res => res.json())
-        .then(resj => {
-            console.log("good!")
-        })
+        // fetch('/api/database/posts/createPost', request)
+        // .then(res => res.json())
+        // .then(resj => {
+        //     console.log("good!")
+        // })
     };
     
     return [generatePost];
