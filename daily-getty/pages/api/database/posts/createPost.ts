@@ -14,6 +14,8 @@ export default async function createPost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
+    console.log("inside createPost");
+
     /* Only accept POST requests */
     if(req.method !== 'PUT') {
         res.status(405).json(
