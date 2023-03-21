@@ -2,7 +2,7 @@ import * as React from 'react';
 import { green } from '@mui/material/colors';
 import { display } from '@mui/system';
 import Box from '@mui/material/Box';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress, ImageList } from '@mui/material';
 import { Container } from '@mui/system';
 import { Modal, Typography } from '@mui/material';
@@ -24,6 +24,12 @@ const MuseForm = () => {
 
     const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
+
+    const [test1, settest1] = useState('')
+    const [test2, settest2] = useState('')
+    const [prompt, setPrompt] = React.useState('');
+        let createdStatic  = 0;
+    const [generatePost] = useAddPost(test1, test2, prompt, createdStatic);
     const timer = React.useRef<number>();
 
     React.useEffect(() => {
@@ -44,10 +50,14 @@ const MuseForm = () => {
         setGenerate(false);
     };
 
+    useMemo(() => {
+        console.log("CCLICKED")
+    }, [test1, test2])
+
 
 
     //DallE API CALL
-    const [prompt, setPrompt] = React.useState('');
+    
     const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
 
    
@@ -60,7 +70,7 @@ const MuseForm = () => {
     const [created, setCreated] = React.useState('');
 
     let b64Static;
-    let createdStatic;
+
     
     
     console.log(loadingImage);
@@ -73,11 +83,13 @@ const MuseForm = () => {
       
         let splitB64 = event.target.src.split(',')[1];
         
-        b64Static = splitB64;
-        createdStatic = event.target.id;
-        const [generatePost] = useAddPost(b64Static, user_id, prompt, createdStatic);
+        settest1(splitB64)
+        settest2(event.target.id)
+        // b64Static = splitB64;
+        // createdStatic = event.target.id;
+        
 
-        generatePost();
+        // generatePost();
 
         
 

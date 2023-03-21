@@ -31,12 +31,25 @@ export default async function getUserAccount (
     const dbref = ref(db, 'users/')
     const users = await asyncOnValue(dbref);
 
+
     let user = {} as DatabaseUser;
 
     /* Check all users if email is attached to user */
     for(let user_id in users) {
 
         let current_user: DatabaseUser = users[user_id];
+
+        if(body.id && body.id === current_user.id) {
+            res.status(200).json(
+                generateDbUserResponse(
+                    true,
+                    current_user,
+                    {} as DatabaseError
+                )
+            )
+
+            return
+        }
 
         /* Search from email */
         if(body.email && current_user.email === body.email) {
