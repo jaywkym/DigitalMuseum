@@ -8,7 +8,6 @@ import {
 
  import {
     useAddPost,
-    useGetAllPostsForUser,
     useGetPostForUser
  } from './database/posts'
 
@@ -21,7 +20,6 @@ function Test() {
     let user_id = status === 'authenticated'? (session.user as any).id : "";
 
     const [postCreatedSuccess, postCreatedLoading, createPost] = useAddPost(user_id, 12345, "test");
-    const [posts, getPostsSuccess, getPostsLoading, getAllPostsForUser] = useGetAllPostsForUser(user_id);
     const [post, getPostSuccess, getPostLoading, getPostForUser] = useGetPostForUser(user_id, "2023_2_1")
     const [deleteFriendsSuccess, loading, removeFriend] = useDeleteFriend(user_id, "8e08b18e-c0b0-4293-ad99-b2e63c5fcaf7");
     const [friends, friendsLoading, getFriends] = useFriends(user_id)
@@ -32,7 +30,6 @@ function Test() {
 
     console.log({
         postCreatedSuccess: postCreatedSuccess,
-        posts: posts,
         post: post,
         deleteFriendsSuccess: deleteFriendsSuccess,
         friends: friends,
@@ -49,9 +46,6 @@ function Test() {
             <input type={'button'} onClick={async () => {
                 await createPost()
             }} value={'Add Post'} />
-            <input type={'button'} onClick={async () => {
-                await getAllPostsForUser()
-            }} value={'Get posts'} />
             <input type={'button'} onClick={async () => {
                 await getPostForUser() 
             }} value={'Get post for 2023-2-1'} />

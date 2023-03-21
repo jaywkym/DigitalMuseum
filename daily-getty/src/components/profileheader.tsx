@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { Avatar, Chip, Stack } from '@mui/material';
 import { Container } from '@mui/system';
-import { useGetAllPostsForUser } from '@/pages/database/posts';
 
 const ProfileHeader = ({user}) => {
 
