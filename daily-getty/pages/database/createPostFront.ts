@@ -19,22 +19,37 @@ import { useSession } from "next-auth/react";
  * @returns [b64_image, error, loading, generate] A base64 encoded image, an error, a
  *          loading boolean, and a function to generate the image.
  */
-const useAddPost = (b64: string, user_id: string, user_prompt: string, created: string): 
+const useAddPost = (b64: string, user_id: string, user_prompt: string, created: number): 
     [() => void] => {
 
     function generatePost() {
  
+        console.log(b64);
+        console.log(user_id);
+        console.log(user_prompt);
+        console.log(created);
+
+        const uploadInfo: DatabasePost = {
+            id: null,
+            user_id: user_id,
+            userPrompt: user_prompt,
+            givenPrompt: null, 
+            likes: 0,
+            image: {
+                created: created as Number,
+                b64: b64 as String
+            } as any
+        }
+    
         const request = {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                'b64': b64,
-            })
+            body: JSON.stringify(uploadInfo)
         }
     
-        fetch('/api/database/posts/generate_image', request)
+        fetch('/api/database/posts/createPost', request)
         .then(res => res.json())
         .then(resj => {
             console.log("good!")

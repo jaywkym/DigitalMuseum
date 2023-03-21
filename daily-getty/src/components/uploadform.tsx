@@ -59,18 +59,27 @@ const MuseForm = () => {
     const [b64, setB64] = React.useState('');
     const [created, setCreated] = React.useState('');
 
-    const [generatePost] = useAddPost(b64, user_id, prompt, created);
+    let b64Static;
+    let createdStatic;
+    
     
     console.log(loadingImage);
     console.log(error)
+   
+
 
     const imageClick = event => {
 
-        console.log(event.target)
+      
+        let splitB64 = event.target.src.split(',')[1];
         
-       
+        b64Static = splitB64;
+        createdStatic = event.target.id;
+        const [generatePost] = useAddPost(b64Static, user_id, prompt, createdStatic);
 
-        //generatePost();
+        generatePost();
+
+        
 
     };
 

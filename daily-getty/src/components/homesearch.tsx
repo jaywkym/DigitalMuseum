@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { List } from '@mui/material';
+import { signOut } from 'next-auth/react';
+import { Button } from '@mui/material';
 
 //SEARCH BAR STYLING
 const Search = styled('div')(({ theme }) => ({
@@ -78,11 +80,19 @@ const HomeSearch = () => {
     return (
         <AppBar position="static">
             <Toolbar>
+                <Button  style={{
+                borderRadius: 35,
+                backgroundColor: "#21b6ae",
+                padding: "18px 36px",
+                fontSize: "18px",
+                textDecorationColor: "black"
+                }}  onClick={() => { signOut(); }}>Logout</Button>
                 <Typography
-                    variant="h6"
+                    variant="h3"
                     noWrap
                     component="div"
-                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, alignContent: 'center' }}
+                    align="center"
+                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block'}, textAlignContent: 'center'  }}
                 >
                     DailyMuse
                 </Typography>
