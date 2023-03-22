@@ -71,7 +71,7 @@ const ProfileHeader = ({user}) => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    {!loading && <Chip label={`Following ${friends.length}`} />}
+                    {!loading && <Chip label={`Following ${friends? friends.length: 0}`} />}
                     {!isFriend && <Chip label="Follow" variant="outlined" onClick={() => {
                         addFriend()
                         .then(getFriends)
