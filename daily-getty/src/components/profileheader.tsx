@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { Avatar, Chip, Stack } from '@mui/material';
 import { Container } from '@mui/system';
-import { useAddFriend, useFriends } from '@/pages/database/profile';
+import { useFollowUser, useFollowing } from '@/pages/database/profile';
 import { Button, Modal, Grid, List } from '@mui/material';
 
 const style = {
@@ -26,41 +26,35 @@ const ProfileHeader = ({ user }) => {
 
     const session_user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
-    const [friends, loading, getFriends] = useFriends(user.id)
-    const [myFriends, myFloading, getMyFriends] = useFriends(user.id)
-    const [addSuccess, addLoading, addFriend] = useAddFriend(session_user.id, user.id)
-    const [isFriend, setIsFriend] = useState(true)
+    const [following, followingLoading, getFollowing] = useFollowing(user.id)
+    const [sFollowing, sFollowingLoading, sGetFollowing] = useFollowing(session_user.id)
+    const [addSuccess, addLoading, followUser] = useFollowUser(session_user.id, user.id)
+    const [isFollowing, setIsFriend] = useState(false)
+    const selfAccount = session_user.id === user.id
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    // console.log({
-    //     current_user: session_user,
-    //     profile_user: user,
-    //     isFriend: isFriend,
-    //     addSuccess: addSuccess,
-    //     addLoading: addLoading
-    // })
+    useEffect(() => {
+        getFollowing()
+        .catch(console.error)
+
+        sGetFollowing()
+        .catch(console.error)
+    }, [user.id, session_user.id])
 
     useEffect(() => {
-        getFriends()
-        getMyFriends()
-    }, [user.id, addLoading])
 
-    useMemo(() => {
-        // console.log(friends)
-        if (friends) {
             let foundFriend = false;
-            myFriends.forEach(friend => {
-                console.log({
-                    friend: friend,
-                    session_user: session_user.id,
-                    user: user.id
-                })
-                if (friend === session_user.id ||
-                    friend === user.id ||
-                    user.id == session_user.id) {
+
+            if(!sFollowing)
+                return;
+
+            sFollowing.forEach(friend => {
+                
+                if(friend == session_user.id ||
+                    friend == user.id) {
                     foundFriend = true
                     return;
                 }
@@ -69,8 +63,7 @@ const ProfileHeader = ({ user }) => {
 
             setIsFriend(foundFriend)
 
-        }
-    }, [friends, myFriends])
+    }, [following, user, sFollowing])
 
     return (
         <Container fixed >
@@ -88,13 +81,14 @@ const ProfileHeader = ({ user }) => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    {!loading &&
-                        <Button onClick={handleOpen}>
-                            <Chip label={`Following ${friends ? friends.length : 0}`} />
-                        </Button>}
-                    {!isFriend && <Chip label="Follow" variant="outlined" onClick={() => {
-                        addFriend()
-                            .then(getFriends)
+                    {!followingLoading && <Chip label={`Following ${following? following.length: 0}`} />}
+                    {!selfAccount && <Chip label={isFollowing? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
+                        if(!isFollowing)
+                            followUser()
+                        
+                        // TODO - Remove as following
+
+                        .then(sGetFollowing)
                     }} />}
                 </Stack>
                 <Modal
@@ -105,7 +99,7 @@ const ProfileHeader = ({ user }) => {
                 >
                     <Box sx={style}>
                         <List>
-                            {friends.map((friend) => (
+                            {sFollowing.map((friend) => (
                                 <li key={friend}>
                                     <Grid container alignItems="center">
                                         <Grid item sx={{ display: 'flex', width: 44 }}>
@@ -131,3 +125,12 @@ const ProfileHeader = ({ user }) => {
 };
 
 export default ProfileHeader;
+
+
+// {!loading &&
+//     <Button onClick={handleOpen}>
+//         <Chip label={`Following ${friends ? friends.length : 0}`} />
+//     </Button>}
+// {!isFriend && <Chip label="Follow" variant="outlined" onClick={() => {
+//     addFriend()
+//         .then(getFriends)

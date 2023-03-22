@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head';
 import React, {useEffect, useMemo, useState} from 'react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
-import { pull_user, useFriends } from './database/profile';
+import { pull_user } from './database/profile';
 import { profile } from 'console';
 import { requestPostFromUserById } from './database/posts';
 import { Box, Button, CircularProgress, CssBaseline, List } from '@mui/material';
@@ -22,7 +22,7 @@ export default function Profile() {
     const [pageProfile, setPageProfile] = useState({} as DatabaseUser)
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [postsLoading, setLoading] = useState(false);
-    const [alreadyFriends, setAlreadyFriends] = useState(true);
+    
     
     const router = useRouter();
 
