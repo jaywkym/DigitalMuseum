@@ -5,6 +5,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { Box, Grid, Typography } from '@mui/material';
 
 export default function Asynchronous() {
 
@@ -64,19 +65,36 @@ export default function Asynchronous() {
         onChange={(event: any, newValue: DatabaseUser | null) => {
             push(`/${newValue.id}`)
         }}
-        // renderOption={(props, option) => {
+        renderOption={(props, option) => {
 
-        //     return (
-        //         <>
-        //             <p>test</p>
-        //         </>
-        //     )
-        // }}
+            console.log(option)
+            
+            return (
+                <>
+                    <li {...props}>
+                        <Grid container alignItems="center">
+                        <Grid item sx={{ display: 'flex', width: 44 }}>
+                            <img src={option.image} width={'50%'}/>
+                        </Grid>
+                        <Grid item sx={{ width: 'calc(100% - 44px)'}}>
+                            <Box
+                                key={option.id}
+                                component="span"
+                                sx={{ fontWeight: 'bold', color: 'black'}}
+                            >
+                                <p>{option.name}</p>
+                            </Box>
+                        </Grid>
+                        </Grid>
+                    </li>
+                </>
+            )
+        }}
         renderInput={(params) => (
             <>
             <TextField
             {...params}
-            label="Asynchronous"
+            label="Explore Users"
             InputProps={{
                 ...params.InputProps,
                 endAdornment: (
