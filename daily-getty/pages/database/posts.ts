@@ -197,7 +197,7 @@ export function useGetHomefeed(user_id: string):
         fetch(`/api/database/profile/getFriends`, request)
         .then(res => res.json())
         .then(res => {
-            let friends = res.friends.friends
+            let friends = res.friends.following
             
             friends.forEach((friend_id) => {
                 const request = {
