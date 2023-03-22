@@ -21,7 +21,7 @@ function Test() {
     const [post, getPostSuccess, getPostLoading, getPostForUser] = useGetPostForUser(user_id, "2023_2_1")
     const [deleteFriendsSuccess, loading, removeFriend] = useDeleteFriend(user_id, "8e08b18e-c0b0-4293-ad99-b2e63c5fcaf7");
     // const [friends, friendsLoading, getFriends] = useFriends(user_id)
-    // const [addFriendsSuccess, addFriendsLoading, addFriend] = useAddFriend(user_id, "30202347-41d5-4d4c-b66f-809694cf48ee")
+   // const [addFriendsSuccess, addFriendsLoading, addFriend] = useAddFriend(user_id, "30202347-41d5-4d4c-b66f-809694cf48ee")
 
     /* Update friends list on frontend if friend added or remoed */
 

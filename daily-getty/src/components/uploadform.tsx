@@ -114,6 +114,9 @@ const MuseForm = () => {
             .then(res => res.json())
             .then(resj => {
                 console.log("good!")
+                //ADD FUNCTIONALITY TO SWITCH TO COMPLETED
+
+
             })
 
     };

@@ -13,6 +13,12 @@ import HomeSearch from '@/src/components/homesearch';
 
 export default function NewMuse() {
 
+    function testing(){
+        console.log("hello functionality")         
+    }
+
+
+
     return (
         <>
             <Head>
@@ -21,7 +27,8 @@ export default function NewMuse() {
             <main>
                 <HomeSearch />
                 <Box sx={{ flexGrow: 1, m: 8 }}>
-                    
+
+                
                     <CssBaseline />
                     <Prompt />
                     <MuseForm />
