@@ -18,8 +18,8 @@ type CustomSession = {
     expires: string
 }
 
-//import dns from 'node:dns';
-//dns.setDefaultResultOrder('ipv4first');
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
 
 /**
  * authOptions: Configuration for authentication through next. 
