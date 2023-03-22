@@ -28,8 +28,6 @@ export function useFollowing(user_id: string):
 
         setLoading(true);
 
-        console.log(user_id)
-
         const dbFriendsResponse = await requestFollowingForUser(user_id);
 
         console.log(dbFriendsResponse)
@@ -38,11 +36,9 @@ export function useFollowing(user_id: string):
             if(dbFriendsResponse.friends)
                 setFollowing(dbFriendsResponse.friends.following)
             else {
-                console.log("GOT HERER 1")
                 setFollowing([]);
             }
         } else {
-            console.log("GOT HERE")
             setFollowing([])
         }
 
@@ -50,6 +46,46 @@ export function useFollowing(user_id: string):
     }
 
     return [following, loading, pullFollowing]
+}
+
+/**
+ * useFriends: Hook to retreive all the friends of a user given an ID.
+ * 
+ * @param user_id ID of user to retrieve all friends    
+ * @returns Nothing... Why does everyone always expect me to return something.
+ */
+export function useFollowers(user_id: string):
+    [string[], boolean, () => Promise<void>]{
+    
+    const [followers, setFollowers] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    async function pullFollowers() {
+
+        if(loading)
+            return;
+
+        if(user_id === undefined)
+            return;
+
+        setLoading(true);
+
+        const dbFriendsResponse = await requestFriendsForUser(user_id);
+
+        if(dbFriendsResponse.success) {
+            if(dbFriendsResponse.friends)
+                setFollowers(dbFriendsResponse.friends.followers)
+            else {
+                setFollowers([]);
+            }
+        } else {
+            setFollowers([])
+        }
+
+       setLoading(false);
+    }
+
+    return [followers, loading, pullFollowers]
 }
 
 /**
@@ -139,6 +175,26 @@ export async function requestRemoveFriend(user_id: string, friend_id: string): P
 }
 
 export async function requestFollowingForUser(user_id: string): Promise<DatabaseFriendsResponse> {
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: user_id,
+        })
+    }
+
+    try {
+        const resp = await fetch(`/api/database/profile/getFriends`, request)
+        return await resp.json() as DatabaseFriendsResponse
+    } catch (err: any) {
+        return {success: false} as DatabaseFriendsResponse
+    }
+
+}
+
+export async function requestFriendsForUser(user_id: string): Promise<DatabaseFriendsResponse> {
     const request = {
         method: 'POST',
         headers: {

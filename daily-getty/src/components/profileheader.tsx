@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { Avatar, Chip, Stack } from '@mui/material';
 import { Container } from '@mui/system';
-import { useFollowUser, useFollowing } from '@/pages/database/profile';
+import { useFollowUser, useFollowers, useFollowing } from '@/pages/database/profile';
 import { Button, Modal, Grid, List } from '@mui/material';
 
 const style = {
@@ -27,6 +27,7 @@ const ProfileHeader = ({ user }) => {
     const session_user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
     const [following, followingLoading, getFollowing] = useFollowing(user.id)
+    const [followers, followersLoading, getFollowers] = useFollowers(user.id)
     const [sFollowing, sFollowingLoading, sGetFollowing] = useFollowing(session_user.id)
     const [addSuccess, addLoading, followUser] = useFollowUser(session_user.id, user.id)
     const [isFollowing, setIsFriend] = useState(false)
@@ -42,7 +43,17 @@ const ProfileHeader = ({ user }) => {
 
         sGetFollowing()
             .catch(console.error)
+
+        getFollowers()
+            .catch(console.error)
     }, [user.id, session_user.id])
+
+
+    console.log({
+        user_id: user.id,
+        followers: followers,
+        following: following
+    })
 
     useEffect(() => {
 
@@ -82,6 +93,7 @@ const ProfileHeader = ({ user }) => {
                 </Box>
                 <Stack direction="row" spacing={1}>
                     {!followingLoading && <Chip label={`Following ${following ? following.length : 0}`} />}
+                    {!followersLoading && <Chip label={`Followers ${followers ? followers.length : 0}`} />}
                     {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
                         if (!isFollowing)
                             followUser()
@@ -89,6 +101,7 @@ const ProfileHeader = ({ user }) => {
                                 // TODO - Remove as following
 
                                 .then(sGetFollowing)
+                                .then(getFollowers)
                     }} />}
                 </Stack>
                 {/*
