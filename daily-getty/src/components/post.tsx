@@ -67,14 +67,19 @@ const Post = ({ userObj, post }) => {
                         {/* </Button>*/}
                     </Box>
                 </Link>
-                {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} />}
+                {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
                 <div
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}>
-                    {src !== `data:image/png;base64, ` && isHovering ? (
-                        <Typography>
-                            Promptx
-                        </Typography>) : (
+                    {isHovering ? (
+                        <div style={{ height: 280 }}>
+                            <Box sx={{ m: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                                <Typography>
+                                    Prompt
+                                </Typography>
+                            </Box>
+                        </div>
+                    ) : (
                         < CardMedia
                             component="img"
                             alt={alt}
