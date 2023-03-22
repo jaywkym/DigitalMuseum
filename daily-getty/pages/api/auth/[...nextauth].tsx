@@ -4,6 +4,7 @@ import type { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import FacebookProvider from "next-auth/providers/facebook"
 import GoogleProvider from "next-auth/providers/google";
+<<<<<<< Updated upstream
 import InstagramProvider from "next-auth/providers/instagram";
 import TwitterProvider from "next-auth/providers/twitter"
 
@@ -35,6 +36,16 @@ type CustomUserToken = {
     email  : string,
     username : string
 }
+=======
+import type { 
+    DatabaseResponse,
+    DatabaseUser,
+    DatabaseUserResponse
+}  from "../../../types/FirebaseResponseTypes";
+import dns from 'node:dns';
+
+dns.setDefaultResultOrder('ipv4first');
+>>>>>>> Stashed changes
 
 type CustomSession = {
     user: {
