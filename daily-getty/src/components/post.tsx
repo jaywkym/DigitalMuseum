@@ -11,6 +11,7 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Container } from '@mui/system';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { useState } from 'react';
 
 
 interface PostProps {
@@ -23,10 +24,14 @@ const handleLike = () => { } //Handle Adding Like to DataBase
 const handleShare = () => { } //Overlay Share Window
 const visitProfile = () => { } //Visit Profile
 
-const Post = ({userObj, post}) => {
+const Post = ({ userObj, post }) => {
 
-    const alt = post.image? post.image.userPrompt : "";
-    const src = post.image? `data:image/png;base64, ${post.image.b64}` : ``
+    const [isHovering, setIsHovered] = useState(false);
+    const onMouseEnter = () => setIsHovered(true);
+    const onMouseLeave = () => setIsHovered(false);
+
+    const alt = post.image ? post.image.userPrompt : "";
+    const src = post.image ? `data:image/png;base64, ${post.image.b64}` : ``
 
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
@@ -40,13 +45,22 @@ const Post = ({userObj, post}) => {
                     </Typography>
                     {/* </Button>*/}
                 </Box>
-                { src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} />}
-                {src !== `data:image/png;base64, ` && < CardMedia
-                    component="img"
-                    alt={alt}
-                    height="280"
-                    image={src}
-                />}
+                {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} />}
+                <div
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}>
+                    {src !== `data:image/png;base64, ` && isHovering ? (
+                        <Typography>
+                            Promptx
+                        </Typography>) : (
+                        < CardMedia
+                            component="img"
+                            alt={alt}
+                            height="280"
+                            image={src}
+                        />
+                    )}
+                </div>
                 {/*
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />

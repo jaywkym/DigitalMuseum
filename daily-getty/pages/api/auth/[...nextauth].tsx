@@ -1,12 +1,12 @@
 import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
-import type { NextAuthOptions } from "next-auth" 
+import type { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
-import type { 
+import type {
     DatabaseResponse,
     DatabaseUser,
     DatabaseUserResponse
-}  from "../../../types/FirebaseResponseTypes";
+} from "../../../types/FirebaseResponseTypes";
 
 type CustomSession = {
     user: {
@@ -18,15 +18,18 @@ type CustomSession = {
     expires: string
 }
 
+//import dns from 'node:dns';
+//dns.setDefaultResultOrder('ipv4first');
+
 /**
  * authOptions: Configuration for authentication through next. 
  */
-export const authOptions: NextAuthOptions = {  
+export const authOptions: NextAuthOptions = {
 
     secret: process.env.NEXTAUTH_SECRET,
 
     /* Defines the types of ways that a user can login to the platform */
-    providers: [    
+    providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
@@ -39,7 +42,7 @@ export const authOptions: NextAuthOptions = {
         updateAge: 24 * 60 * 60, // 24 hours
         generateSessionToken: () => {
             return randomUUID?.() ?? randomBytes(32).toString("hex")
-          }
+        }
     },
 
     jwt: {
@@ -50,13 +53,13 @@ export const authOptions: NextAuthOptions = {
         async signIn({ user, account, profile, email, credentials }) {
 
             /* Reject login if email is not verified */
-            if(!(profile as any).email_verified)
+            if (!(profile as any).email_verified)
                 return false;
 
             console.log("Checking email verified")
 
             /* Reject login if email is not verified */
-            if(!(profile as any).email_verified)
+            if (!(profile as any).email_verified)
                 return false;
 
             console.log("Email verified")
@@ -67,7 +70,7 @@ export const authOptions: NextAuthOptions = {
 
             console.log("Account exists: " + account_exists)
             /* Log in user if their account exists */
-            if(account_exists)
+            if (account_exists)
                 return true;
 
             const userAccount: DatabaseUser = {
@@ -85,21 +88,21 @@ export const authOptions: NextAuthOptions = {
             /* Create user account if it does not exist */
             const resp = await create_account(userAccount)
 
-            if(!resp) {
+            if (!resp) {
                 console.log("ERR: Could not create account")
                 return false;
             }
 
             console.log("Account created")
-            
-            return true
-          },
 
-            /* Callback whenever a session token is created/updated */
-          async session( {session, token} ) {
+            return true
+        },
+
+        /* Callback whenever a session token is created/updated */
+        async session({ session, token }) {
 
             /* No updating needed if user id is set */
-            if((session as CustomSession).user.id !== undefined)
+            if ((session as CustomSession).user.id !== undefined)
                 return session;
 
             /* Create new session for user with updated profile information */
@@ -125,22 +128,22 @@ export const authOptions: NextAuthOptions = {
             } as CustomSession;
 
             return new_session
-          },
+        },
 
-          /* Callback whenever jwt token is created/ updated */
-          async jwt( {token, user}) {
- 
+        /* Callback whenever jwt token is created/ updated */
+        async jwt({ token, user }) {
+
             /* Update token id from user id */
-            if(user)
+            if (user)
                 token.id = user.id
 
             return token;
-          }
+        }
     },
 
     /* Custom pages that will direct the user to the provider's login page */
     pages: {
-         signIn: '/auth/signin',
+        signIn: '/auth/signin',
     }
 }
 
@@ -163,7 +166,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
     try {
         const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         const json = await resp.json() as DatabaseUserResponse;
-        if(json.error)
+        if (json.error)
             return json.user;
 
         return {} as DatabaseUser;
@@ -191,6 +194,8 @@ async function check_user_exists(email: string): Promise<boolean> {
 
     console.log("Sending request in check_user_exists")
     console.log(request)
+    console.log('${process.env.NEXTAUTH_URL}')
+    console.log(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`)
 
     try {
         const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request);
@@ -203,7 +208,7 @@ async function check_user_exists(email: string): Promise<boolean> {
         console.error(err)
         return false;
     }
-    
+
 }
 
 async function create_account(userAccount: DatabaseUser): Promise<Boolean> {
