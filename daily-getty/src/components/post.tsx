@@ -55,7 +55,7 @@ const Post = ({userObj, post}) => {
                     
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
                         {/*<Button onClick={visitProfile}>*/}
-                        <Avatar alt={userObj.name} src={profileImage} />
+                        <Avatar alt={userObj.name} src={profileImage} sx={{mr: 1}} />
                         <div></div>
                         <Typography gutterBottom variant="body1" component="div" >
                             @{profileName}
