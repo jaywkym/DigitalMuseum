@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -11,6 +10,8 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Container } from '@mui/system';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { useEffect, useState } from 'react';
+import { pull_user } from '@/pages/database/profile';
 
 
 interface PostProps {
@@ -25,18 +26,35 @@ const visitProfile = () => { } //Visit Profile
 
 const Post = ({userObj, post}) => {
 
+    const [postProfile, setPostProfile] = useState({} as DatabaseUser)
+
     const alt = post.image? post.image.userPrompt : "";
     const src = post.image? `data:image/png;base64, ${post.image.b64}` : ``
+    const profileName = postProfile? postProfile.name : ''
+    const profileImage = postProfile? postProfile.image : ''
+
+    useEffect(() => {
+
+        async function getUserInfo() {
+            const resp_profile = await pull_user({id: post.user_id} as DatabaseUser);
+            if(resp_profile.id)
+                setPostProfile(resp_profile)
+        }
+
+        getUserInfo()
+        .catch(console.error)
+
+    }, [post])
 
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
             <Card raised sx={{ width: '356px' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
                     {/*<Button onClick={visitProfile}>*/}
-                    <Avatar alt={userObj.name} src={userObj.image} />
+                    <Avatar alt={userObj.name} src={profileImage} />
                     <div></div>
                     <Typography gutterBottom variant="body1" component="div" >
-                        @{userObj.name}
+                        @{profileName}
                     </Typography>
                     {/* </Button>*/}
                 </Box>
