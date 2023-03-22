@@ -103,35 +103,30 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
-                <Box sx={{ bgcolor: '#000000', width: '100%', height: '100vh' }}>
-                    <HomeSearch />
-                    <Box sx={{ bgcolor: '#000000' }}>
-                        <Box sx={{ flexGrow: 1, m: 10 }}>
-                            {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
-
-                            <CssBaseline />
-                            <ProfileHeader user={user} />
-                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                {loading && (
-                                    <CircularProgress
-                                        size={68}
-                                        sx={{
-                                            color: green[500],
-                                        }}
-                                    />
-                                )}
-                                <List>
-                                    {
-                                        Object.keys(posts_map).map((post) => (
-                                            <Post userObj={user} post={posts[post]} key={posts[post].id} />
-                                        ))
-                                    }
-                                </List>
-                            </Box>
-                        </Box>
-                        <NavBar />
+                <HomeSearch />
+                <Box sx={{ flexGrow: 1, m: 10 }}>
+                    {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
+                    <CssBaseline />
+                    <ProfileHeader user={user} />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                        {loading && (
+                            <CircularProgress
+                                size={68}
+                                sx={{
+                                    color: green[500],
+                                }}
+                            />
+                        )}
+                        <List>
+                            {
+                                Object.keys(posts_map).map((post) => (
+                                    <Post userObj={user} post={posts[post]} key={posts[post].id} />
+                                ))
+                            }
+                        </List>
                     </Box>
                 </Box>
+                <NavBar />
             </main>
         </>
     )
