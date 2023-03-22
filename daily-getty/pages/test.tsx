@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react'
 import { 
-    useFriends,
-    useAddFriend,
     useDeleteFriend
  } from './database/profile';
 
@@ -22,8 +20,8 @@ function Test() {
     const [postCreatedSuccess, postCreatedLoading, createPost] = useAddPost(user_id, 12345, "test");
     const [post, getPostSuccess, getPostLoading, getPostForUser] = useGetPostForUser(user_id, "2023_2_1")
     const [deleteFriendsSuccess, loading, removeFriend] = useDeleteFriend(user_id, "8e08b18e-c0b0-4293-ad99-b2e63c5fcaf7");
-    const [friends, friendsLoading, getFriends] = useFriends(user_id)
-    const [addFriendsSuccess, addFriendsLoading, addFriend] = useAddFriend(user_id, "30202347-41d5-4d4c-b66f-809694cf48ee")
+    // const [friends, friendsLoading, getFriends] = useFriends(user_id)
+    // const [addFriendsSuccess, addFriendsLoading, addFriend] = useAddFriend(user_id, "30202347-41d5-4d4c-b66f-809694cf48ee")
 
     /* Update friends list on frontend if friend added or remoed */
 
@@ -32,8 +30,6 @@ function Test() {
         postCreatedSuccess: postCreatedSuccess,
         post: post,
         deleteFriendsSuccess: deleteFriendsSuccess,
-        friends: friends,
-        addFriendSuccess: addFriendsSuccess
     })
 
     return (
@@ -49,12 +45,12 @@ function Test() {
             <input type={'button'} onClick={async () => {
                 await getPostForUser() 
             }} value={'Get post for 2023-2-1'} />
-            <input type={'button'} onClick={async () => {
+            {/* <input type={'button'} onClick={async () => {
                 await getFriends()
             }} value={'Get Friends'} />
             <input type={'button'} onClick={async () => {
                 await addFriend()
-            }} value={'Add friend'} />
+            }} value={'Add friend'} /> */}
             <input type={'button'} onClick={async () => {
                 await removeFriend()
             }} value={'Remove friend'} />

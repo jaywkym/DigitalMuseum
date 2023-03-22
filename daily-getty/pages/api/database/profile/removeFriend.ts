@@ -32,10 +32,11 @@ export default async function removeFriend (
     if(!friends_obj)
         friends_obj = {
             id: user_id,
-            friends: []
+            followers: [],
+            following: []
         } as DatabaseFriends
 
-    if(!friends_obj.friends) {
+    if(!friends_obj.following) {
         res.status(200).json(
             generateDbResponse(
                 false,
@@ -45,7 +46,7 @@ export default async function removeFriend (
         return;
     }
 
-    if(!friends_obj.friends.includes(friend_id)) {
+    if(!friends_obj.following.includes(friend_id)) {
         res.status(200).json(
             generateDbResponse(
                 false,
@@ -56,8 +57,8 @@ export default async function removeFriend (
     }
 
 
-    const index = friends_obj.friends.indexOf(friend_id, 0)
-    friends_obj.friends.splice(index, 1);
+    const index = friends_obj.following.indexOf(friend_id, 0)
+    friends_obj.following.splice(index, 1);
 
     const db = database;
     set(ref(db, `friends/${user_id}`), friends_obj)
