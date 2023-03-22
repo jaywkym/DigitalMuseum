@@ -11,88 +11,26 @@ import { List } from '@mui/material';
 import { signOut } from 'next-auth/react';
 import { Button } from '@mui/material';
 
-//SEARCH BAR STYLING
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '50%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
-        },
-    },
-}));
-
-//COMPONENT
 const HomeSearch = () => {
-    //HANDLE ON CHANGE and REACT STATES
-    const [searchFormState, setSearchFormState] = useState('');
-    const onTextChange = (e: any) => setSearchFormState(e.target.value);
-    const [searchResults, setSearchResults] = useState([]);
-
-    //PERFORM SEARCH FUNCTION
-    const handleSearchSubmit = (event) => {
-        event.preventDefault();
-        const results = performSearch(searchFormState);
-        setSearchResults(results);
-    };
-
-    const performSearch = (searchTerm) => {
-        // Perform the search and return an array of results
-        return [
-            'Result 1',
-            'Result 2',
-            'Result 3'
-        ];
-    };
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" style={{ background: '#000000' }}>
             <Toolbar>
-                <Button  style={{
-                borderRadius: 35,
-                backgroundColor: "#21b6ae",
-                padding: "18px 36px",
-                fontSize: "18px",
-                textDecorationColor: "black"
-                }}  onClick={() => { signOut(); }}>Logout</Button>
+                <Button style={{
+                    borderRadius: 28,
+                    backgroundColor: "#FFFFFF",
+                    padding: "14px 28px",
+                    fontSize: "14px",
+                    textDecorationColor: "black"
+                }} onClick={() => { signOut(); }}>
+                    <Typography color={'#000000'}>Logout</Typography>
+                </Button>
                 <Typography
                     variant="h3"
                     noWrap
                     component="div"
                     align="center"
-                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block'}, textAlignContent: 'center'  }}
+                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, textAlignContent: 'center' }}
                 >
                     DailyMuse
                 </Typography>
