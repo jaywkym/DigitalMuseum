@@ -25,7 +25,6 @@ export default function Profile() {
 
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
-    const [freinds, setFriends] = useState([])
 
     async function loadImages(blankPosts) {
 

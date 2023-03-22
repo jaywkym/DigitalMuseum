@@ -7,7 +7,7 @@ import type {
     DatabaseFriends
 }  from "../../../../types/FirebaseResponseTypes";
 
-export default async function getFriends (
+export default async function followUser (
     req: NextApiRequest,
     res: NextApiResponse<DatabaseResponse>
   ) {
@@ -27,29 +27,33 @@ export default async function getFriends (
     const user_id = req.body.id;
     const friend_id = req.body.friend_id
 
-    let friends_obj: DatabaseFriends = await getFriendsForUserById(user_id)
+    let friends_obj: DatabaseFriends = await getFollowingForUserById(user_id)
+
 
     if(!friends_obj)
         friends_obj = {
             id: user_id,
-            friends: []
+            followers: [],
+            following: []
         } as DatabaseFriends
 
-    if(!friends_obj.friends)
-        friends_obj.friends = []
+    if(!friends_obj.followers)
+        friends_obj.followers = []
 
-    if(friends_obj.friends.includes(friend_id)) {
+    if(!friends_obj.following)
+        friends_obj.following = []
+
+    if(friends_obj.following.includes(friend_id)) {
         res.status(200).json(
             generateDbResponse(
                 false,
-                generateError(-100, "User is already a friend")
+                generateError(-100, "Already following user")
             )
         )
         return;
     }
 
-
-    friends_obj.friends.push(friend_id)
+    friends_obj.following.push(friend_id)
 
     const db = database;
     set(ref(db, `friends/${user_id}`), friends_obj)
@@ -64,7 +68,7 @@ export default async function getFriends (
   
 }
 
-async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
+async function getFollowingForUserById(id: string): Promise<DatabaseFriends> {
     const request = {
         method: 'POST',
         headers: {
@@ -75,16 +79,17 @@ async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
         })
     }
     
-    return new Promise((resolve, reject) => {
-        fetch(`${process.env.URL}api/database/profile/getFriends`, request)
-        .then(res => res.json())
-        .then(res => {
-           resolve(res.friends)
-        })
-        .catch(err => {
-            reject(err)
-        })
-    })
+    try {
+        const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getFriends`, request)
+        const friends_obj = await resp.json();
+        console.log(friends_obj)
+        return friends_obj.friends;
+    } catch (err: any) {
+        console.error(err)
+
+        return {id: id, following: [], followers: []}
+    }
+
 
 }
 

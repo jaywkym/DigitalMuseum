@@ -47,7 +47,8 @@ export type DatabaseFriendsResponse = {
 
 export type DatabaseFriends = {
   id: string,
-  friends: string[]
+  followers: string[],
+  following: string[]
 }
 
 export type DatabasePost = {

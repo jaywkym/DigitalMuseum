@@ -12,33 +12,44 @@ import type {
  * @param user_id ID of user to retrieve all friends    
  * @returns Nothing... Why does everyone always expect me to return something.
  */
-export function useFriends(user_id: string):
+export function useFollowing(user_id: string):
     [string[], boolean, () => Promise<void>]{
     
-    const [friends, setFriends] = useState([]);
+    const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    async function pullFriends() {
+    async function pullFollowing() {
 
         if(loading)
             return;
 
+        if(user_id === undefined)
+            return;
+
         setLoading(true);
 
-        const dbFriendsResponse = await requestFriendsForUser(user_id);
+        console.log(user_id)
+
+        const dbFriendsResponse = await requestFollowingForUser(user_id);
+
+        console.log(dbFriendsResponse)
 
         if(dbFriendsResponse.success) {
-            console.log(dbFriendsResponse)
             if(dbFriendsResponse.friends)
-                setFriends(dbFriendsResponse.friends.friends)
-            else
-                setFriends([]);
+                setFollowing(dbFriendsResponse.friends.following)
+            else {
+                console.log("GOT HERER 1")
+                setFollowing([]);
+            }
+        } else {
+            console.log("GOT HERE")
+            setFollowing([])
         }
 
        setLoading(false);
     }
 
-    return [friends, loading, pullFriends]
+    return [following, loading, pullFollowing]
 }
 
 /**
@@ -48,20 +59,20 @@ export function useFriends(user_id: string):
  * @param friend_id ID of friend to add to user's friends list
  * @returns Still nothing LOL
  */
-export function useAddFriend(user_id: string, friend_id: string):
+export function useFollowUser(user_id: string, friend_id: string):
     [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false);
         const [loading, setLoading] = useState(false);
 
-        async function addFriend() {
+        async function followUser() {
             if(loading)
                 return;
 
             setLoading(true);
             setSuccess(false);
 
-            const dbResponse = await requestAddFriend(user_id, friend_id);
+            const dbResponse = await requestFollowUser(user_id, friend_id);
 
             setSuccess(dbResponse.success)
 
@@ -69,7 +80,7 @@ export function useAddFriend(user_id: string, friend_id: string):
             
         }
 
-    return [success, loading, addFriend];
+    return [success, loading, followUser];
 }
 
 /**
@@ -127,7 +138,7 @@ export async function requestRemoveFriend(user_id: string, friend_id: string): P
 
 }
 
-export async function requestFriendsForUser(user_id: string): Promise<DatabaseFriendsResponse> {
+export async function requestFollowingForUser(user_id: string): Promise<DatabaseFriendsResponse> {
     const request = {
         method: 'POST',
         headers: {
@@ -147,7 +158,7 @@ export async function requestFriendsForUser(user_id: string): Promise<DatabaseFr
 
 }
 
-export async function requestAddFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
+export async function requestFollowUser(user_id: string, friend_id: string): Promise<DatabaseResponse> {
     const request = {
         method: 'POST',
         headers: {
@@ -160,7 +171,7 @@ export async function requestAddFriend(user_id: string, friend_id: string): Prom
     }
 
     try {
-        const resp = await fetch(`/api/database/profile/addFriend`, request);
+        const resp = await fetch(`/api/database/profile/followUser`, request);
         return await resp.json() as DatabaseResponse;
     } catch (err: any) {
         return {success: false} as DatabaseResponse;
@@ -187,7 +198,6 @@ export async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
     try {
         const resp = await fetch(`/api/database/profile/getUserAccount`, request)
         const json = await resp.json() as DatabaseUserResponse;
-        console.log(json)
         if(json.error)
             return json.user;
 
