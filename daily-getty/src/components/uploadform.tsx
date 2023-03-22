@@ -2,7 +2,7 @@ import * as React from 'react';
 import { green } from '@mui/material/colors';
 import { display } from '@mui/system';
 import Box from '@mui/material/Box';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress, ImageList } from '@mui/material';
 import { Container } from '@mui/system';
 import { Modal, Typography } from '@mui/material';
@@ -13,6 +13,9 @@ import Loading from './loading';
 import setImage from '@/pages/dalle/images';
 import setLoading from "@/pages/dalle/images";
 import { useSession } from 'next-auth/react'
+import type {
+    DatabasePost,
+} from "../../types/FirebaseResponseTypes";
 
 
 const MuseForm = () => {
@@ -24,6 +27,11 @@ const MuseForm = () => {
 
     const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
+
+    const [test1, settest1] = useState('')
+    const [test2, settest2] = useState('')
+    const [prompt, setPrompt] = React.useState('');
+
     const timer = React.useRef<number>();
 
     React.useEffect(() => {
@@ -44,10 +52,14 @@ const MuseForm = () => {
         setGenerate(false);
     };
 
+    useMemo(() => {
+        console.log("CCLICKED")
+    }, [test1, test2])
+
 
 
     //DallE API CALL
-    const [prompt, setPrompt] = React.useState('');
+
     const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
 
 
@@ -56,11 +68,12 @@ const MuseForm = () => {
 
     let user_id = status === 'authenticated' ? (session.user as any).id : "";
 
-    const [b64, setB64] = React.useState('');
-    const [created, setCreated] = React.useState('');
-
-    let b64Static;
     let createdStatic;
+
+    const [b64, setB64] = React.useState('');
+    const [created, setCreated] = React.useState();
+    const [generatePost] = useAddPost(b64, user_id, prompt, created);
+
 
 
     console.log(loadingImage);
@@ -68,18 +81,40 @@ const MuseForm = () => {
 
 
 
-    const imageClick = event => {
+    const imageClick = (event) => {
 
 
         let splitB64 = event.target.src.split(',')[1];
+        setB64(splitB64);
 
-        b64Static = splitB64;
         createdStatic = event.target.id;
-        //const [generatePost] = useAddPost(b64Static, user_id, prompt, createdStatic);
+        setCreated(createdStatic);
 
-        //generatePost();
+        const uploadInfo: DatabasePost = {
+            id: null,
+            user_id: user_id,
+            userPrompt: prompt,
+            givenPrompt: null,
+            likes: 0,
+            image: {
+                created: createdStatic as Number,
+                b64: splitB64 as String
+            } as any
+        }
 
+        const request = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(uploadInfo)
+        }
 
+        fetch('/api/database/posts/createPost', request)
+            .then(res => res.json())
+            .then(resj => {
+                console.log("good!")
+            })
 
     };
 

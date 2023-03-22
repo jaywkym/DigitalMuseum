@@ -1,24 +1,24 @@
 import { database } from "../../../../firebase/clientApp";
-import { ref, set } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { 
     DatabaseError, 
-    DatabaseResponse,
-    DatabasePost
+    DatabaseUserResponse,
+    DatabaseUser,
+    DatabaseUsersResponse
 }  from "../../../../types/FirebaseResponseTypes";
 
-export default async function createPost (
+export default async function getAllUsers (
     req: NextApiRequest,
-    res: NextApiResponse<DatabaseResponse>
+    res: NextApiResponse<DatabaseUsersResponse>
   ) {
 
-    console.log("inside createPost");
-
     /* Only accept POST requests */
-    if(req.method !== 'PUT') {
+    if(req.method !== 'POST') {
         res.status(405).json(
-            generateDbResponse(
+            generateDbUserResponse(
                 false, 
+                {} as DatabaseUser[],
                 generateError(405, 'Invalid request method')
             )
         )
@@ -26,42 +26,31 @@ export default async function createPost (
         return;
     }
 
-    const body = req.body;
-   
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate() ;
-
-    const post_id = year + "_" + month + "_" + day;
-    body.likes = 1
-    body.givenPrompt = "test"
-    
-    const dbpost = {
-        id: post_id,
-        user_id: body.user_id,
-        userPrompt: body.userPrompt,
-        givenPrompt: null,
-        likes: body.likes,
-        image: {
-            created: body.image.created as Number,
-            b64: body.image.b64 as String
-        } as any
-    } as DatabasePost
-
-
-    console.log("Attempting to store image in database")
-    console.log(dbpost)
-
     const db = database;
+    const dbref = ref(db, 'users/')
+    const users: DatabaseUser[] = await asyncOnValue(dbref);
 
-    set(ref(db, `posts/${dbpost.user_id}/${post_id}`), dbpost)
-
-    res.status(200).json(generateDbResponse(true, {} as DatabaseError))
+    res.status(200).json(
+        generateDbUserResponse(
+            true,
+            users,
+            {} as DatabaseError
+        )
+    )
   
 }
 
- /**
+function asyncOnValue(ref): Promise<DatabaseUser[]> {
+
+    return new Promise((resolve) => {
+        onValue(ref, (snapshot) => {
+            const data = snapshot.val();
+            resolve(data as DatabaseUser[])
+        })
+    })
+}
+
+  /**
  * 
  * generateDbResponse: Generates an DatabaseResponse object from given inputs.
  * 
@@ -70,12 +59,14 @@ export default async function createPost (
  * @param error A DatabaseError Object filled with error information
  * @returns DatabaseResponse
  */
-function generateDbResponse(
+function generateDbUserResponse(
     success: boolean, 
-    error: DatabaseError): DatabaseResponse {
+    user   : DatabaseUser[],
+    error: DatabaseError): DatabaseUsersResponse {
    
     return {
         success: success,
+        users: user,
         error: error
     }
 }
@@ -105,4 +96,3 @@ export const config = {
       },
     },
   }
-  

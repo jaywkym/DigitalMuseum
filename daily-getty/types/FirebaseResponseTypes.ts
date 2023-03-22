@@ -16,6 +16,12 @@ export type DatabaseUserResponse = {
   error  : DatabaseError
 }
 
+export type DatabaseUsersResponse = {
+  success: boolean,
+  users   : DatabaseUser[],
+  error  : DatabaseError
+}
+
 export type DatabaseUser = {
   id: string,
   name: string,

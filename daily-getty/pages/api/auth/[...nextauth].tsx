@@ -65,6 +65,8 @@ export const authOptions: NextAuthOptions = {
             console.log("Email verified")
             console.log("Checking account exists")
 
+            console.log(user)
+
             /* Verify if new user (Create account) */
             const account_exists = await check_user_exists(user.email);
 
@@ -198,7 +200,8 @@ async function check_user_exists(email: string): Promise<boolean> {
     console.log(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`)
 
     try {
-        const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request);
+        console.log(process.env)
+        const resp = await fetch(`http://localhost:3000/api/database/profile/checkForUser`, request);
         const dbResponse = await resp.json() as DatabaseResponse;
 
         return dbResponse.success;

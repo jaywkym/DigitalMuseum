@@ -12,6 +12,7 @@ export default async function checkUser (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
+    console.log("INSIDE THE CHECK FOR USER");
     /* Only accept POST requests */
     if(req.method !== 'POST') {
         res.status(405).json(
