@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
 import { Avatar, CircularProgress } from '@mui/material';
@@ -16,12 +16,13 @@ import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/F
 import { green } from '@mui/material/colors';
 import Test from './test';
 import HomeSearch from '@/src/components/homesearch';
+import BGImage from '@/src/components/backgroundImage';
 
 export default function Profile() {
 
-    const {data: session, status} = useSession();
+    const { data: session, status } = useSession();
 
-    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
@@ -33,21 +34,21 @@ export default function Profile() {
             const postRequest = await requestPostFromUserById(user.id, post.id)
             const rPost = postRequest.post;
 
-            if(!postRequest.success) {
+            if (!postRequest.success) {
                 console.error("ERROR: Could not fetch post")
                 console.error(postRequest);
                 return;
             }
-            
+
             const newPosts = blankPosts.map((newPost) => {
-                if(newPost.id === rPost.id)
+                if (newPost.id === rPost.id)
                     newPost.image.b64 = rPost.image.b64
 
                 return newPost;
             })
 
             setPosts(newPosts)
-        
+
         })
 
         setLoading(false);
@@ -65,7 +66,7 @@ export default function Profile() {
                 user_id: user.id,
             })
         }
-    
+
         const resp = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
         const dbResponse = await resp.json() as DatabaseUserPostsResponse;
         const dbPosts = dbResponse.posts;
@@ -82,19 +83,19 @@ export default function Profile() {
 
     useEffect(() => {
 
-            if(!user.id) 
-                return;
+        if (!user.id)
+            return;
 
-            setLoading(true);
-            setPosts([])
-            
-            loadBlankPosts()
+        setLoading(true);
+        setPosts([])
+
+        loadBlankPosts()
             .then(loadImages)
             .catch(err => console.error(err))
 
     }, [user.id])
 
-    let posts_map = posts? posts : {}
+    let posts_map = posts ? posts : {}
 
     return (
         <>
@@ -103,28 +104,29 @@ export default function Profile() {
             </Head>
             <main>
                 <HomeSearch />
-                <Box sx={{ flexGrow: 1, m: 10 }}>
-                    {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
-                   
-                    <CssBaseline />
-                    <ProfileHeader user={user}/>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                    {loading && (
-                        <CircularProgress
-                            size={68}
-                            sx={{
-                                color: green[500],
-                            }}
-                        />
-                    )}
-                        <List>
-                            {
-                                Object.keys(posts_map).map((post) => (
-                                    <Post userObj={user} post={posts[post]} key={posts[post].id} />
-                                ))
-                            }
-                            
-                        </List>
+                <Box sx={{ backgroundImage: './static/Frame.jpg' }}>
+                    <Box sx={{ flexGrow: 1, m: 10 }}>
+                        {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
+
+                        <CssBaseline />
+                        <ProfileHeader user={user} />
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            {loading && (
+                                <CircularProgress
+                                    size={68}
+                                    sx={{
+                                        color: green[500],
+                                    }}
+                                />
+                            )}
+                            <List>
+                                {
+                                    Object.keys(posts_map).map((post) => (
+                                        <Post userObj={user} post={posts[post]} key={posts[post].id} />
+                                    ))
+                                }
+                            </List>
+                        </Box>
                     </Box>
                     <NavBar />
                 </Box>
