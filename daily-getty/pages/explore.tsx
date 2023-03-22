@@ -6,6 +6,8 @@ import { DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTyp
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Box, Grid, Typography } from '@mui/material';
+import HomeSearch from '@/src/components/homesearch';
+import NavBar from '@/src/components/bottomnav';
 
 export default function Asynchronous() {
 
@@ -48,65 +50,70 @@ export default function Asynchronous() {
     }, [open]);
 
     return (
-        <Autocomplete
-        id="user-lookup"
-        sx={{ width: 300 }}
-        open={open}
-        onOpen={() => {
-            setOpen(true);
-        }}
-        onClose={() => {
-            setOpen(false);
-        }}
-        isOptionEqualToValue={(option, value) => option.name === value.name}
-        getOptionLabel={(option) => option.name}
-        options={users}
-        loading={loading}
-        onChange={(event: any, newValue: DatabaseUser | null) => {
-            push(`/${newValue.id}`)
-        }}
-        renderOption={(props, option) => {
+        <>
+            <HomeSearch />
+            <Autocomplete
+                id="user-lookup"
+                sx={{ width: 300 }}
+                open={open}
+                onOpen={() => {
+                    setOpen(true);
+                }}
+                onClose={() => {
+                    setOpen(false);
+                }}
+                isOptionEqualToValue={(option, value) => option.name === value.name}
+                getOptionLabel={(option) => option.name}
+                options={users}
+                loading={loading}
+                onChange={(event: any, newValue: DatabaseUser | null) => {
+                    push(`/${newValue.id}`)
+                }}
+                renderOption={(props, option) => {
 
-            console.log(option)
-            
-            return (
-                <>
-                    <li {...props}>
-                        <Grid container alignItems="center">
-                        <Grid item sx={{ display: 'flex', width: 44 }}>
-                            <img src={option.image} width={'50%'}/>
-                        </Grid>
-                        <Grid item sx={{ width: 'calc(100% - 44px)'}}>
-                            <Box
-                                key={option.id}
-                                component="span"
-                                sx={{ fontWeight: 'bold', color: 'black'}}
-                            >
-                                <p>{option.name}</p>
-                            </Box>
-                        </Grid>
-                        </Grid>
-                    </li>
-                </>
-            )
-        }}
-        renderInput={(params) => (
-            <>
-            <TextField
-            {...params}
-            label="Explore Users"
-            InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                <Fragment>
-                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                    {params.InputProps.endAdornment}
-                </Fragment>
-                ),
-            }}
+                    console.log(option)
+                    
+                    return (
+                        <>
+                            <li {...props}>
+                                <Grid container alignItems="center">
+                                <Grid item sx={{ display: 'flex', width: 44 }}>
+                                    <img src={option.image} width={'50%'}/>
+                                </Grid>
+                                <Grid item sx={{ width: 'calc(100% - 44px)'}}>
+                                    <Box
+                                        key={option.id}
+                                        component="span"
+                                        sx={{ fontWeight: 'bold', color: 'black'}}
+                                    >
+                                        <p>{option.name}</p>
+                                    </Box>
+                                </Grid>
+                                </Grid>
+                            </li>
+                        </>
+                    )
+                }}
+                renderInput={(params) => (
+                    <>
+                    <TextField
+                    {...params}
+                    label="Explore Users"
+                    InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                        <Fragment>
+                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                        </Fragment>
+                        ),
+                    }}
+                    />
+                    </>
+                )}
             />
-            </>
-        )}
-        />
+            <NavBar />
+        </>
+       
     );
 }

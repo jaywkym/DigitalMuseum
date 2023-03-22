@@ -10,6 +10,7 @@ import { Box, Button, CircularProgress, CssBaseline, List } from '@mui/material'
 import ProfileHeader from '@/src/components/profileheader';
 import { green } from '@mui/material/colors';
 import Post from '@/src/components/post';
+import HomeSearch from '@/src/components/homesearch';
 import NavBar from '@/src/components/bottomnav';
 
 export default function Profile() {
@@ -117,6 +118,7 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
+                <HomeSearch />
                 <Box sx={{ flexGrow: 1, m: 10 }}>
                     <CssBaseline />
                     <ProfileHeader user={pageProfile}/>
@@ -140,6 +142,7 @@ export default function Profile() {
                     </Box>
                     <NavBar />
                 </Box>
+                <NavBar />
             </main>
         </>
     )
