@@ -38,30 +38,30 @@ const ProfileHeader = ({ user }) => {
 
     useEffect(() => {
         getFollowing()
-        .catch(console.error)
+            .catch(console.error)
 
         sGetFollowing()
-        .catch(console.error)
+            .catch(console.error)
     }, [user.id, session_user.id])
 
     useEffect(() => {
 
-            let foundFriend = false;
+        let foundFriend = false;
 
-            if(!sFollowing)
+        if (!sFollowing)
+            return;
+
+        sFollowing.forEach(friend => {
+
+            if (friend == session_user.id ||
+                friend == user.id) {
+                foundFriend = true
                 return;
+            }
 
-            sFollowing.forEach(friend => {
-                
-                if(friend == session_user.id ||
-                    friend == user.id) {
-                    foundFriend = true
-                    return;
-                }
+        })
 
-            })
-
-            setIsFriend(foundFriend)
+        setIsFriend(foundFriend)
 
     }, [following, user, sFollowing])
 
@@ -81,16 +81,17 @@ const ProfileHeader = ({ user }) => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    {!followingLoading && <Chip label={`Following ${following? following.length: 0}`} />}
-                    {!selfAccount && <Chip label={isFollowing? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
-                        if(!isFollowing)
+                    {!followingLoading && <Chip label={`Following ${following ? following.length : 0}`} />}
+                    {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
+                        if (!isFollowing)
                             followUser()
-                        
-                        // TODO - Remove as following
 
-                        .then(sGetFollowing)
+                                // TODO - Remove as following
+
+                                .then(sGetFollowing)
                     }} />}
                 </Stack>
+                {/*
                 <Modal
                     open={open}
                     onClose={handleClose}
@@ -119,6 +120,7 @@ const ProfileHeader = ({ user }) => {
                         </List>
                     </Box>
                 </Modal>
+                            */}
             </Box>
         </Container>
     );

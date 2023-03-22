@@ -14,7 +14,7 @@ import { Button } from '@mui/material';
 const HomeSearch = () => {
 
     return (
-        <AppBar position="static" style={{ background: '#000000' }}>
+        <AppBar position="static" style={{ background: '#000000', display: 'flex', justifyContent: 'center', width: '100%' }}>
             <Toolbar>
                 <Button style={{
                     borderRadius: 28,

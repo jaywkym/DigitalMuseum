@@ -1,20 +1,19 @@
 import * as React from 'react';
 import { signIn, signOut } from 'next-auth/react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import GoogleButton from 'react-google-button'
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Head from 'next/head';
+import Image from 'next/image';
+import bg from "../public/loginbg.jpg";
 
 function Copyright(props: any) {
   return (
@@ -46,21 +45,52 @@ export default function SignIn() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-
+    <>
+      <div style={{
+        zIndex: -1,
+        position: "fixed",
+        width: "100vw",
+        height: "100vh",
+      }}>
+        <Image src={bg} alt="background" object-fit="cover" fill></Image>
+      </div>
+      <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box
-          sx={{
-            mt: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-            Log in
-          </Typography>
+        <Container component="main" maxWidth="xs">
+          <Box sx={{ paddingTop: 5 }}><Box
+            sx={{
+              paddingTop: 8,
+              mb: 5,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              p: 3,
+              bgcolor: '#FFFFFF',
+              boxShadow: 4,
+            }}
+          >
+            <Typography component="h1" variant="h3" sx={{ paddingTop: 3, mb: 3, justifyContent: 'center' }}>
+              Welcome to your DailyMuse!
+            </Typography>
+            <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
+              Login/Signup Using Google
+            </Typography>
+            <Box sx={{
+              m: 2,
+              bgcolor: '#FFFFFF',
+              borderRadius: '4px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+              <GoogleButton
+                onClick={() => { signIn('google', { callbackUrl: '/homefeed', redirect: false }) }}
+              />
+            </Box>
+          </Box>
+          </Box>
+        </Container>
+        {/* REGULAR LOGIN FORM (LIKELY NOT USING)
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
             <TextField
               required
@@ -84,22 +114,22 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
-              onClick={async (event) => { 
+              onClick={async (event) => {
 
                 console.log({
                   email: email,
                   password: password
                 })
 
-                await signIn('credentials', { 
+                await signIn('credentials', {
                   email: email,
                   password: password,
-                  callbackUrl: '/homefeed', 
-                  redirect: false 
-                }) 
-                
+                  callbackUrl: '/homefeed',
+                  redirect: false
+                })
+
               }}
-              
+
             >
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
@@ -107,17 +137,11 @@ export default function SignIn() {
                 'Log In'
               )}
             </Button>
-          </Box>
-          <Box sx={{ m: 2 }}>
-            <GoogleButton
-              onClick={() => { signIn('google', { callbackUrl: '/homefeed', redirect: false }) }}
-            />
-          </Box>
-          <Link href="#" variant="body2">
-            Forgot password?
-          </Link>
-        </Box>
-      </Container>
-    </ThemeProvider >
+            <Link href="#" variant="body2">
+          Forgot password?
+        </Link>
+              */}
+      </ThemeProvider >
+    </>
   );
 }

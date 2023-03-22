@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import Stack from '@mui/material/Stack';
@@ -20,15 +20,15 @@ import { useSession } from 'next-auth/react';
 export default function HomeFeed() {
 
     const [value, setValue] = React.useState(0);
-    const {data: session, status} = useSession();
-    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+    const { data: session, status } = useSession();
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const [homefeed, homefeedSuccess, homefeedLoading, getHomefeed] = useGetHomefeed(user.id);
 
     useEffect(() => {
         getHomefeed()
     }, [user])
 
-    let homefeed_map = homefeed? homefeed : {}
+    let homefeed_map = homefeed ? homefeed : {}
 
     return (
         <>
@@ -36,31 +36,31 @@ export default function HomeFeed() {
                 <title>Home Feed</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1, mb: 10 }}>
+                <Box sx={{ flexGrow: 1, mb: 10, width: '100%', height: '100vh' }}>
                     <HomeSearch />
                     <Container fixed>
                         <CssBaseline />
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                        {homefeedLoading && !homefeedSuccess && (
-                        <CircularProgress
-                            size={68}
-                            sx={{
-                                color: green[500],
-                            }}
-                        />
-                        )}
+                            {homefeedLoading && !homefeedSuccess && (
+                                <CircularProgress
+                                    size={68}
+                                    sx={{
+                                        color: green[500],
+                                    }}
+                                />
+                            )}
 
-                        {/* <center> */}
+                            {/* <center> */}
                             <Stack spacing={4}>
 
                                 <ImageList cols={3} rowHeight={400}>
 
                                     {
-                                        !homefeedLoading && homefeedSuccess &&  Object.keys(homefeed_map).map((post) => (
+                                        !homefeedLoading && homefeedSuccess && Object.keys(homefeed_map).map((post) => (
                                             // <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
-                                                <ImageListItem key={homefeed[post].id} >
-                                                        <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
-                                                </ImageListItem>
+                                            <ImageListItem key={homefeed[post].id} >
+                                                <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
+                                            </ImageListItem>
                                         ))
                                     }
 
@@ -68,10 +68,10 @@ export default function HomeFeed() {
 
                             </Stack>
 
-                        {/* </center> */}
+                            {/* </center> */}
 
 
-                        {/* <List>
+                            {/* <List>
                             {
                                 !homefeedLoading && homefeedSuccess &&  Object.keys(homefeed_map).map((post) => (
                                     <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
