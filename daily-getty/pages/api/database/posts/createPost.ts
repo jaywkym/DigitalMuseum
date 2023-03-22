@@ -34,7 +34,6 @@ export default async function createPost (
     const day = date.getDate() ;
 
     const post_id = year + "_" + month + "_" + day;
-    body.userPrompt = "test"
     body.likes = 1
     body.givenPrompt = "test"
     

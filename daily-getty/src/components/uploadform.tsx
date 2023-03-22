@@ -13,6 +13,9 @@ import Loading from './loading';
 import setImage from '@/pages/dalle/images';
 import setLoading from "@/pages/dalle/images";
 import { useSession } from 'next-auth/react'
+import type { 
+    DatabasePost, 
+}  from "../../types/FirebaseResponseTypes";
 
 
 const MuseForm = () => {
@@ -28,8 +31,7 @@ const MuseForm = () => {
     const [test1, settest1] = useState('')
     const [test2, settest2] = useState('')
     const [prompt, setPrompt] = React.useState('');
-        let createdStatic  = 0;
-    const [generatePost] = useAddPost(test1, test2, prompt, createdStatic);
+   
     const timer = React.useRef<number>();
 
     React.useEffect(() => {
@@ -66,7 +68,6 @@ const MuseForm = () => {
     
     let user_id = status === 'authenticated'? (session.user as any).id : "";
 
-    let b64Static;
     let createdStatic;
     
     const [b64, setB64] = React.useState('');
@@ -80,7 +81,7 @@ const MuseForm = () => {
    
 
 
-    const imageClick = event => {
+     const imageClick = (event) => {
 
       
         let splitB64 = event.target.src.split(',')[1];
@@ -88,9 +89,33 @@ const MuseForm = () => {
         
         createdStatic = event.target.id;
         setCreated(createdStatic);
-       
-        //generatePost();
 
+        const uploadInfo: DatabasePost = {
+            id: null,
+            user_id: user_id,
+            userPrompt: prompt,
+            givenPrompt: null, 
+            likes: 0,
+            image: {
+                created: createdStatic as Number,
+                b64: splitB64 as String
+            } as any
+        }
+    
+        const request = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(uploadInfo)
+        }
+    
+        fetch('/api/database/posts/createPost', request)
+        .then(res => res.json())
+        .then(resj => {
+            console.log("good!")
+        })
+       
     };
 
     const style = {
@@ -145,7 +170,7 @@ const MuseForm = () => {
                     <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
                 </Loading>
                 :
-                <Image id={created1} alt="image" height={500} width={500} src={b64_image1}  onClick={imageClick}></Image>      
+                <Image id={created1} alt="image" height={500} width={500} src={b64_image1}  onClick={imageClick}></Image>   
                 
             }
                 {loadingImage ?
@@ -170,7 +195,7 @@ const MuseForm = () => {
 
             <Box sx={{ m: 5 }}>
                 <Container fixed>
-                    <Button variant="contained" color="success" onClick={generateImage}>
+                    <Button variant="contained" color="success" onClick={generateImage }>
                         Generate Muse
                     </Button>
                     {/*IMAGE GENERATED MODAL 
