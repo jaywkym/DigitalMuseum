@@ -12,6 +12,7 @@ import { Container } from '@mui/system';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
+import Link from 'next/link';
 
 
 interface PostProps {
@@ -32,6 +33,7 @@ const Post = ({userObj, post}) => {
     const src = post.image? `data:image/png;base64, ${post.image.b64}` : ``
     const profileName = postProfile? postProfile.name : ''
     const profileImage = postProfile? postProfile.image : ''
+    const profileLink = postProfile? postProfile.id : ''
 
     useEffect(() => {
 
@@ -49,15 +51,18 @@ const Post = ({userObj, post}) => {
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
             <Card raised sx={{ width: '356px' }}>
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
-                    {/*<Button onClick={visitProfile}>*/}
-                    <Avatar alt={userObj.name} src={profileImage} />
-                    <div></div>
-                    <Typography gutterBottom variant="body1" component="div" >
-                        @{profileName}
-                    </Typography>
-                    {/* </Button>*/}
-                </Box>
+                <Link href={`/${profileLink}`}>
+                    
+                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
+                        {/*<Button onClick={visitProfile}>*/}
+                        <Avatar alt={userObj.name} src={profileImage} />
+                        <div></div>
+                        <Typography gutterBottom variant="body1" component="div" >
+                            @{profileName}
+                        </Typography>
+                        {/* </Button>*/}
+                    </Box>
+                </Link>
                 { src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} />}
                 {src !== `data:image/png;base64, ` && < CardMedia
                     component="img"
