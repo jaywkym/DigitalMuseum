@@ -27,7 +27,7 @@ export default async function removeFriend (
     const user_id = req.body.id;
     const friend_id = req.body.friend_id
 
-    let friends_obj: DatabaseFriends = await getFriendsForUserById(user_id)
+    let friends_obj: DatabaseFriends = await getFollowingForUserById(user_id)
 
     if(!friends_obj)
         friends_obj = {
@@ -36,7 +36,13 @@ export default async function removeFriend (
             following: []
         } as DatabaseFriends
 
-    if(!friends_obj.following) {
+    if(!friends_obj.followers)
+        friends_obj.followers = []
+
+    if(!friends_obj.following)
+        friends_obj.following = []
+
+    if(friends_obj.following.length == 0) {
         res.status(200).json(
             generateDbResponse(
                 false,
@@ -56,12 +62,51 @@ export default async function removeFriend (
         return;
     }
 
-
     const index = friends_obj.following.indexOf(friend_id, 0)
     friends_obj.following.splice(index, 1);
 
+    let new_friends_obj: DatabaseFriends = await getFollowingForUserById(friend_id);
+
+    if(!new_friends_obj)
+        new_friends_obj = {
+            id: friend_id,
+            followers: [],
+            following: []
+        } as DatabaseFriends
+
+    if(!new_friends_obj.followers)
+        new_friends_obj.followers = []
+
+    if(!new_friends_obj.following)
+        new_friends_obj.following = []
+
+    if(!new_friends_obj.followers) {
+        res.status(200).json(
+            generateDbResponse(
+                false,
+                generateError(-42, "Your friend has no friends... dang...")
+            )
+        )
+        return;
+    }
+
+    if(!new_friends_obj.followers.includes(user_id)) {
+        res.status(200).json(
+            generateDbResponse(
+                false,
+                generateError(-101, "User is not a friend")
+            )
+        )
+        return;
+    }
+
+    const friend_index = new_friends_obj.followers.indexOf(user_id, 0)
+    new_friends_obj.followers.splice(friend_index, 1);
+
     const db = database;
+
     set(ref(db, `friends/${user_id}`), friends_obj)
+    set(ref(db, `friends/${friend_id}`), new_friends_obj)
 
     res.status(200).json(
         generateDbResponse(
@@ -72,7 +117,7 @@ export default async function removeFriend (
   
 }
 
-async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
+async function getFollowingForUserById(id: string): Promise<DatabaseFriends> {
     const request = {
         method: 'POST',
         headers: {
@@ -83,16 +128,16 @@ async function getFriendsForUserById(id: string): Promise<DatabaseFriends> {
         })
     }
     
-    return new Promise((resolve, reject) => {
-        fetch(`${process.env.URL}api/database/profile/getFriends`, request)
-        .then(res => res.json())
-        .then(res => {
-           resolve(res.friends)
-        })
-        .catch(err => {
-            reject(err)
-        })
-    })
+    try {
+        const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getFriends`, request)
+        const friends_obj = await resp.json();
+        return friends_obj.friends;
+    } catch (err: any) {
+        console.error(err)
+
+        return {id: id, following: [], followers: []}
+    }
+
 
 }
 
