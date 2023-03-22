@@ -28,11 +28,12 @@ export function useFriends(user_id: string):
         const dbFriendsResponse = await requestFriendsForUser(user_id);
 
         if(dbFriendsResponse.success) {
-            console.log(dbFriendsResponse)
+            console.log(dbFriendsResponse.friends)
             if(dbFriendsResponse.friends)
-                setFriends(dbFriendsResponse.friends.friends)
-            else
-                setFriends([]);
+                if(dbFriendsResponse.friends.friends)
+                    setFriends(dbFriendsResponse.friends.friends)
+                else
+                    setFriends([]);
         }
 
        setLoading(false);
