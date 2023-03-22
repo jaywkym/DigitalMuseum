@@ -99,7 +99,7 @@ const ProfileHeader = ({ user }) => {
                 >
                     <Box sx={style}>
                         <List>
-                            {sFollowing.map((friend) => (
+                            {sFollowing && sFollowing.map((friend) => (
                                 <li key={friend}>
                                     <Grid container alignItems="center">
                                         <Grid item sx={{ display: 'flex', width: 44 }}>
