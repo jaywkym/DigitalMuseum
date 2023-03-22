@@ -29,7 +29,6 @@ export default async function followUser (
 
     let friends_obj: DatabaseFriends = await getFollowingForUserById(user_id)
 
-
     if(!friends_obj)
         friends_obj = {
             id: user_id,
@@ -55,8 +54,39 @@ export default async function followUser (
 
     friends_obj.following.push(friend_id)
 
+    let new_friends_obj: DatabaseFriends = await getFollowingForUserById(friend_id);
+    if(!new_friends_obj)
+        new_friends_obj = {
+            id: friend_id,
+            followers: [],
+            following: []
+        } as DatabaseFriends
+
+    if(!new_friends_obj.followers)
+        new_friends_obj.followers = []
+
+    if(!new_friends_obj.following)
+        new_friends_obj.following = []
+
+    if(new_friends_obj.followers.includes(user_id)) {
+        res.status(200).json(
+            generateDbResponse(
+                false,
+                generateError(-100, "Already following user")
+            )
+        )
+        return;
+    }
+
+    new_friends_obj.followers.push(user_id)
+
     const db = database;
+
+    console.log(friends_obj)
+    console.log(new_friends_obj)
+
     set(ref(db, `friends/${user_id}`), friends_obj)
+    set(ref(db, `friends/${friend_id}`), new_friends_obj)
 
     res.status(200).json(
         generateDbResponse(
@@ -82,7 +112,6 @@ async function getFollowingForUserById(id: string): Promise<DatabaseFriends> {
     try {
         const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getFriends`, request)
         const friends_obj = await resp.json();
-        console.log(friends_obj)
         return friends_obj.friends;
     } catch (err: any) {
         console.error(err)

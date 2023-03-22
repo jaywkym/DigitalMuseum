@@ -17,20 +17,20 @@ const Prompt = () => {
     }, []);
 
     if (!randomPrompt) {
-        return <Typography variant="h1">Loading Prompt</Typography>;
+        return <Typography variant="h4">Loading Prompt</Typography>;
     }
 
     return (
-        <Box sx={{ m: 5 }}>
-            <Container fixed>
+        <Container fixed >
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <Box sx={{ m: 5 }}>
-                    <Typography variant="h5">Prompt of the Day</Typography>
+                    <Typography variant="h3">Prompt of the Day</Typography>
                 </Box>
                 <Box>
                     <Typography variant="h6">What is your spirit animal? Mythical Animals Count!</Typography>
                 </Box>
-            </Container>
-        </Box>
+            </Box>
+        </Container >
     );
 };
 

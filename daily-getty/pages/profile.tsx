@@ -104,32 +104,29 @@ export default function Profile() {
             </Head>
             <main>
                 <HomeSearch />
-                <Box sx={{ backgroundImage: './static/Frame.jpg' }}>
-                    <Box sx={{ flexGrow: 1, m: 10 }}>
-                        {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
-
-                        <CssBaseline />
-                        <ProfileHeader user={user} />
-                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                            {loading && (
-                                <CircularProgress
-                                    size={68}
-                                    sx={{
-                                        color: green[500],
-                                    }}
-                                />
-                            )}
-                            <List>
-                                {
-                                    Object.keys(posts_map).map((post) => (
-                                        <Post userObj={user} post={posts[post]} key={posts[post].id} />
-                                    ))
-                                }
-                            </List>
-                        </Box>
+                <Box sx={{ flexGrow: 1, m: 10 }}>
+                    {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
+                    <CssBaseline />
+                    <ProfileHeader user={user} />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                        {loading && (
+                            <CircularProgress
+                                size={68}
+                                sx={{
+                                    color: green[500],
+                                }}
+                            />
+                        )}
+                        <List>
+                            {
+                                Object.keys(posts_map).map((post) => (
+                                    <Post userObj={user} post={posts[post]} key={posts[post].id} />
+                                ))
+                            }
+                        </List>
                     </Box>
-                    <NavBar />
                 </Box>
+                <NavBar />
             </main>
         </>
     )
