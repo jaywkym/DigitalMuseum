@@ -104,7 +104,7 @@ const ProfileHeader = ({ user }) => {
                                 .then(getFollowers)
                     }} />}
                 </Stack>
-                {/*
+                
                 <Modal
                     open={open}
                     onClose={handleClose}
@@ -133,7 +133,7 @@ const ProfileHeader = ({ user }) => {
                         </List>
                     </Box>
                 </Modal>
-                            */}
+                            
             </Box>
         </Container>
     );
