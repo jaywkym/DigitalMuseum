@@ -69,7 +69,7 @@ const ProfileHeader = ({ user }) => {
         <Container fixed >
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <Box sx={{ m: 5 }}>
-                    <Typography variant='h3' color={"#FFFFFF"}>
+                    <Typography variant='h3'>
                         Hey, {user.name}!
                     </Typography>
                 </Box>
@@ -80,7 +80,7 @@ const ProfileHeader = ({ user }) => {
                         sx={{ width: 128, height: 128 }}
                     />
                 </Box>
-                <Stack direction="row" spacing={1} color="#FFFFFF">
+                <Stack direction="row" spacing={1}>
                     {!followingLoading && <Chip label={`Following ${following ? following.length : 0}`} />}
                     {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
                         if (!isFollowing)

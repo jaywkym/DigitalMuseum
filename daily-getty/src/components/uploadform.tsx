@@ -134,15 +134,12 @@ const MuseForm = () => {
 
     return (
         <Container fixed>
-            <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+            <Box sx={{ m: 5, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignContent: 'space-between', alignItems: 'space-between', p: 5 }}>
                 <FormControl>
                     <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
                     <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required onChange={(e) => { setPrompt(e.target.value) }} />
                     <FormHelperText id="prompt-helper" color='info'>Limit your answer to 100 words or less.</FormHelperText>
                 </FormControl>
-            </Box>
-
-            <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <FormControl>
                     <FormLabel id="art-style">Choose an art style</FormLabel>
                     <RadioGroup

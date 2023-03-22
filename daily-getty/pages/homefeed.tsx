@@ -36,7 +36,7 @@ export default function HomeFeed() {
                 <title>Home Feed</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1, mb: 10, bgColor: '#000000', width: '100%', height: '100vh' }}>
+                <Box sx={{ flexGrow: 1, mb: 10, width: '100%', height: '100vh' }}>
                     <HomeSearch />
                     <Container fixed>
                         <CssBaseline />
