@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { green } from '@mui/material/colors';
-import { display } from '@mui/system';
 import Box from '@mui/material/Box';
 import { useState, useEffect, useMemo } from 'react';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress, ImageList } from '@mui/material';
@@ -10,13 +9,10 @@ import Image from 'next/image';
 import useImage from '@/pages/dalle/images';
 import useAddPost from '@/pages/database/createPostFront';
 import Loading from './loading';
-import setImage from '@/pages/dalle/images';
-import setLoading from "@/pages/dalle/images";
 import { useSession } from 'next-auth/react'
 import type {
     DatabasePost,
 } from "../../types/FirebaseResponseTypes";
-import generatePrompt from './generateprompt';
 
 
 const MuseForm = () => {
@@ -24,8 +20,6 @@ const MuseForm = () => {
     const ref1 = React.createRef();
     const ref2 = React.createRef();
     const ref3 = React.createRef();
-
-    const [question, setQuestion] = React.useState('');
 
     const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
@@ -42,10 +36,13 @@ const MuseForm = () => {
         };
     }, []);
 
+
+    //ART STYLE FORM
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue((event.target as HTMLInputElement).value);
     };
 
+    //MODAL STATES
     const handleButtonClick = () => {
         setGenerate(true);
     };
@@ -58,29 +55,19 @@ const MuseForm = () => {
         console.log("CCLICKED")
     }, [test1, test2])
 
-
-
-
     //DallE API CALL
-
     const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
-
-
     const { data: session, status } = useSession()
-
     let user_id = status === 'authenticated' ? (session.user as any).id : "";
-
     let createdStatic;
-
     const [b64, setB64] = React.useState('');
     const [created, setCreated] = React.useState();
     const [generatePost] = useAddPost(b64, user_id, prompt, created);
-
     console.log(loadingImage);
     console.log(error)
 
 
-
+    //IMAGE SELECTION
     const imageClick = (event) => {
         let splitB64 = event.target.src.split(',')[1];
         setB64(splitB64);
@@ -130,14 +117,29 @@ const MuseForm = () => {
         pb: 3,
     };
 
-    //QUESTION
-    generatePrompt()
-        .then((random) => {
-            setQuestion(random);
-        })
-        .catch((error) => {
-            console.log("Couldn't make prompt: ", error);
-        });
+    //QUESTION PROMPT GENERATE
+    const allPrompts = ["Where do you see yourself in 5 years?",
+        "What brings you happiness?",
+        "Favorite memory?",
+        "Most recently memorable dream?",
+        "Perfect Day?",
+        "Mood today?",
+        "Something you’re looking forward to ?",
+        "Dream vacation ?",
+        "Spirit Animal ?",
+        "What's your worst nightmare?",
+        "You're childhood home looks like...",
+        "The last dream you remember looked like...",
+        "How you remember your 5 year old self looks like...",
+        "Your ideal pet...there are no limits here...",
+        "What are you going to look like in 30 - 50 years ?",
+        "What do you think the future looks like ?",
+        "Your favorite time period ? Paint a picture with your words...",
+        "Your favorite super hero is...",
+        "Something that makes you sad...]"];
+    const randomIndex = Math.floor(Math.random() * allPrompts.length);
+    const question = allPrompts[randomIndex];
+    console.log(question);
 
     return (
         <Container fixed>
@@ -217,9 +219,33 @@ const MuseForm = () => {
                         Your Muse of the Day
                     </Typography>
                     <Container>
-                        {/* <div onClick={imageClick}><Image alt="image1" height={500} width={500} src={b64_image1}></Image></div>
-                                    <div onClick={imageClick}><Image alt="image2" height={500} width={500} src={b64_image2}></Image></div>
-                                    <div onClick={imageClick}><Image alt="image3" height={500} width={500} src={b64_image3}></Image></div>                     */}
+                        {/* 
+                        <Box sx={{ m: 5, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                {loadingImage ?
+                    <Loading>
+                        <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                    </Loading>
+                    :
+                    <Image id={created1} alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>
+                }
+                {loadingImage ?
+                    <Loading>
+                        <Image id="2" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                    </Loading>
+                    :
+                    <Image id={created2} alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>
+                }
+                {loadingImage ?
+                    <Loading>
+                        <Image id="3" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                    </Loading>
+                    :
+                    <div>
+                        <Image id={created3} alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>
+                    </div>
+                }
+            </Box>
+            */}
                     </Container>
                 </Box>
             </Modal>
