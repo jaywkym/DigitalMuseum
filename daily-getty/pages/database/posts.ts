@@ -198,6 +198,9 @@ export function useGetHomefeed(user_id: string):
         .then(res => res.json())
         .then(res => {
             let friends = res.friends.following
+
+            if(friends.length == 0)
+                return;
             
             friends.forEach((friend_id) => {
                 const request = {

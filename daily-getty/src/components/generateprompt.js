@@ -19,8 +19,3 @@ export default async function generatePrompt() {
     // Choose a random line from the array
     const randomIndex = Math.floor(Math.random() * lines.length);
     const randomLine = lines[randomIndex];
-
-    // Return the random line as a string
-    console.log(randomLine);
-    return randomLine.trim();
-}
