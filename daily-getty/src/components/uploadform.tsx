@@ -58,24 +58,15 @@ const MuseForm = () => {
         console.log("CCLICKED")
     }, [test1, test2])
 
-
-
-
     //DallE API CALL
 
     const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
-
-
     const { data: session, status } = useSession()
-
     let user_id = status === 'authenticated' ? (session.user as any).id : "";
-
     let createdStatic;
-
     const [b64, setB64] = React.useState('');
     const [created, setCreated] = React.useState();
     const [generatePost] = useAddPost(b64, user_id, prompt, created);
-
     console.log(loadingImage);
     console.log(error)
 
@@ -130,13 +121,14 @@ const MuseForm = () => {
         pb: 3,
     };
 
+    //GENERATE PROMPT
     useEffect(() => {
 
         //QUESTION
         generatePrompt()
-        .then(setQuestion)
-        .catch(console.error);
-        
+            .then(setQuestion)
+            .catch(console.error);
+
     }, [])
 
     return (
