@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react'
 import type {
     DatabasePost,
 } from "../../types/FirebaseResponseTypes";
+import generatePrompt from './generateprompt';
 
 
 const MuseForm = () => {
@@ -24,6 +25,7 @@ const MuseForm = () => {
     const ref2 = React.createRef();
     const ref3 = React.createRef();
 
+    const [question, setQuestion] = React.useState('');
 
     const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
@@ -58,10 +60,10 @@ const MuseForm = () => {
 
 
 
+
     //DallE API CALL
 
     const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
-
 
 
     const { data: session, status } = useSession()
@@ -74,16 +76,12 @@ const MuseForm = () => {
     const [created, setCreated] = React.useState();
     const [generatePost] = useAddPost(b64, user_id, prompt, created);
 
-
-
     console.log(loadingImage);
     console.log(error)
 
 
 
     const imageClick = (event) => {
-
-
         let splitB64 = event.target.src.split(',')[1];
         setB64(splitB64);
 
@@ -132,8 +130,25 @@ const MuseForm = () => {
         pb: 3,
     };
 
+    //QUESTION
+    generatePrompt()
+        .then((random) => {
+            setQuestion(random);
+        })
+        .catch((error) => {
+            console.log("Couldn't make prompt: ", error);
+        });
+
     return (
         <Container fixed>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                <Box sx={{ m: 5 }}>
+                    <Typography variant="h3">Prompt of the Day</Typography>
+                </Box>
+                <Box>
+                    <Typography variant="h6">{question}</Typography>
+                </Box>
+            </Box>
             <Box sx={{ m: 5, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignContent: 'space-between', alignItems: 'space-between', p: 5 }}>
                 <FormControl>
                     <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
