@@ -13,16 +13,24 @@ import { Button } from '@mui/material';
 
 const HomeSearch = () => {
 
+    const [hover, setHover] = useState(false);
+
     return (
         <AppBar position="static" style={{ background: '#000000', display: 'flex', justifyContent: 'center', width: '100%' }}>
             <Toolbar>
-                <Button style={{
-                    borderRadius: 28,
-                    backgroundColor: "#FFFFFF",
-                    padding: "14px 28px",
-                    fontSize: "14px",
-                    textDecorationColor: "black"
-                }} onClick={() => { signOut(); }}>
+                <Button 
+                    style={{
+                        borderRadius: 28,
+                        backgroundColor: !hover? "#DEE2E2" : "#BBBBBB",
+                        padding: "14px 28px",
+                        fontSize: "14px",
+                        textDecorationColor: "black",
+                    }} 
+                    
+                    onClick={() => signOut()}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                >
                     <Typography color={'#000000'}>Logout</Typography>
                 </Button>
                 <Typography
