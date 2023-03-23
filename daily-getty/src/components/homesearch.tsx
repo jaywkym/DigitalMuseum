@@ -34,6 +34,14 @@ const HomeSearch = () => {
                 >
                     DailyMuse
                 </Typography>
+                <Button style={{
+                    borderRadius: 28,
+                    // backgroundColor: "#FFFFFF",
+                    padding: "14px 28px",
+                    fontSize: "14px",
+                    // textDecorationColor: "black"
+                    visibility: 'hidden'
+                }}>Logout</Button>
                 {/*
 <Search>
                     <SearchIconWrapper>
