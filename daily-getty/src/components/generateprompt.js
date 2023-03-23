@@ -1,6 +1,6 @@
 export default async function generatePrompt() {
     //Fetch File
-    const res = await fetch('@/static/prompts.txt');
+    const res = await fetch('/prompts.txt');
     const fileContents = await res.text();
 
     // Split the file contents into an array of lines
@@ -11,5 +11,6 @@ export default async function generatePrompt() {
     const randomLine = lines[randomIndex];
 
     // Return the random line as a string
+    console.log(randomLine);
     return randomLine.trim();
 }
