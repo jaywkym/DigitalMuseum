@@ -130,14 +130,14 @@ const MuseForm = () => {
         pb: 3,
     };
 
-    //QUESTION
-    generatePrompt()
-        .then((random) => {
-            setQuestion(random);
-        })
-        .catch((error) => {
-            console.log("Couldn't make prompt: ", error);
-        });
+    useEffect(() => {
+
+        //QUESTION
+        generatePrompt()
+        .then(setQuestion)
+        .catch(console.error);
+        
+    }, [])
 
     return (
         <Container fixed>
