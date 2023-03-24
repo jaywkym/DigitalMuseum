@@ -25,10 +25,7 @@ const MuseForm = () => {
     const [test1, settest1] = useState('')
     const [test2, settest2] = useState('')
 
-
     const timer = React.useRef<number>();
-
-
     React.useEffect(() => {
         return () => {
             clearTimeout(timer.current);
@@ -92,9 +89,7 @@ const MuseForm = () => {
             } as any
         }
 
-
         console.log(uploadInfo);
-
 
         const request = {
             method: 'PUT',
@@ -103,7 +98,6 @@ const MuseForm = () => {
             },
             body: JSON.stringify(uploadInfo)
         }
-
 
         fetch('/api/database/posts/createPost', request)
             .then(res => res.json())
@@ -116,7 +110,6 @@ const MuseForm = () => {
 
     //MODAL STATES
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
-
 
     const handleButtonClick = () => {
         setGenerate(true); //Open Modal
@@ -143,7 +136,15 @@ const MuseForm = () => {
 
 
     if (completed) {
-        return (<div>Thanks for the Post! Come back Tomorrow to post again!</div>);
+        return (
+            <Container fixed>
+                <Box sx={{ m: 10, p: 5, display: 'flex', bgcolor: '#FFFFFF', width: '', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                    <Typography component="h1" variant="h3">
+                        Thanks for the Post! Come back Tomorrow to post again!
+                    </Typography>
+                </Box>
+            </Container>
+        );
     }
     else {
         return (
@@ -210,9 +211,14 @@ const MuseForm = () => {
                         px: 4,
                         pb: 3,
                     }}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Your Muse of the Day
-                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', p: 3 }}>
+                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                                Your Muse of the Day
+                            </Typography>
+                            <Typography variant="body1" component="h3">
+                                Click on an image below to finalize your muse.
+                            </Typography>
+                        </Box>
                         <Container>
                             <Box sx={{ m: 5, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                 <ImageList sx={{ height: '70vh' }}>

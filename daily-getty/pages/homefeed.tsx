@@ -51,9 +51,8 @@ export default function HomeFeed() {
                             )}
 
                             {/* <center> */}
-                            <Stack spacing={4}>
-
-                                <ImageList cols={3} rowHeight={400}>
+                            <Stack spacing={5}>
+                                <ImageList cols={1} rowHeight={600}>
 
                                     {
                                         !homefeedLoading && homefeedSuccess && Object.keys(homefeed_map).map((post) => (
@@ -65,7 +64,6 @@ export default function HomeFeed() {
                                     }
 
                                 </ImageList>
-
                             </Stack>
 
                             {/* </center> */}
