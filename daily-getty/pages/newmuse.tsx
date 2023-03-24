@@ -42,7 +42,7 @@ export default function NewMuse() {
                     bgcolor: '#FFFFFF',
                     boxShadow: 4,
                 }}>
-                    <Prompt />
+                    {/*<Prompt />*/}
                     {/* <MuseForm /> */}
                     <CheckItemExists />
                 </Box>

@@ -18,8 +18,8 @@ type CustomSession = {
     expires: string
 }
 
-//import dns from 'node:dns';
-//dns.setDefaultResultOrder('ipv4first');
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
 
 /**
  * authOptions: Configuration for authentication through next. 
@@ -195,13 +195,10 @@ async function check_user_exists(email: string): Promise<boolean> {
     }
 
     console.log("Sending request in check_user_exists")
-    console.log(request)
-    console.log('${process.env.NEXTAUTH_URL}')
     console.log(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`)
 
     try {
-        console.log(process.env)
-        const resp = await fetch(`http://localhost:3000/api/database/profile/checkForUser`, request);
+        const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request);
         const dbResponse = await resp.json() as DatabaseResponse;
 
         return dbResponse.success;

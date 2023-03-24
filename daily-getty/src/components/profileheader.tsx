@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { Avatar, Chip, Stack } from '@mui/material';
 import { Container } from '@mui/system';
-import { useFollowUser, useFollowers, useFollowing } from '@/pages/database/profile';
+import { useFollowUser, useFollowers, useFollowing, useUnfollowUser } from '@/pages/database/profile';
 import { Button, Modal, Grid, List } from '@mui/material';
 
 const style = {
@@ -29,7 +29,8 @@ const ProfileHeader = ({ user }) => {
     const [following, followingLoading, getFollowing] = useFollowing(user.id)
     const [followers, followersLoading, getFollowers] = useFollowers(user.id)
     const [sFollowing, sFollowingLoading, sGetFollowing] = useFollowing(session_user.id)
-    const [addSuccess, addLoading, followUser] = useFollowUser(session_user.id, user.id)
+    const [followSuccess, followLoading, followUser] = useFollowUser(session_user.id, user.id)
+    const [unfollowSuccess, unfollowLoading, unfollowUser] = useUnfollowUser(session_user.id, user.id);
     const [isFollowing, setIsFriend] = useState(false)
     const selfAccount = session_user.id === user.id
 
@@ -46,7 +47,7 @@ const ProfileHeader = ({ user }) => {
 
         getFollowers()
             .catch(console.error)
-    }, [user.id, session_user.id])
+    }, [user.id, session_user.id, followLoading, unfollowLoading])
 
 
     console.log({
@@ -74,7 +75,7 @@ const ProfileHeader = ({ user }) => {
 
         setIsFriend(foundFriend)
 
-    }, [following, user, sFollowing])
+    }, [following, followers, sFollowing])
 
     return (
         <Container fixed >
@@ -97,6 +98,8 @@ const ProfileHeader = ({ user }) => {
                     {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
                         if (!isFollowing)
                             followUser()
+                        else
+                            unfollowUser()
 
                                 // TODO - Remove as following
 

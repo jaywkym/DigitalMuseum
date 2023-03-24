@@ -34,7 +34,8 @@ export function useFollowing(user_id: string):
 
         if(dbFriendsResponse.success) {
             if(dbFriendsResponse.friends)
-                setFollowing(dbFriendsResponse.friends.following)
+                if(dbFriendsResponse.friends.following)
+                    setFollowing(dbFriendsResponse.friends.following)
             else {
                 setFollowing([]);
             }
@@ -74,7 +75,8 @@ export function useFollowers(user_id: string):
 
         if(dbFriendsResponse.success) {
             if(dbFriendsResponse.friends)
-                setFollowers(dbFriendsResponse.friends.followers)
+                if(dbFriendsResponse.friends.followers)
+                    setFollowers(dbFriendsResponse.friends.followers)
             else {
                 setFollowers([]);
             }
@@ -119,40 +121,32 @@ export function useFollowUser(user_id: string, friend_id: string):
     return [success, loading, followUser];
 }
 
-/**
- * useDeleteFriend: Deletes a friend from a user's friends list.
- * 
- * @param user_id User whose friends list will be modified
- * @param friend_id Unfortunate ex friend's ID
- * @returns Your mom.
- */
-export function useDeleteFriend(user_id: string, friend_id: string):
+export function useUnfollowUser(user_id: string, friend_id: string):
     [boolean, boolean, () => Promise<void>] {
 
-        const [success, setSuccess] = useState(false)
-        const [loading, setLoading] = useState(false)
+        const [success, setSuccess] = useState(false);
+        const [loading, setLoading] = useState(false);
 
-        async function removeFriend() {
+        async function followUser() {
 
-            if(loading) {
-                setSuccess(false)
+            if(loading)
                 return;
-            }
 
             setLoading(true);
             setSuccess(false);
 
-            const dbResponse = await requestRemoveFriend(user_id, friend_id);
+            const dbResponse = await requestUnfollowUser(user_id, friend_id);
 
             setSuccess(dbResponse.success)
+
             setLoading(false)
             
         }
 
-        return [success, loading, removeFriend];
+    return [success, loading, followUser];
 }
 
-export async function requestRemoveFriend(user_id: string, friend_id: string): Promise<DatabaseResponse> {
+export async function requestUnfollowUser(user_id: string, friend_id: string): Promise<DatabaseResponse> {
 
     const request = {
         method: 'POST',
@@ -166,7 +160,7 @@ export async function requestRemoveFriend(user_id: string, friend_id: string): P
     }
     
     try {
-        const resp = await fetch(`/api/database/profile/removeFriend`, request)
+        const resp = await fetch(`/api/database/profile/unfollowUser`, request)
         return await resp.json() as DatabaseResponse;
     } catch (err: any) {
         return {success: false} as DatabaseResponse;
