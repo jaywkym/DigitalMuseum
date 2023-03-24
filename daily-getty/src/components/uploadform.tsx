@@ -25,6 +25,8 @@ const MuseForm = () => {
     const ref3 = React.createRef();
 
 
+    const [finish, setFinish] = React.useState(false); //check if working
+
     const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
 
@@ -115,7 +117,7 @@ const MuseForm = () => {
             .then(resj => {
                 console.log("good!")
                 //ADD FUNCTIONALITY TO SWITCH TO COMPLETED
-
+                setFinish(true);
 
             })
 
@@ -135,96 +137,104 @@ const MuseForm = () => {
         pb: 3,
     };
 
-    return (
-        <Container fixed>
-            <Box sx={{ m: 5, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignContent: 'space-between', alignItems: 'space-between', p: 5 }}>
-                <FormControl>
-                    <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
-                    <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required onChange={(e) => { setPrompt(e.target.value) }} />
-                    <FormHelperText id="prompt-helper" color='info'>Limit your answer to 100 words or less.</FormHelperText>
-                </FormControl>
-                <FormControl>
-                    <FormLabel id="art-style">Choose an art style</FormLabel>
-                    <RadioGroup
-                        aria-labelledby="art-style-radio"
-                        name="art-style-radio"
-                        value={value}
-                        onChange={handleChange}
-                    >
-                        <FormControlLabel value="realism" control={<Radio />} label="Realism" />
-                        <FormControlLabel value="animated" control={<Radio />} label="Animated" />
-                        <FormControlLabel value="pop art" control={<Radio />} label="Pop Art" />
-                        <FormControlLabel value="abstract" control={<Radio />} label="Abstract" />
-                        <FormControlLabel value="retro" control={<Radio />} label="Retro" />
-                    </RadioGroup>
-                </FormControl>
-            </Box>
 
-            <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                {loadingImage ?
-                    <Loading>
-                        <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                    </Loading>
-                    :
-                    <Image id={created1} alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>
-                }
-                {loadingImage ?
-                    <Loading>
-                        <Image id="2" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                    </Loading>
-                    :
-                    <Image id={created2} alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>
-                }
-                {loadingImage ?
-                    <Loading>
-                        <Image id="3" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                    </Loading>
-                    :
-                    <div>
-                        <Image id={created3} alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>
-                    </div>
-                }
-            </Box>
-
-            <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Button variant="contained" color="success" onClick={generateImage}>
-                    Generate Muse
-                </Button>
-            </Box>
-
-            {/*IMAGE GENERATED MODAL 
-                    */}
-            <Modal
-                open={generate}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Your Muse of the Day
-                    </Typography>
-                    <Container>
-                        {/* <div onClick={imageClick}><Image alt="image1" height={500} width={500} src={b64_image1}></Image></div>
-                                    <div onClick={imageClick}><Image alt="image2" height={500} width={500} src={b64_image2}></Image></div>
-                                    <div onClick={imageClick}><Image alt="image3" height={500} width={500} src={b64_image3}></Image></div>                     */}
-                    </Container>
+    if(finish){
+        return(
+            <div>Thanks for your post, come back tomorrow!</div>
+        )
+    }
+    else{
+        return (
+            <Container fixed>
+                <Box sx={{ m: 5, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignContent: 'space-between', alignItems: 'space-between', p: 5 }}>
+                    <FormControl>
+                        <FormLabel id="prompt" color='info'>Prompt of the Day</FormLabel>
+                        <TextField id="prompt-answer" label="Answer the prompt!" variant="filled" placeholder="Enter Prompt" multiline rows={4} fullWidth required onChange={(e) => { setPrompt(e.target.value) }} />
+                        <FormHelperText id="prompt-helper" color='info'>Limit your answer to 100 words or less.</FormHelperText>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel id="art-style">Choose an art style</FormLabel>
+                        <RadioGroup
+                            aria-labelledby="art-style-radio"
+                            name="art-style-radio"
+                            value={value}
+                            onChange={handleChange}
+                        >
+                            <FormControlLabel value="realism" control={<Radio />} label="Realism" />
+                            <FormControlLabel value="animated" control={<Radio />} label="Animated" />
+                            <FormControlLabel value="pop art" control={<Radio />} label="Pop Art" />
+                            <FormControlLabel value="abstract" control={<Radio />} label="Abstract" />
+                            <FormControlLabel value="retro" control={<Radio />} label="Retro" />
+                        </RadioGroup>
+                    </FormControl>
                 </Box>
-            </Modal>
-            {loadingImage && (
-                <CircularProgress
-                    size={68}
-                    sx={{
-                        color: green[500],
-                        position: 'absolute',
-                        top: -6,
-                        left: -6,
-                        zIndex: 1,
-                    }}
-                />
-            )}
-        </Container>
-    );
+    
+                <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                    {loadingImage ?
+                        <Loading>
+                            <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                        </Loading>
+                        :
+                        <Image id={created1} alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>
+                    }
+                    {loadingImage ?
+                        <Loading>
+                            <Image id="2" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                        </Loading>
+                        :
+                        <Image id={created2} alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>
+                    }
+                    {loadingImage ?
+                        <Loading>
+                            <Image id="3" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                        </Loading>
+                        :
+                        <div>
+                            <Image id={created3} alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>
+                        </div>
+                    }
+                </Box>
+    
+                <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                    <Button variant="contained" color="success" onClick={generateImage}>
+                        Generate Muse
+                    </Button>
+                </Box>
+    
+                {/*IMAGE GENERATED MODAL 
+                        */}
+                <Modal
+                    open={generate}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Your Muse of the Day
+                        </Typography>
+                        <Container>
+                            {/* <div onClick={imageClick}><Image alt="image1" height={500} width={500} src={b64_image1}></Image></div>
+                                        <div onClick={imageClick}><Image alt="image2" height={500} width={500} src={b64_image2}></Image></div>
+                                        <div onClick={imageClick}><Image alt="image3" height={500} width={500} src={b64_image3}></Image></div>                     */}
+                        </Container>
+                    </Box>
+                </Modal>
+                {loadingImage && (
+                    <CircularProgress
+                        size={68}
+                        sx={{
+                            color: green[500],
+                            position: 'absolute',
+                            top: -6,
+                            left: -6,
+                            zIndex: 1,
+                        }}
+                    />
+                )}
+            </Container>
+        );
+    }
 };
 
 export default MuseForm;
