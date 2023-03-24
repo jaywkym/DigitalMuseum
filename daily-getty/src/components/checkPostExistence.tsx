@@ -7,23 +7,28 @@ import { useSession } from 'next-auth/react'
 
 const CheckItemExists = () => {
   const [itemExists, setItemExists] = useState(null);
+  const [userIDs, setUserIDs] = useState("");
 
   const { data: session, status } = useSession()
+ 
 
   useEffect(() => {
 
-   
-   
     let user_id = status === 'authenticated' ? (session.user as any).id : "";
+
+
+   // console.log(session);
+
+   
 
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
-    const day = date.getDate() ;
+    const day = date.getDate();
 
     const post_id = year + "_" + month + "_" + day;
 
-    //console.log(post_id)
+    //console.log(post
     
 
     const uploadInfo = {
@@ -44,6 +49,7 @@ const CheckItemExists = () => {
         .then(resj => {
             console.log(resj.exist);
 
+            console.log("THE VALUE OF THE EXISTENCE IS:" + resj.exist)
             if(resj.exist){
                 setItemExists(true);
             }
