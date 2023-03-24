@@ -4,6 +4,7 @@ import type {
     DatabaseUserPostsResponse,
     DatabaseUserPostResponse,
     DatabaseResponse,
+    UserLikesPost,
 }  from "../../types/FirebaseResponseTypes";
 import { StringDecoder } from "string_decoder";
 
@@ -230,6 +231,38 @@ export function useUnlikeImage(user_id: string, post_id: string):
 
 }
 
+export function useUserLikesImage(user_id: string, post_id: string):
+    [boolean, boolean, () => Promise<void>] {
+
+    const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    async function unlikeImage() {
+
+        if(loading || !user_id || !post_id) {
+            setSuccess(false)
+            return;
+        }
+
+        if(user_id === '' || post_id === '') {
+            setSuccess(false)
+            return;
+        }
+
+        setLoading(true);
+        setSuccess(false);
+
+        const dbResponse = await requestUnlikePost(user_id, post_id);
+
+        setSuccess(dbResponse.success)
+        setLoading(false)
+
+    }
+
+    return [success, loading, unlikeImage];
+
+}
+
 export function useGetHomefeed(user_id: string):
     [DatabasePost[], boolean, boolean, () => void] {
 
@@ -340,7 +373,7 @@ export async function requestLikePost(
     Promise<DatabaseResponse> {
 
     const request = {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -349,6 +382,8 @@ export async function requestLikePost(
             post_id: post_id
         })
     }
+
+    console.log(request);
 
     try {
 
@@ -367,7 +402,7 @@ export async function requestUnlikePost(
     Promise<DatabaseResponse> {
 
     const request = {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -379,12 +414,42 @@ export async function requestUnlikePost(
 
     try {
 
-        const resp = await fetch('/api/database/posts/unLikePost', request);
+        const resp = await fetch('/api/database/posts/unlikePost', request);
         return await resp.json() as DatabaseResponse;
 
     } catch (err: any) {
         console.error(err)
         return {success: false, error: err}
+    }
+}
+
+export async function requestIfUserLikesPost(
+    user_id: string,
+    post_id: string):
+    Promise<boolean> {
+
+    const request = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+            post_id: post_id
+        })
+    }
+
+    try {
+
+        const resp = await fetch('/api/database/posts/userLikesPost', request);
+        const json = await resp.json() as UserLikesPost;
+
+        return json.success;
+
+
+    } catch (err: any) {
+        console.error(err)
+        return false
     }
 }
 

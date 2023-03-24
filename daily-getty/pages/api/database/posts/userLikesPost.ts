@@ -9,7 +9,7 @@ import type {
     DatabaseResponse
 }  from "../../../../types/FirebaseResponseTypes";
 
-export default async function unlikePost (
+export default async function userLikesPost (
     req: NextApiRequest,
     res: NextApiResponse<DatabaseResponse>
   ) {
@@ -63,27 +63,18 @@ export default async function unlikePost (
 
     let userLiked = post.likes;
 
-    if(!userLiked.includes(user_id)) {
-        res.status(200).json(
-            generateDbResponse(
-                false, 
-                generateError(418, 'User does not like post')
-            )
-        )
+    console.log(userLiked)
 
-        return;
-    }
+    const userLikesPost = userLiked.includes(user_id)
 
-    const index = userLiked.indexOf(user_id, 0)
-    userLiked.splice(index, 1);
-
-    post.likes = userLiked;
-
-    set(ref(db, `posts/${user_id}/${post_id}`), post)
+    console.log({
+        list: userLiked,
+        true: userLikesPost
+    })
 
     res.status(200).json(
         generateDbResponse(
-            true, 
+            userLikesPost, 
             {} as DatabaseError
         )
     )

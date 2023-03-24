@@ -58,7 +58,12 @@ export default async function likePost (
         
     }
 
+    if(!post.likes)
+        post.likes = []
+
     let userLiked = post.likes;
+
+    console.log(userLiked)
 
     if(userLiked.includes(user_id)) {
         res.status(200).json(
