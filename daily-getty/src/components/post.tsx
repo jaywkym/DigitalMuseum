@@ -33,8 +33,6 @@ const Post = ({ userObj, post }) => {
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
     const [isHovering, setIsHovered] = useState(false);
-    const onMouseEnter = () => setIsHovered(true);
-    const onMouseLeave = () => setIsHovered(false);
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
@@ -50,7 +48,7 @@ const Post = ({ userObj, post }) => {
 
     async function getUserLikesPost() {
         const resp = await requestIfUserLikesPost(user.id, post.id);
-        console.log({resp: resp})
+        console.log({ resp: resp })
         setUserLikesPost(resp)
     }
 
@@ -73,13 +71,13 @@ const Post = ({ userObj, post }) => {
     }, [post])
 
     async function handleLike() {
-        if(userLikesPost)
+        if (userLikesPost)
             await unlikePost()
         else
             await likePost()
 
         await getUserLikesPost()
-        
+
     }
 
     return (
@@ -89,7 +87,7 @@ const Post = ({ userObj, post }) => {
 
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
                         {/*<Button onClick={visitProfile}>*/}
-                        <Avatar alt={userObj.name} src={profileImage} sx={{mr: 1}} />
+                        <Avatar alt={userObj.name} src={profileImage} sx={{ mr: 1 }} />
                         <div></div>
                         <Typography gutterBottom variant="body1" component="div" >
                             @{profileName}
@@ -105,7 +103,7 @@ const Post = ({ userObj, post }) => {
                         <div style={{ height: 280 }}>
                             <Box sx={{ m: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 <Typography>
-                                    Prompt
+                                    Prompt:
                                 </Typography>
                             </Box>
                         </div>
@@ -118,13 +116,13 @@ const Post = ({ userObj, post }) => {
                         />
                     )}
                 </div>
-                
+
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
                     <Button endIcon={
                         <IosShareIcon onClick={handleShare} />} />
                 </CardActions>
-               
+
             </Card>
         </Box>
     );
