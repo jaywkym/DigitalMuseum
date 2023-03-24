@@ -164,35 +164,7 @@ const MuseForm = () => {
                     </RadioGroup>
                 </FormControl>
             </Box>
-
-            {/* PREVIOUS IMAGE RENDERING
-            <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                {loadingImage ?
-                    <Loading>
-                        <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                    </Loading>
-                    :
-                    <Image id={created1} alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>
-                }
-                {loadingImage ?
-                    <Loading>
-                        <Image id="2" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                    </Loading>
-                    :
-                    <Image id={created2} alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>
-                }
-                {loadingImage ?
-                    <Loading>
-                        <Image id="3" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                    </Loading>
-                    :
-                    <div>
-                        <Image id={created3} alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>
-                    </div>
-                }
-            </Box>
-            */}
-
+                
             <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <Button variant="contained" color="success" onClick={handleButtonClick}>
                     Generate Muse
@@ -263,7 +235,7 @@ const MuseForm = () => {
                     </Container>
                 </Box>
             </Modal>
-            {
+           {
                 loadingImage && (
                     <CircularProgress
                         size={68}
@@ -275,10 +247,10 @@ const MuseForm = () => {
                             zIndex: 1,
                         }}
                     />
-                )}
-            </Container>
-        );
-    }
+                )
+            }
+        </Container >
+    );
 };
 
 export default MuseForm;
