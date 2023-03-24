@@ -13,6 +13,9 @@ import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
+import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
+import { useSession } from 'next-auth/react';
+import { request } from 'http';
 
 interface PostProps {
     user: string;
@@ -20,12 +23,14 @@ interface PostProps {
     likes: string;
 }
 
-const handleLike = () => { } //Handle Adding Like to DataBase
 const handleShare = () => { } //Overlay Share Window
 const visitProfile = () => { } //Visit Profile
 
 const Post = ({ userObj, post }) => {
 
+    const { data: session, status } = useSession();
+
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
     const [isHovering, setIsHovered] = useState(false);
     const onMouseEnter = () => setIsHovered(true);
@@ -39,6 +44,18 @@ const Post = ({ userObj, post }) => {
     const profileImage = postProfile ? postProfile.image : ''
     const profileLink = postProfile ? postProfile.id : ''
 
+    const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id)
+    const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id)
+    const [userLikesPost, setUserLikesPost] = useState(false);
+
+    async function getUserLikesPost() {
+        const resp = await requestIfUserLikesPost(user.id, post.id);
+        console.log({resp: resp})
+        setUserLikesPost(resp)
+    }
+
+    console.log(userLikesPost)
+
     useEffect(() => {
 
         async function getUserInfo() {
@@ -50,7 +67,20 @@ const Post = ({ userObj, post }) => {
         getUserInfo()
             .catch(console.error)
 
+        getUserLikesPost()
+            .catch(console.error)
+
     }, [post])
+
+    async function handleLike() {
+        if(userLikesPost)
+            await unlikePost()
+        else
+            await likePost()
+
+        await getUserLikesPost()
+        
+    }
 
     return (
         <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
@@ -88,13 +118,13 @@ const Post = ({ userObj, post }) => {
                         />
                     )}
                 </div>
-                {/*
+                
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
                     <Button endIcon={
                         <IosShareIcon onClick={handleShare} />} />
                 </CardActions>
-                */}
+               
             </Card>
         </Box>
     );

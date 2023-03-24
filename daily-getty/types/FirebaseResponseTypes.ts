@@ -81,3 +81,9 @@ export type PostExistence = {
   error: DatabaseError
 }
 
+export type UserLikesPost = {
+  success: boolean,
+  likesPost: boolean,
+  error: DatabaseError
+}
+
