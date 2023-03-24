@@ -34,14 +34,12 @@ export default async function createPost (
     const day = date.getDate() ;
 
     const post_id = year + "_" + month + "_" + day;
-    body.likes = 1
-    body.givenPrompt = "test"
     
     const dbpost = {
         id: post_id,
         user_id: body.user_id,
         userPrompt: body.userPrompt,
-        givenPrompt: null,
+        givenPrompt: body.givenPrompt,
         likes: body.likes,
         image: {
             created: body.image.created as Number,
