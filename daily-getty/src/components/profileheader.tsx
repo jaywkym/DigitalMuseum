@@ -116,7 +116,7 @@ const ProfileHeader = ({ user }) => {
                 >
                     <Box sx={style}>
                         <List>
-                            {sFollowing && sFollowing.map((friend) => (
+                            {sFollowing.map((friend) => (
                                 <li key={friend}>
                                     <Grid container alignItems="center">
                                         <Grid item sx={{ display: 'flex', width: 44 }}>
@@ -135,9 +135,9 @@ const ProfileHeader = ({ user }) => {
                                 </li>))}
                         </List>
                     </Box>
-                </Modal>
-                            */}
-            </Box>
+                            </Modal> */}
+                            
+            </Box> 
         </Container>
     );
 };

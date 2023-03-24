@@ -75,4 +75,9 @@ export type DatabaseUserPostResponse = {
   error: DatabaseError
 }
 
+export type PostExistence = {
+  success: boolean,
+  exist : boolean,
+  error: DatabaseError
+}
 
