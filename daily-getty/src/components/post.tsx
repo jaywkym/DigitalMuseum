@@ -28,6 +28,8 @@ const visitProfile = () => { } //Visit Profile
 
 const Post = ({ userObj, post }) => {
 
+    console.log("THE POST IS:")
+    console.log(post)
     const { data: session, status } = useSession();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
@@ -38,7 +40,9 @@ const Post = ({ userObj, post }) => {
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
-    const alt = post.image ? post.image.userPrompt : "";
+    const alt = post.image ? post.userPrompt : "";
+    const postQuestion = post.givenPrompt ? post.givenPrompt : "";
+    const date = post.id ? post.id : "";
     const src = post.image ? `data:image/png;base64, ${post.image.b64}` : ``
     const profileName = postProfile ? postProfile.name : ''
     const profileImage = postProfile ? postProfile.image : ''
@@ -105,7 +109,11 @@ const Post = ({ userObj, post }) => {
                         <div style={{ height: 280 }}>
                             <Box sx={{ m: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 <Typography>
-                                    Prompt
+                                    Question: {postQuestion}
+                                    <br></br>
+                                    User Response: {alt}
+                                    <br></br>
+                                    Date: {date}
                                 </Typography>
                             </Box>
                         </div>

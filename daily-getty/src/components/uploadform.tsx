@@ -45,6 +45,9 @@ const MuseForm = () => {
     //DallE API CALL
     const [prompt, setPrompt] = React.useState(''); //PROMPT TO GENERATE IMAGE
 
+     //GENERATE PROMPT
+     const [question, setQuestion] = React.useState('');
+
     const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage, generateImage] = useImage(prompt, "3"); //INCORPORATE ERROR HANDLING
     const { data: session, status } = useSession()
     let user_id = status === 'authenticated' ? (session.user as any).id : "";
@@ -68,6 +71,8 @@ const MuseForm = () => {
         createdStatic = event.target.id;
         setCreated(createdStatic);
 
+        // console.log(question);
+
         const uploadInfo: DatabasePost = {
             id: null,
             user_id: user_id,
@@ -79,6 +84,8 @@ const MuseForm = () => {
                 b64: splitB64 as String
             } as any
         }
+
+        // console.log(uploadInfo);
 
         const request = {
             method: 'PUT',
@@ -109,14 +116,13 @@ const MuseForm = () => {
         setGenerate(false); //Closes Modal
     };
 
-    //GENERATE PROMPT
-    const [question, setQuestion] = React.useState('');
+   
     useEffect(() => {
 
         //QUESTION
-        generatePrompt()
-            .then(setQuestion)
-            .catch(console.error);
+        const theQuestion = generatePrompt()
+             .then(setQuestion)
+             .catch(console.error);
     }, [])
 
     if(completed){
