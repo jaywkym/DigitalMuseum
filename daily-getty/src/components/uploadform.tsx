@@ -21,10 +21,6 @@ const MuseForm = () => {
     const ref2 = React.createRef();
     const ref3 = React.createRef();
 
-    const [finish, setFinish] = React.useState(false); //check if working
-
-    const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
-    const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
     const [test1, settest1] = useState('')
     const [test2, settest2] = useState('')
 
@@ -59,7 +55,6 @@ const MuseForm = () => {
     console.log(loadingImage);
     console.log(error)
 
-
     //IMAGE SELECTION
     const [selected, setSelected] = React.useState(false);
 
@@ -74,7 +69,7 @@ const MuseForm = () => {
             id: null,
             user_id: user_id,
             userPrompt: prompt,
-            givenPrompt: null,
+            givenPrompt: question,
             likes: [],
             image: {
                 created: createdStatic as Number,
@@ -94,9 +89,6 @@ const MuseForm = () => {
             .then(res => res.json())
             .then(resj => {
                 console.log("good!")
-                //ADD FUNCTIONALITY TO SWITCH TO COMPLETED
-                setFinish(true);
-
             })
     };
 
@@ -123,14 +115,9 @@ const MuseForm = () => {
             .catch(console.error);
     }, [])
 
-    if(finish){
-        return(
-            <div>Thanks for your post, come back tomorrow!</div>
-        )
-    }
-    else{
-        return (
-            <Container fixed>
+    return (
+        <Container fixed>
+            {/*Prompt Header*/}
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <Box sx={{ m: 5 }}>
                     <Typography variant="h3">Prompt of the Day</Typography>
