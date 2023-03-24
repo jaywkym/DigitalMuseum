@@ -56,7 +56,7 @@ export type DatabasePost = {
   user_id: string,
   userPrompt: string,
   givenPrompt: string,
-  likes: number,
+  likes: string[],
   image: {
     created: number,
     b64: string,
@@ -75,4 +75,15 @@ export type DatabaseUserPostResponse = {
   error: DatabaseError
 }
 
+export type PostExistence = {
+  success: boolean,
+  exist : boolean,
+  error: DatabaseError
+}
+
+export type UserLikesPost = {
+  success: boolean,
+  likesPost: boolean,
+  error: DatabaseError
+}
 

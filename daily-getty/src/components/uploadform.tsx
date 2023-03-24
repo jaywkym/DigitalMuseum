@@ -21,6 +21,10 @@ const MuseForm = () => {
     const ref2 = React.createRef();
     const ref3 = React.createRef();
 
+    const [finish, setFinish] = React.useState(false); //check if working
+
+    const [value, setValue] = React.useState(''); //VALUE OF RADIO GROUP
+    const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
     const [test1, settest1] = useState('')
     const [test2, settest2] = useState('')
 
@@ -70,8 +74,8 @@ const MuseForm = () => {
             id: null,
             user_id: user_id,
             userPrompt: prompt,
-            givenPrompt: question,
-            likes: 0,
+            givenPrompt: null,
+            likes: [],
             image: {
                 created: createdStatic as Number,
                 b64: splitB64 as String
@@ -90,6 +94,9 @@ const MuseForm = () => {
             .then(res => res.json())
             .then(resj => {
                 console.log("good!")
+                //ADD FUNCTIONALITY TO SWITCH TO COMPLETED
+                setFinish(true);
+
             })
     };
 
@@ -116,9 +123,14 @@ const MuseForm = () => {
             .catch(console.error);
     }, [])
 
-    return (
-        <Container fixed>
-            {/*Prompt Header*/}
+    if(finish){
+        return(
+            <div>Thanks for your post, come back tomorrow!</div>
+        )
+    }
+    else{
+        return (
+            <Container fixed>
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <Box sx={{ m: 5 }}>
                     <Typography variant="h3">Prompt of the Day</Typography>
@@ -263,10 +275,10 @@ const MuseForm = () => {
                             zIndex: 1,
                         }}
                     />
-                )
-            }
-        </Container >
-    );
+                )}
+            </Container>
+        );
+    }
 };
 
 export default MuseForm;

@@ -8,8 +8,15 @@ import MuseForm from '@/src/components/uploadform';
 import Prompt from '@/src/components/prompt';
 import HomeSearch from '@/src/components/homesearch';
 import abstractbg from "./public/abstractbg.jpg"
+import CheckItemExists from "@/src/components/checkPostExistence"
 
 export default function NewMuse() {
+
+    function testing(){
+        console.log("hello functionality")         
+    }
+
+
 
     return (
         <>
@@ -36,7 +43,8 @@ export default function NewMuse() {
                     boxShadow: 4,
                 }}>
                     {/*<Prompt />*/}
-                    <MuseForm />
+                    {/* <MuseForm /> */}
+                    <CheckItemExists />
                 </Box>
                 <NavBar />
             </main>
