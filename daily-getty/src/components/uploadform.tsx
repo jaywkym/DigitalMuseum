@@ -2,7 +2,7 @@ import * as React from 'react';
 import { green } from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import { useState, useEffect, useMemo } from 'react';
-import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress, ImageList } from '@mui/material';
+import { FormControl, FormControlLabel, FormHelperText, FormLabel, RadioGroup, TextField, Radio, Button, CircularProgress, ImageList, ImageListItem } from '@mui/material';
 import { Container } from '@mui/system';
 import { Modal, Typography } from '@mui/material';
 import Image from 'next/image';
@@ -21,16 +21,17 @@ const MuseForm = () => {
     const ref2 = React.createRef();
     const ref3 = React.createRef();
 
+
     const [test1, settest1] = useState('')
     const [test2, settest2] = useState('')
 
     const timer = React.useRef<number>();
-
     React.useEffect(() => {
         return () => {
             clearTimeout(timer.current);
         };
     }, []);
+
 
     //ART STYLE FORM
     const [artStyle, setArtStyle] = React.useState(''); //VALUE OF RADIO GROUP
@@ -38,9 +39,11 @@ const MuseForm = () => {
         setArtStyle((event.target as HTMLInputElement).value);
     };
 
+
     useMemo(() => {
         console.log("CCLICKED")
     }, [test1, test2])
+
 
     //DallE API CALL
     const [prompt, setPrompt] = React.useState(''); //PROMPT TO GENERATE IMAGE
@@ -55,18 +58,22 @@ const MuseForm = () => {
     const [b64, setB64] = React.useState('');
     const [created, setCreated] = React.useState();
 
+
     const [generatePost] = useAddPost(b64, user_id, prompt, created);
     console.log(loadingImage);
     console.log(error)
+
 
     const [completed, setCompleted] = React.useState(false);
 
     //IMAGE SELECTION
     const [selected, setSelected] = React.useState(false);
 
+
     const imageClick = (event) => {
         let splitB64 = event.target.src.split(',')[1];
         setB64(splitB64);
+
 
         createdStatic = event.target.id;
         setCreated(createdStatic);
@@ -103,6 +110,7 @@ const MuseForm = () => {
             })
     };
 
+
     //MODAL STATES
     const [generate, setGenerate] = React.useState(false); //SUCCESS IN GENERATING ARTWORK
 
@@ -112,12 +120,14 @@ const MuseForm = () => {
         generateImage(); //Generate Image
     };
 
+
     const handleClose = () => {
         setGenerate(false); //Closes Modal
     };
 
-   
+
     useEffect(() => {
+
 
         //QUESTION
         const theQuestion = generatePrompt()
@@ -125,10 +135,19 @@ const MuseForm = () => {
              .catch(console.error);
     }, [])
 
-    if(completed){
-       return (<div>Thanks for the Post! Come back Tomorrow to post again!</div> );
+
+    if (completed) {
+        return (
+            <Container fixed>
+                <Box sx={{ m: 10, p: 5, display: 'flex', bgcolor: '#FFFFFF', width: '', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                    <Typography component="h1" variant="h3">
+                        Thanks for the Post! Come back Tomorrow to post again!
+                    </Typography>
+                </Box>
+            </Container>
+        );
     }
-    else{
+    else {
         return (
             <Container fixed>
                 {/*Prompt Header*/}
@@ -165,15 +184,15 @@ const MuseForm = () => {
                         </RadioGroup>
                     </FormControl>
                 </Box>
-                    
+
                 <Box sx={{ m: 5, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                     <Button variant="contained" color="success" onClick={handleButtonClick}>
                         Generate Muse
                     </Button>
                 </Box>
-    
-                {/*IMAGE GENERATED MODAL 
-                        */}
+
+                {/*IMAGE GENERATED MODAL
+                       */}
                 <Modal
                     open={generate}
                     onClose={handleClose}
@@ -193,50 +212,67 @@ const MuseForm = () => {
                         px: 4,
                         pb: 3,
                     }}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Your Muse of the Day
-                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', p: 3 }}>
+                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                                Your Muse of the Day
+                            </Typography>
+                            <Typography variant="body1" component="h3">
+                                Click on an image below to finalize your muse.
+                            </Typography>
+                        </Box>
                         <Container>
                             <Box sx={{ m: 5, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                                {loadingImage && !selected ?
-                                    <Loading>
-                                        <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                                    </Loading>
-                                    :
-                                    <Image id={created1} alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>
-                                }
-                                {loadingImage && !selected ?
-                                    <Loading>
-                                        <Image id="2" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                                    </Loading>
-                                    :
-                                    <Image id={created2} alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>
-                                }
-                                {loadingImage && !selected ?
-                                    <Loading>
-                                        <Image id="3" alt="image" height={500} width={500} src='/placeholder.png'></Image>
-                                    </Loading>
-                                    :
-                                    <div>
-                                        <Image id={created3} alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>
-                                    </div>
-                                }
-    
-                                {selected &&
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', m: 10, p: 5 }}>
-                                        <Typography component="h1" variant="h4">
-                                            Congratulations! You have posted your muse!
-                                        </Typography>
-                                        <Button onClick={handleClose}>
-                                            Close
-                                        </Button>
-                                    </Box>
-                                }
+                                <ImageList sx={{ height: '70vh' }}>
+                                    {loadingImage && !selected ?
+                                        <ImageListItem>
+                                            <Loading>
+                                                <Image id="1" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                                            </Loading>
+                                        </ImageListItem>
+                                        :
+                                        <ImageListItem>
+                                            <Image id={created1} alt="image" height={500} width={500} src={b64_image1} onClick={imageClick}></Image>
+                                        </ImageListItem>
+                                    }
+                                    {loadingImage && !selected ?
+                                        <ImageListItem>
+                                            <Loading>
+                                                <Image id="2" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                                            </Loading>
+                                        </ImageListItem>
+                                        :
+                                        <ImageListItem>
+                                            <Image id={created2} alt="image" height={500} width={500} src={b64_image2} onClick={imageClick}></Image>
+                                        </ImageListItem>
+                                    }
+                                    {loadingImage && !selected ?
+                                        <ImageListItem>
+                                            <Loading>
+                                                <Image id="3" alt="image" height={500} width={500} src='/placeholder.png'></Image>
+                                            </Loading>
+                                        </ImageListItem>
+                                        :
+                                        <ImageListItem>
+                                            <Image id={created3} alt="image" height={500} width={500} src={b64_image3} onClick={imageClick}></Image>
+                                        </ImageListItem>
+                                    }
+
+                                    {selected &&
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', m: 10, p: 5 }}>
+                                            <Typography component="h1" variant="h4">
+                                                Congratulations! You have posted your muse!
+                                            </Typography>
+                                            <Button onClick={handleClose}>
+                                                Close
+                                            </Button>
+                                        </Box>
+                                    }
+                                </ImageList>
                             </Box>
                         </Container>
                     </Box>
                 </Modal>
-               {
+                {
                     loadingImage && (
                         <CircularProgress
                             size={68}
@@ -254,5 +290,6 @@ const MuseForm = () => {
         );
     }
 };
+
 
 export default MuseForm;

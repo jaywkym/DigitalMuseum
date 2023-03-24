@@ -35,8 +35,6 @@ const Post = ({ userObj, post }) => {
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
     const [isHovering, setIsHovered] = useState(false);
-    const onMouseEnter = () => setIsHovered(true);
-    const onMouseLeave = () => setIsHovered(false);
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
@@ -54,7 +52,7 @@ const Post = ({ userObj, post }) => {
 
     async function getUserLikesPost() {
         const resp = await requestIfUserLikesPost(user.id, post.id);
-        console.log({resp: resp})
+        console.log({ resp: resp })
         setUserLikesPost(resp)
     }
 
@@ -77,64 +75,60 @@ const Post = ({ userObj, post }) => {
     }, [post])
 
     async function handleLike() {
-        if(userLikesPost)
+        if (userLikesPost)
             await unlikePost()
         else
             await likePost()
 
         await getUserLikesPost()
-        
+
     }
 
     return (
-        <Box sx={{ m: 3, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center' }}>
-            <Card raised sx={{ width: '356px' }}>
-                <Link href={`/${profileLink}`}>
-
-                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', m: 1 }}>
-                        {/*<Button onClick={visitProfile}>*/}
-                        <Avatar alt={userObj.name} src={profileImage} sx={{mr: 1}} />
-                        <div></div>
-                        <Typography gutterBottom variant="body1" component="div" >
-                            @{profileName}
-                        </Typography>
-                        {/* </Button>*/}
-                    </Box>
-                </Link>
-                {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
-                <div
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}>
-                    {isHovering ? (
-                        <div style={{ height: 280 }}>
-                            <Box sx={{ m: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                <Typography>
+        <Card raised sx={{ display: 'flex', width: '800px', mt: 5 }}>
+            {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
+            <div
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}>
+                {isHovering ? (
+                    <div style={{ height: 500, width: 450 }}>
+                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            <Typography>
                                     Question: {postQuestion}
                                     <br></br>
                                     User Response: {alt}
                                     <br></br>
-                                    Date: {date}
-                                </Typography>
-                            </Box>
-                        </div>
-                    ) : (
-                        < CardMedia
-                            component="img"
-                            alt={alt}
-                            height="280"
-                            image={src}
-                        />
-                    )}
-                </div>
-                
+                                    Date: {date}:
+                            </Typography>
+                        </Box>
+                    </div>
+                ) : (
+                    < CardMedia
+                        component="img"
+                        alt={alt}
+                        height={500}
+                        width={500}
+                        image={src}
+                    />
+                )}
+            </div>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                <Link href={`/${profileLink}`}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', m: 2 }}>
+                        {/*<Button onClick={visitProfile}>*/}
+                        <Avatar alt={userObj.name} src={profileImage} sx={{ mr: 2 }} />
+                        <Typography variant="body1" component="h1">
+                            @{profileName}
+                        </Typography>
+                    </Box>
+                </Link>
+
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
-                    <Button endIcon={
-                        <IosShareIcon onClick={handleShare} />} />
+                    <Button endIcon={<IosShareIcon />} onClick={handleShare} />
                 </CardActions>
-               
-            </Card>
-        </Box>
+            </Box>
+        </Card >
     );
 };
 
