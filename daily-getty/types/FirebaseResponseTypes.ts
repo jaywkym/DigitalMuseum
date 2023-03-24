@@ -56,7 +56,7 @@ export type DatabasePost = {
   user_id: string,
   userPrompt: string,
   givenPrompt: string,
-  likes: number,
+  likes: string[],
   image: {
     created: number,
     b64: string,

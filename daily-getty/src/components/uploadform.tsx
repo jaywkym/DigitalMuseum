@@ -84,7 +84,7 @@ const MuseForm = () => {
             user_id: user_id,
             userPrompt: prompt,
             givenPrompt: null,
-            likes: 0,
+            likes: [],
             image: {
                 created: createdStatic as Number,
                 b64: splitB64 as String

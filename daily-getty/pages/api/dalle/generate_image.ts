@@ -117,7 +117,7 @@ export default async function request_image_handler(
         user_id: user_obj.id,
         userPrompt: prompt,
         givenPrompt: null, 
-        likes: 0,
+        likes: [],
         image: {
             created: image.created as Number,
             b64: image.data[0].b64_json as String

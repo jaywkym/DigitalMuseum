@@ -166,6 +166,70 @@ export function useGetPostForUser(user_id: string, post_id: string):
     return [post, success, loading, getPost];
 }
 
+export function useLikeImage(user_id: string, post_id: string):
+    [boolean, boolean, () => Promise<void>] {
+
+    const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    async function likeImage() {
+
+        if(loading || !user_id || !post_id) {
+            setSuccess(false)
+            return;
+        }
+
+        if(user_id === '' || post_id === '') {
+            setSuccess(false)
+            return;
+        }
+
+        setLoading(true);
+        setSuccess(false);
+
+        const dbResponse = await requestLikePost(user_id, post_id);
+
+        setSuccess(dbResponse.success)
+        setLoading(false)
+
+    }
+
+    return [success, loading, likeImage];
+
+}
+
+export function useUnlikeImage(user_id: string, post_id: string):
+    [boolean, boolean, () => Promise<void>] {
+
+    const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    async function unlikeImage() {
+
+        if(loading || !user_id || !post_id) {
+            setSuccess(false)
+            return;
+        }
+
+        if(user_id === '' || post_id === '') {
+            setSuccess(false)
+            return;
+        }
+
+        setLoading(true);
+        setSuccess(false);
+
+        const dbResponse = await requestUnlikePost(user_id, post_id);
+
+        setSuccess(dbResponse.success)
+        setLoading(false)
+
+    }
+
+    return [success, loading, unlikeImage];
+
+}
+
 export function useGetHomefeed(user_id: string):
     [DatabasePost[], boolean, boolean, () => void] {
 
@@ -268,6 +332,60 @@ export function useGetHomefeed(user_id: string):
     }
 
     return [homefeed, success, loading, getHomefeed];
+}
+
+export async function requestLikePost(
+    user_id: string,
+    post_id: string):
+    Promise<DatabaseResponse> {
+
+    const request = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+            post_id: post_id
+        })
+    }
+
+    try {
+
+        const resp = await fetch('/api/database/posts/likePost', request);
+        return await resp.json() as DatabaseResponse;
+
+    } catch (err: any) {
+        console.error(err)
+        return {success: false, error: err}
+    }
+}
+
+export async function requestUnlikePost(
+    user_id: string,
+    post_id: string):
+    Promise<DatabaseResponse> {
+
+    const request = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: user_id,
+            post_id: post_id
+        })
+    }
+
+    try {
+
+        const resp = await fetch('/api/database/posts/unLikePost', request);
+        return await resp.json() as DatabaseResponse;
+
+    } catch (err: any) {
+        console.error(err)
+        return {success: false, error: err}
+    }
 }
 
 export async function requestCreatePost(
