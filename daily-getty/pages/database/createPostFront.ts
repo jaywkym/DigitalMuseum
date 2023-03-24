@@ -34,7 +34,7 @@ const useAddPost = (b64: string, user_id: string, user_prompt: string, created: 
             user_id: user_id,
             userPrompt: user_prompt,
             givenPrompt: null, 
-            likes: 0,
+            likes: [],
             image: {
                 created: created as Number,
                 b64: b64 as String
