@@ -2,11 +2,11 @@ import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
 import type { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
-import type {
+import type { 
     DatabaseResponse,
     DatabaseUser,
     DatabaseUserResponse
-} from "../../../types/FirebaseResponseTypes";
+}  from "../../../types/FirebaseResponseTypes";
 
 type CustomSession = {
     user: {
