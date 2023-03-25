@@ -2,6 +2,38 @@ import { randomBytes, randomUUID } from "crypto";
 import NextAuth from 'next-auth'
 import type { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
+import InstagramProvider from "next-auth/providers/instagram";
+import TwitterProvider from "next-auth/providers/twitter"
+
+type LoginCredentials = {
+    username: string
+    password: string
+}
+
+type SignInResponse = {
+    user: string,
+    account: string,
+    profile: string,
+    email: string,
+    credentials: string
+}
+
+type User = {
+    uuid: string,
+    email: string,
+    google_id: string,
+    username: string,
+    profile_picture: string,
+    friends: User[],
+    create_time: number
+}
+
+type CustomUserToken = {
+    user_id: string,
+    email  : string,
+    username : string
+}
+
 import type { 
     DatabaseResponse,
     DatabaseUser,

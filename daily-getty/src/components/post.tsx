@@ -132,8 +132,8 @@ const Post = ({ userObj, post }) => {
                     <Button endIcon={<IosShareIcon />} onClick={handleShare} />
                 </CardActions>
             </Box>
-         </Card>
-            
+        </Card>
+
 
     );
 
