@@ -14,7 +14,7 @@ import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
-import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
+import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from "../../pages/database/posts";
 import { useSession } from 'next-auth/react';
 import { request } from 'http';
 import { Container, style } from '@mui/system';
@@ -30,8 +30,7 @@ const visitProfile = () => { } //Visit Profile
 
 const Post = ({ userObj, post }) => {
 
-    console.log("THE POST IS:")
-    console.log(post)
+    console.log("JSHLKFJHALSKJHLAKJFHLKASJHDLKAJSHDLKJASHD");
     const { data: session, status } = useSession();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
@@ -57,8 +56,6 @@ const Post = ({ userObj, post }) => {
         console.log({ resp: resp })
         setUserLikesPost(resp)
     }
-
-    console.log(userLikesPost)
 
     useEffect(() => {
 
