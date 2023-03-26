@@ -90,7 +90,7 @@ const Post = ({ userObj, post }) => {
             <div
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}>
-                {isHovering ? (
+                {/* {isHovering ? (
                     <div style={{ height: 500, width: 450 }}>
                         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                             <Typography>
@@ -102,7 +102,7 @@ const Post = ({ userObj, post }) => {
                             </Typography>
                         </Box>
                     </div>
-                ) : (
+                ) : ( */}
                     < CardMedia
                         component="img"
                         alt={alt}
@@ -110,7 +110,7 @@ const Post = ({ userObj, post }) => {
                         width={500}
                         image={src}
                     />
-                )}
+                {/* )} */}
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
                 <Link href={`/${profileLink}`}>
@@ -126,7 +126,15 @@ const Post = ({ userObj, post }) => {
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
                     <Button endIcon={<IosShareIcon />} onClick={handleShare} />
+                   
                 </CardActions>
+                <Typography>
+                                    <b>Question: </b> {postQuestion}
+                                    <br></br>
+                                    <b>User Response: </b> {alt}
+                                    <br></br>
+                                    <b>Date: </b>{date}
+                            </Typography>
             </Box>
         </Card >
     );
