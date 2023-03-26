@@ -85,7 +85,7 @@ const Post = ({ userObj, post }) => {
     }
 
     return (
-        <Card raised sx={{ display: 'flex', width: '800px', mt: 5 }}>
+        <Card raised sx={{ display: 'flex', width: '800px', mt: 5, boxShadow: 4 }}>
             {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
             <div
                 onMouseEnter={() => setIsHovered(true)}
@@ -103,13 +103,13 @@ const Post = ({ userObj, post }) => {
                         </Box>
                     </div>
                 ) : ( */}
-                    < CardMedia
-                        component="img"
-                        alt={alt}
-                        height={500}
-                        width={500}
-                        image={src}
-                    />
+                < CardMedia
+                    component="img"
+                    alt={alt}
+                    height={500}
+                    width={500}
+                    image={src}
+                />
                 {/* )} */}
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
@@ -122,19 +122,16 @@ const Post = ({ userObj, post }) => {
                         </Typography>
                     </Box>
                 </Link>
-
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', p: 3 }}>
+                    <Typography>Question: {postQuestion}</Typography>
+                    <Typography>User Response: {alt}</Typography>
+                    <Typography>Date Posted: {date}</Typography>
+                </Box>
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
                     <Button endIcon={<IosShareIcon />} onClick={handleShare} />
-                   
                 </CardActions>
-                <Typography>
-                                    <b>Question: </b> {postQuestion}
-                                    <br></br>
-                                    <b>User Response: </b> {alt}
-                                    <br></br>
-                                    <b>Date: </b>{date}
-                            </Typography>
+
             </Box>
         </Card >
     );
