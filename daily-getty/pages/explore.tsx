@@ -52,22 +52,25 @@ export default function Asynchronous() {
 
             const post_id = year + "_" + month + "_" + day;
 
-            user_ids.map(async function (user) {
+            const promises = user_ids.map(async function (user) {
 
                 let post = await requestPostFromUserById(user.id, post_id);
 
-                if(post.post.image){
-                    
-                    posts.push(post.post);
-                }
+                return post.post
 
             });
-            return posts;
+
+            const returned_promises = await Promise.all(promises);
+            
+            return returned_promises.filter(post => {
+                return post.id
+            });
+
             
         }
 
         loadUserPosts()
-        .then(posts => (setExplorefeed(posts)))
+        .then(setExplorefeed)
         .catch(console.error);
 
     }, [loading])
@@ -75,16 +78,6 @@ export default function Asynchronous() {
     useEffect(() => {
         if (!open) setUsers([]);
     }, [open]);
-
-    console.log("before return")
-    console.log(explorefeed)
-
-    function test(explorefeed) {
-        console.log(explorefeed);
-        for(let i=0; i<explorefeed.length; i++){
-            console.log(explorefeed[i]);
-        }
-    }
     
     return (
         <>
@@ -150,15 +143,12 @@ export default function Asynchronous() {
                 )}
             />
 
-            {test(explorefeed)}
-
             <Stack spacing={5}>
                     <ImageList cols={1} rowHeight={600}>
 
                         {
                             
                             explorefeed.map((post, i) => (
-                                // <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
                                 <ImageListItem key={i} >
                                     <Post userObj={user} post={post} key={post.user_id + "-" + post.id} />
                                 </ImageListItem>
