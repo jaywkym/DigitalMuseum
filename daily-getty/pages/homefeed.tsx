@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import Stack from '@mui/material/Stack';
@@ -14,8 +14,9 @@ import NavBar from '@/src/components/bottomnav';
 import { useGetHomefeed } from './database/posts';
 import { CircularProgress } from '@mui/material';
 import { green } from '@mui/material/colors';
-import { DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
+import { requestFriendsForUser } from './database/profile';
 
 export default function HomeFeed() {
 
@@ -23,10 +24,82 @@ export default function HomeFeed() {
     const { data: session, status } = useSession();
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const [homefeed, homefeedSuccess, homefeedLoading, getHomefeed] = useGetHomefeed(user.id);
+    const [friends, setFriends] = useState([] as string[]);
+    const [posts, setPosts] = useState([] as DatabasePost[])
+
+    const friends_updated = friends.length !== 0;
 
     useEffect(() => {
-        getHomefeed()
-    }, [user])
+
+        async function pullFriends() {
+            const dbFriendsResponse = await requestFriendsForUser(user.id);
+
+            if(!dbFriendsResponse.success)
+                return;
+
+            if(!dbFriendsResponse.friends)
+                return;
+
+            setFriends(dbFriendsResponse.friends.following);
+        }
+
+        pullFriends()
+        .catch(console.error);
+        //getHomefeed()
+    }, [user.id])
+
+    useEffect(() => {
+        if(!friends_updated)
+            return;
+
+
+        async function pullBlankPostsFromFriends() {
+
+            const blankPosts: DatabasePost[] = [];
+
+            const promise = await friends.map(async (friend_id) => {
+
+                const request = {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: friend_id,
+                    })
+                }
+
+                const dbResponse = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
+                const json = await dbResponse.json() as DatabaseUserPostsResponse;
+                if(!json.success)
+                    return;
+
+                if(!json.posts)
+                    return;
+
+                const user_posts: DatabasePost[] = Object.keys(json.posts).map((post_id) => {
+                    return json.posts[post_id] as DatabasePost
+                })
+
+                blankPosts.push(...user_posts)
+                
+            });
+
+            await Promise.all(promise);
+
+            blankPosts.sort((a, b) => {return a.id < b.id});
+
+            console.log(blankPosts)
+
+        }
+
+        pullBlankPostsFromFriends()
+        .catch(console.error)
+
+    }, [friends_updated])
+
+
+    // console.log({friends: friends, user_id: user.id})
 
     let homefeed_map = homefeed ? homefeed : {}
 
