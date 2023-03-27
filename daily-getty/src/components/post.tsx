@@ -5,6 +5,7 @@ import ImageListItem from '@mui/material/ImageListItem';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import DownloadIcon from '@mui/icons-material/Download';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Avatar, Skeleton, ToggleButton } from '@mui/material';
@@ -27,7 +28,7 @@ interface PostProps {
     likes: string;
 }
 
-const handleShare = () => { } //Overlay Share Window
+
 const visitProfile = () => { } //Visit Profile
 
 const Post = ({ userObj, post }) => {
@@ -48,6 +49,9 @@ const Post = ({ userObj, post }) => {
     const profileImage = postProfile ? postProfile.image : ''
     const profileLink = postProfile ? postProfile.id : ''
 
+
+
+
     const [clicked, setClicked] = useState(false);
 
     const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
@@ -66,6 +70,22 @@ const Post = ({ userObj, post }) => {
         if (resp_profile.id)
             setPostProfile(resp_profile)
     }
+
+    const contentType = "image/png"
+
+    const handleShare = (event) => { 
+
+        console.log(event.target)
+        console.log(post.image)
+        const base64Data = post.image.b64;
+    
+        const linkSource = `data:${contentType};base64,${base64Data}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = post.userPrompt;
+        downloadLink.click();
+    
+    } //Overlay Share Window
 
     useEffect(() => {
 
@@ -147,7 +167,7 @@ const Post = ({ userObj, post }) => {
                     }
                         }> <ThumbUpIcon/>
                     </ToggleButton>}
-                    {/* <Button endIcon={<IosShareIcon />} onClick={handleShare} /> */}
+                    <Button endIcon={<DownloadIcon />} onClick={handleShare} />
                 </CardActions>
 
             </Box>

@@ -87,3 +87,7 @@ export type UserLikesPost = {
   error: DatabaseError
 }
 
+export type LikesResponse = {
+  likes: string [],
+}
+
