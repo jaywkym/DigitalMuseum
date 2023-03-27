@@ -11,7 +11,7 @@ import { Container } from '@mui/system';
 import HomeSearch from '@/src/components/homesearch';
 import Post from '@/src/components/post';
 import NavBar from '@/src/components/bottomnav';
-import { useGetHomefeed } from './database/posts';
+import { requestPostFromUserById } from './database/posts';
 import { CircularProgress } from '@mui/material';
 import { green } from '@mui/material/colors';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
@@ -23,11 +23,11 @@ export default function HomeFeed() {
     const [value, setValue] = React.useState(0);
     const { data: session, status } = useSession();
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
-    const [homefeed, homefeedSuccess, homefeedLoading, getHomefeed] = useGetHomefeed(user.id);
     const [friends, setFriends] = useState([] as string[]);
     const [posts, setPosts] = useState([] as DatabasePost[])
 
     const friends_updated = friends.length !== 0;
+    const posts_updated = posts.length !== 0;
 
     useEffect(() => {
 
@@ -45,7 +45,7 @@ export default function HomeFeed() {
 
         pullFriends()
         .catch(console.error);
-        //getHomefeed()
+
     }, [user.id])
 
     useEffect(() => {
@@ -87,7 +87,8 @@ export default function HomeFeed() {
 
             await Promise.all(promise);
 
-            blankPosts.sort((a, b) => {return a.id < b.id});
+            blankPosts.sort((a, b) => {return a.id < b.id? 1 : 0});
+            setPosts(blankPosts)
 
             console.log(blankPosts)
 
@@ -98,10 +99,47 @@ export default function HomeFeed() {
 
     }, [friends_updated])
 
+    useEffect(() => {
+        if(!posts_updated)
+            return;
 
-    // console.log({friends: friends, user_id: user.id})
+        async function pullAllPosts() {
 
-    let homefeed_map = homefeed ? homefeed : {}
+            const promises = posts.map(async (blank_post) => {
+                
+                const dbResponse = await requestPostFromUserById(blank_post.user_id, blank_post.id)
+                if(!dbResponse.success)
+                    return;
+
+                if(!dbResponse.post)
+                    return;
+
+                const post = dbResponse.post;
+                let current_index = 0;
+
+                posts.forEach((current_post) => {
+
+                    if(current_post.id == post.id && current_post.user_id == post.user_id) {
+                        posts[current_index].image.b64 = post.image.b64
+                        console.log(posts[current_index])
+                        return;
+                    }
+
+                    ++current_index;
+
+                })
+
+                return dbResponse.post
+
+            });
+
+            await Promise.all(promises);
+        }
+
+        pullAllPosts()
+        .catch(console.error)
+
+    }, [posts_updated])
 
     return (
         <>
@@ -114,7 +152,7 @@ export default function HomeFeed() {
                     <Container fixed>
                         <CssBaseline />
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                            {homefeedLoading && !homefeedSuccess && (
+                            {!posts_updated && (
                                 <CircularProgress
                                     size={68}
                                     sx={{
@@ -128,28 +166,16 @@ export default function HomeFeed() {
                                 <ImageList cols={1} rowHeight={600}>
 
                                     {
-                                        !homefeedLoading && homefeedSuccess && Object.keys(homefeed_map).map((post) => (
-                                            // <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
-                                            <ImageListItem key={homefeed[post].id} >
-                                                <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
+                                        posts_updated && posts.map((post) => (
+
+                                            <ImageListItem key={'li-' + post.user_id + '-' + post.id} >
+                                                <Post userObj={user} post={post} key={'p-' + post.user_id + '-' + post.id} />
                                             </ImageListItem>
                                         ))
                                     }
 
                                 </ImageList>
                             </Stack>
-
-                            {/* </center> */}
-
-
-                            {/* <List>
-                            {
-                                !homefeedLoading && homefeedSuccess &&  Object.keys(homefeed_map).map((post) => (
-                                    <Post userObj={user} post={homefeed[post]} key={homefeed[post].id} />
-                                ))
-                            }
-                            
-                        </List> */}
                         </Box>
                     </Container>
                     <NavBar />
