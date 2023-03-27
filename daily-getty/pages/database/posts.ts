@@ -167,7 +167,7 @@ export function useGetPostForUser(user_id: string, post_id: string):
     return [post, success, loading, getPost];
 }
 
-export function useLikeImage(user_id: string, post_id: string):
+export function useLikeImage(user_id: string, post_id: string, owner_id: string):
     [boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
@@ -188,7 +188,7 @@ export function useLikeImage(user_id: string, post_id: string):
         setLoading(true);
         setSuccess(false);
 
-        const dbResponse = await requestLikePost(user_id, post_id);
+        const dbResponse = await requestLikePost(user_id, post_id, owner_id);
 
         setSuccess(dbResponse.success)
         setLoading(false)
@@ -199,7 +199,7 @@ export function useLikeImage(user_id: string, post_id: string):
 
 }
 
-export function useUnlikeImage(user_id: string, post_id: string):
+export function useUnlikeImage(user_id: string, post_id: string, owner_id: string):
     [boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
@@ -220,7 +220,8 @@ export function useUnlikeImage(user_id: string, post_id: string):
         setLoading(true);
         setSuccess(false);
 
-        const dbResponse = await requestUnlikePost(user_id, post_id);
+        
+        const dbResponse = await requestUnlikePost(user_id, post_id, owner_id);
 
         setSuccess(dbResponse.success)
         setLoading(false)
@@ -231,7 +232,7 @@ export function useUnlikeImage(user_id: string, post_id: string):
 
 }
 
-export function useUserLikesImage(user_id: string, post_id: string):
+export function useUserLikesImage(user_id: string, post_id: string, owner_id: string):
     [boolean, boolean, () => Promise<void>] {
 
     const [success, setSuccess] = useState(false);
@@ -252,7 +253,7 @@ export function useUserLikesImage(user_id: string, post_id: string):
         setLoading(true);
         setSuccess(false);
 
-        const dbResponse = await requestUnlikePost(user_id, post_id);
+        const dbResponse = await requestUnlikePost(user_id, post_id, owner_id);
 
         setSuccess(dbResponse.success)
         setLoading(false)
@@ -369,7 +370,8 @@ export function useGetHomefeed(user_id: string):
 
 export async function requestLikePost(
     user_id: string,
-    post_id: string):
+    post_id: string,
+    owner_id: string):
     Promise<DatabaseResponse> {
 
     const request = {
@@ -379,7 +381,8 @@ export async function requestLikePost(
         },
         body: JSON.stringify({
             user_id: user_id,
-            post_id: post_id
+            post_id: post_id,
+            owner_id: owner_id
         })
     }
 
@@ -396,10 +399,13 @@ export async function requestLikePost(
     }
 }
 
-export async function requestUnlikePost(
+export async function  requestUnlikePost(
     user_id: string,
-    post_id: string):
+    post_id: string,
+    owner_id: string):
     Promise<DatabaseResponse> {
+
+    
 
     const request = {
         method: 'POST',
@@ -408,7 +414,8 @@ export async function requestUnlikePost(
         },
         body: JSON.stringify({
             user_id: user_id,
-            post_id: post_id
+            post_id: post_id,
+            owner_id: owner_id
         })
     }
 
@@ -425,7 +432,8 @@ export async function requestUnlikePost(
 
 export async function requestIfUserLikesPost(
     user_id: string,
-    post_id: string):
+    post_id: string,
+    owner_id: string):
     Promise<boolean> {
 
     const request = {
@@ -435,7 +443,8 @@ export async function requestIfUserLikesPost(
         },
         body: JSON.stringify({
             user_id: user_id,
-            post_id: post_id
+            post_id: post_id,
+            owner_id: owner_id
         })
     }
 

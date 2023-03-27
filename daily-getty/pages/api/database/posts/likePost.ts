@@ -28,7 +28,7 @@ export default async function likePost (
 
     const body = req.body;
 
-    if(!body.user_id || !body.post_id) {
+    if(!body.user_id || !body.post_id || !body.owner_id) {
         res.status(418).json(
             generateDbResponse(
                 false, 
@@ -41,9 +41,10 @@ export default async function likePost (
 
     const user_id = body.user_id;
     const post_id = body.post_id;
+    const owner_id = body.owner_id;
 
     const db = database;
-    const dbref = ref(db, `posts/${user_id}/${post_id}`)
+    const dbref = ref(db, `posts/${owner_id}/${post_id}`)
 
     let post = await asyncOnValue(dbref);
     if(!post) {
@@ -80,7 +81,7 @@ export default async function likePost (
 
     post.likes = userLiked;
 
-    set(ref(db, `posts/${user_id}/${post_id}`), post)
+    set(ref(db, `posts/${owner_id}/${post_id}`), post)
 
     res.status(200).json(
         generateDbResponse(

@@ -5,8 +5,9 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Avatar, Skeleton } from '@mui/material';
+import { Avatar, Skeleton, ToggleButton } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Container } from '@mui/system';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
@@ -16,6 +17,7 @@ import Link from 'next/link';
 import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
 import { useSession } from 'next-auth/react';
 import { request } from 'http';
+import { ToggleOnRounded } from '@mui/icons-material';
 
 interface PostProps {
     user: string;
@@ -28,8 +30,8 @@ const visitProfile = () => { } //Visit Profile
 
 const Post = ({ userObj, post }) => {
 
-    console.log("THE POST IS:")
-    console.log(post)
+    //console.log("THE POST IS:")
+    //console.log(post)
     const { data: session, status } = useSession();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
@@ -46,25 +48,28 @@ const Post = ({ userObj, post }) => {
     const profileImage = postProfile ? postProfile.image : ''
     const profileLink = postProfile ? postProfile.id : ''
 
-    const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id)
-    const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id)
+    const [clicked, setClicked] = useState(false);
+
+    const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
+    const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id, post.user_id)
+
     const [userLikesPost, setUserLikesPost] = useState(false);
 
     async function getUserLikesPost() {
-        const resp = await requestIfUserLikesPost(user.id, post.id);
+        const resp = await requestIfUserLikesPost(user.id, post.id, post.user_id);
         console.log({ resp: resp })
-        setUserLikesPost(resp)
+        setClicked(resp)
+    }
+    
+    async function getUserInfo() {
+        const resp_profile = await pull_user({ id: post.user_id } as DatabaseUser);
+        if (resp_profile.id)
+            setPostProfile(resp_profile)
     }
 
-    console.log(userLikesPost)
+   // console.log(userLikesPost)
 
     useEffect(() => {
-
-        async function getUserInfo() {
-            const resp_profile = await pull_user({ id: post.user_id } as DatabaseUser);
-            if (resp_profile.id)
-                setPostProfile(resp_profile)
-        }
 
         getUserInfo()
             .catch(console.error)
@@ -75,7 +80,9 @@ const Post = ({ userObj, post }) => {
     }, [post])
 
     async function handleLike() {
-        if (userLikesPost)
+        console.log(post.id)
+        console.log(post.user_id)
+        if (clicked)
             await unlikePost()
         else
             await likePost()
@@ -118,17 +125,22 @@ const Post = ({ userObj, post }) => {
                         {/*<Button onClick={visitProfile}>*/}
                         <Avatar alt={userObj.name} src={profileImage} sx={{ mr: 2 }} />
                         <Typography variant="body1" component="h1">
-                            @{profileName}
+                            <b>@{profileName}</b>
                         </Typography>
                     </Box>
                 </Link>
                 <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', p: 3 }}>
-                    <Typography>Question: {postQuestion}</Typography>
-                    <Typography>User Response: {alt}</Typography>
-                    <Typography>Date Posted: {date}</Typography>
+                    <Typography><b>Question:</b> {postQuestion}</Typography>
+                    <Typography><b>User Response:</b> {alt}</Typography>
+                    <Typography><b>Date Posted:</b> {date}</Typography>
                 </Box>
                 <CardActions>
-                    < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
+                    <ToggleButton value = "check" selected={clicked} onClick= {() => {
+                        handleLike();
+                        setClicked(!clicked);
+                    }
+                        }> <ThumbUpOffAltIcon/>
+                    </ToggleButton>
                     {/* <Button endIcon={<IosShareIcon />} onClick={handleShare} /> */}
                 </CardActions>
 
