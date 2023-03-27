@@ -47,17 +47,19 @@ const MuseForm = () => {
 
     //DallE API CALL
     const [prompt, setPrompt] = React.useState(''); //PROMPT TO GENERATE IMAGE
+    const [style, setStyle] = React.useState(null);
+
 
      //GENERATE PROMPT
      const [question, setQuestion] = React.useState('');
 
-    const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage1, loadingImage2, loadingImage3, generateImage] = useImage(prompt, "1"); //INCORPORATE ERROR HANDLING
+    const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage1, loadingImage2, loadingImage3, generateImage] = useImage(prompt, style, "1"); //INCORPORATE ERROR HANDLING
     const { data: session, status } = useSession()
     let user_id = status === 'authenticated' ? (session.user as any).id : "";
     let createdStatic;
     const [b64, setB64] = React.useState('');
     const [created, setCreated] = React.useState();
-
+   
 
     const [generatePost] = useAddPost(b64, user_id, prompt, created);
     //console.log(loadingImage);
@@ -69,6 +71,10 @@ const MuseForm = () => {
     //IMAGE SELECTION
     const [selected, setSelected] = React.useState(false);
 
+    const changePrompting = (event) => {
+        console.log(event.target.value)
+        setStyle(" created in the style of " + event.target.value)
+    }
 
     const imageClick = (event) => {
         let splitB64 = event.target.src.split(',')[1];
@@ -116,7 +122,7 @@ const MuseForm = () => {
 
     const handleButtonClick = () => {
         setGenerate(true); //Open Modal
-        setPrompt(prompt + "in the style of " + artStyle); //Update Prompt with Artstyle Value
+        //setPrompt(prompt + " created in the style of " + artStyle); //Update Prompt with Artstyle Value
         generateImage(); //Generate Image
     };
 
@@ -176,11 +182,11 @@ const MuseForm = () => {
                             value={artStyle}
                             onChange={handleChange}
                         >
-                            <FormControlLabel value="realism" control={<Radio />} label="Realism" />
-                            <FormControlLabel value="animated" control={<Radio />} label="Animated" />
-                            <FormControlLabel value="pop art" control={<Radio />} label="Pop Art" />
-                            <FormControlLabel value="abstract" control={<Radio />} label="Abstract" />
-                            <FormControlLabel value="retro" control={<Radio />} label="Retro" />
+                            <FormControlLabel value="realism" control={<Radio />} onClick={changePrompting} label="Realism" />
+                            <FormControlLabel value="animated" control={<Radio />} onClick={changePrompting} label="Animated" />
+                            <FormControlLabel value="pop art" control={<Radio />} onClick={changePrompting} label="Pop Art" />
+                            <FormControlLabel value="abstract" control={<Radio />} onClick={changePrompting} label="Abstract" />
+                            <FormControlLabel value="retro" control={<Radio />} onClick={changePrompting} label="Retro" />
                         </RadioGroup>
                     </FormControl>
                 </Box>

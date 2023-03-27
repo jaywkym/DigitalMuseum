@@ -1,6 +1,8 @@
 import { database } from "../../../../firebase/clientApp";
 import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 import type { 
     DatabaseError, 
     DatabaseUserPostResponse,
@@ -14,6 +16,7 @@ export default async function unlikePost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
+    console.log("INSIDE THIS BITCH \n\n\n\n")
     /* Only accept POST requests */
     if(req.method !== 'POST') {
         res.status(405).json(
@@ -28,7 +31,7 @@ export default async function unlikePost (
 
     const body = req.body;
 
-    if(!body.user_id || !body.post_id) {
+    if(!body.user_id || !body.post_id || !body.owner_id) {
         res.status(418).json(
             generateDbResponse(
                 false, 
@@ -41,9 +44,10 @@ export default async function unlikePost (
 
     const user_id = body.user_id;
     const post_id = body.post_id;
+    const owner_id = body.owner_id;
 
     const db = database;
-    const dbref = ref(db, `posts/${user_id}/${post_id}`)
+    const dbref = ref(db, `posts/${owner_id}/${post_id}`)
 
     let post = await asyncOnValue(dbref);
     if(!post) {
@@ -63,7 +67,10 @@ export default async function unlikePost (
 
     let userLiked = post.likes;
 
-    if(!userLiked.includes(user_id)) {
+    const session = await getServerSession(req, res, authOptions);
+    const session_id = (session.user as any).id
+
+    if(!userLiked.includes(session_id)) {
         res.status(200).json(
             generateDbResponse(
                 false, 
@@ -74,12 +81,12 @@ export default async function unlikePost (
         return;
     }
 
-    const index = userLiked.indexOf(user_id, 0)
+    const index = userLiked.indexOf(session_id, 0)
     userLiked.splice(index, 1);
 
     post.likes = userLiked;
 
-    set(ref(db, `posts/${user_id}/${post_id}`), post)
+    set(ref(db, `posts/${owner_id}/${post_id}`), post)
 
     res.status(200).json(
         generateDbResponse(

@@ -1,6 +1,7 @@
 import { database } from "../../../../firebase/clientApp";
 import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 import type { 
     DatabaseError, 
     DatabaseUserPostResponse,
@@ -8,6 +9,8 @@ import type {
     PostExistence,
     DatabaseResponse
 }  from "../../../../types/FirebaseResponseTypes";
+import { getServers } from "dns";
+import { getServerSession } from "next-auth/next";
 
 export default async function userLikesPost (
     req: NextApiRequest,
@@ -28,7 +31,7 @@ export default async function userLikesPost (
 
     const body = req.body;
 
-    if(!body.user_id || !body.post_id) {
+    if(!body.user_id || !body.post_id || !body.owner_id) {
         res.status(418).json(
             generateDbResponse(
                 false, 
@@ -41,9 +44,10 @@ export default async function userLikesPost (
 
     const user_id = body.user_id;
     const post_id = body.post_id;
+    const owner_id = body.owner_id;
 
     const db = database;
-    const dbref = ref(db, `posts/${user_id}/${post_id}`)
+    const dbref = ref(db, `posts/${owner_id}/${post_id}`)
 
     let post = await asyncOnValue(dbref);
     if(!post) {
@@ -63,9 +67,13 @@ export default async function userLikesPost (
 
     let userLiked = post.likes;
 
-    console.log(userLiked)
+    //console.log(userLiked)
+    console.log("RECEIVING SESSION")
+    const session = await getServerSession(req, res, authOptions);
+    console.log(session)
+    const session_id = (session.user as any).id
 
-    const userLikesPost = userLiked.includes(user_id)
+    const userLikesPost = userLiked.includes(session_id)
 
     console.log({
         list: userLiked,
