@@ -50,8 +50,8 @@ const MuseForm = () => {
     const [style, setStyle] = React.useState(null);
 
 
-     //GENERATE PROMPT
-     const [question, setQuestion] = React.useState('');
+    //GENERATE PROMPT
+    const [question, setQuestion] = React.useState('');
 
     const [b64_image1, b64_image2, b64_image3, created1, created2, created3, error, loadingImage1, loadingImage2, loadingImage3, generateImage] = useImage(prompt, style, "1"); //INCORPORATE ERROR HANDLING
     const { data: session, status } = useSession()
