@@ -122,7 +122,7 @@ export default function Profile() {
                         <List>
                             {
                                 Object.keys(posts_map).map((post) => (
-                                    <Post userObj={user} post={posts[post]} key={posts[post].id} />
+                                    <Post _userObj={user} _post={posts[post]} key={posts[post].id} />
                                 ))
                             }
                         </List>

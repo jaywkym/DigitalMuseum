@@ -31,7 +31,10 @@ interface PostProps {
 
 const visitProfile = () => { } //Visit Profile
 
-const Post = ({ userObj, post }) => {
+const Post = ({ _userObj, _post }) => {
+
+    const userObj = _userObj as DatabaseUser;
+    const post = _post as DatabasePost;
 
     const { data: session, status } = useSession();
 
@@ -96,6 +99,10 @@ const Post = ({ userObj, post }) => {
             .catch(console.error)
 
     }, [post])
+
+    useEffect(() => {
+        console.log(user.id)
+    }, [user.id])
 
     async function handleLike() {
         console.log({userLikesPost: userLikesPost})

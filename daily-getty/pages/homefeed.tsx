@@ -26,8 +26,8 @@ export default function HomeFeed() {
     const [friends, setFriends] = useState([] as string[]);
     const [posts, setPosts] = useState([] as DatabasePost[])
 
-    const friends_updated = friends.length !== 0;
-    const posts_updated = posts.length !== 0;
+    const friends_updated = friends && friends.length !== 0;
+    const posts_updated = posts && posts.length !== 0;
 
     useEffect(() => {
 
@@ -40,7 +40,10 @@ export default function HomeFeed() {
             if(!dbFriendsResponse.friends)
                 return;
 
-            setFriends(dbFriendsResponse.friends.following);
+            if(!dbFriendsResponse.friends.following)
+                setFriends([] as string[])
+            else
+                setFriends(dbFriendsResponse.friends.following);
         }
 
         pullFriends()
@@ -89,8 +92,6 @@ export default function HomeFeed() {
 
             blankPosts.sort((a, b) => {return a.id < b.id? 1 : 0});
             setPosts(blankPosts)
-
-            console.log(blankPosts)
 
         }
 
@@ -169,7 +170,7 @@ export default function HomeFeed() {
                                         posts_updated && posts.map((post) => (
 
                                             <ImageListItem key={'li-' + post.user_id + '-' + post.id} >
-                                                <Post userObj={user} post={post} key={'p-' + post.user_id + '-' + post.id} />
+                                                <Post _userObj={user} _post={post} key={'p-' + post.user_id + '-' + post.id} />
                                             </ImageListItem>
                                         ))
                                     }
