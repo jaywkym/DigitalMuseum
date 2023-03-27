@@ -87,7 +87,7 @@ export default function HomeFeed() {
 
             await Promise.all(promise);
 
-            blankPosts.sort((a, b) => {return a.id < b.id as any});
+            blankPosts.sort((a, b) => {return a.id < b.id? 1 : 0});
             setPosts(blankPosts)
 
             console.log(blankPosts)
