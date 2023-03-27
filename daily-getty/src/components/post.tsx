@@ -8,13 +8,14 @@ import Typography from '@mui/material/Typography';
 import { Avatar, Skeleton, ToggleButton } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Container } from '@mui/system';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
-import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
+import { requestIfUserLikesPost, useLikeImage, useUnlikeImage, useUserLikesImage } from '@/pages/database/posts';
 import { useSession } from 'next-auth/react';
 import { request } from 'http';
 import { ToggleOnRounded } from '@mui/icons-material';
@@ -53,11 +54,11 @@ const Post = ({ userObj, post }) => {
     const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
     const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id, post.user_id)
 
-    const [userLikesPost, setUserLikesPost] = useState(false);
+    const [userLikesPost, setUserLikesPost] = useState(false)
 
     async function getUserLikesPost() {
         const resp = await requestIfUserLikesPost(user.id, post.id, post.user_id);
-        console.log({ resp: resp })
+        setUserLikesPost(resp)
         setClicked(resp)
     }
     
@@ -67,7 +68,6 @@ const Post = ({ userObj, post }) => {
             setPostProfile(resp_profile)
     }
 
-   // console.log(userLikesPost)
 
     useEffect(() => {
 
@@ -80,14 +80,14 @@ const Post = ({ userObj, post }) => {
     }, [post])
 
     async function handleLike() {
-        console.log(post.id)
-        console.log(post.user_id)
-        if (clicked)
+        console.log({userLikesPost: userLikesPost})
+        if (userLikesPost)
             await unlikePost()
         else
             await likePost()
 
         await getUserLikesPost()
+        console.log({userLikesPost: userLikesPost})
 
     }
 
@@ -135,12 +135,18 @@ const Post = ({ userObj, post }) => {
                     <Typography><b>Date Posted:</b> {date}</Typography>
                 </Box>
                 <CardActions>
-                    <ToggleButton value = "check" selected={clicked} onClick= {() => {
+                    {!userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
                         handleLike();
                         setClicked(!clicked);
                     }
                         }> <ThumbUpOffAltIcon/>
-                    </ToggleButton>
+                    </ToggleButton>}
+                    {userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
+                        handleLike();
+                        setClicked(!clicked);
+                    }
+                        }> <ThumbUpIcon/>
+                    </ToggleButton>}
                     {/* <Button endIcon={<IosShareIcon />} onClick={handleShare} /> */}
                 </CardActions>
 
