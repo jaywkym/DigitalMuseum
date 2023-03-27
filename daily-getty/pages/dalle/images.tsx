@@ -15,7 +15,7 @@ import type {
  * @returns [b64_image, error, loading, generate] A base64 encoded image, an error, a
  *          loading boolean, and a function to generate the image.
  */
-const useImage = (prompt: string, amount: string): 
+const useImage = (prompt: string, style: string, amount: string): 
     [string, string, string, string, string, string, DalleError, boolean, boolean, boolean, () => void] => {
 
     const [b64_image1, setImage1]: [string, Dispatch<string>] = useState('');
@@ -40,6 +40,10 @@ const useImage = (prompt: string, amount: string):
         setLoading1(true);
         setLoading2(true);
         setLoading3(true);
+
+        console.log("THE PROMPT IS:   ")
+        console.log(prompt + style); 
+        prompt = prompt + style;
 
         const request = {
             method: 'POST',

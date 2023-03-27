@@ -48,15 +48,19 @@ export default async function request_image_handler(
         return;
     }
 
+
     const prompt = req.body.prompt;
     const amount = req.body.amount;
 
+    console.log("AM I EVEN GETTING IN????")
+    console.log(prompt)
     const image  = await requestToDalleAPI(prompt, amount);
-
+    console.log("fuck?")
     console.log(image)
 
     /* ERROR generating image for various reasons */
     if(!image.success) {
+        console.log("do i go in here at all?")
         res.status(200).json(generateImageResponse(false, amount, undefined, image))
 
         return;
@@ -114,17 +118,17 @@ export default async function request_image_handler(
 
 
     //THIS SHOULD ALL BE IN A DIFFERENT SECTION!!!
-    const uploadInfo: DatabasePost = {
-        id: null,
-        user_id: user_obj.id,
-        userPrompt: prompt,
-        givenPrompt: null, 
-        likes: [],
-        image: {
-            created: image.created as Number,
-            b64: image.data[0].b64_json as String
-        } as any
-    }
+    // const uploadInfo: DatabasePost = {
+    //     id: null,
+    //     user_id: user_obj.id,
+    //     userPrompt: prompt,
+    //     givenPrompt: null, 
+    //     likes: [],
+    //     image: {
+    //         created: image.created as Number,
+    //         b64: image.data[0].b64_json as String
+    //     } as any
+    // }
 
     //const resp = await addPostApi(uploadInfo);
 
@@ -163,9 +167,10 @@ async function requestToDalleAPI(prompt: string, amount: string) {
     try {
 
         /* Fetch images from DALLE api */
+        console.log("here in try?")
         const resp = await fetch(url, dalle_request);
         const json = await resp.json()
-
+        console.log("end of try?")
         /* TODO - Handle error for successful request but invalid parameters (Invalid api key, invalid request...) */
         if(json.error) {
             json.error.success = false
