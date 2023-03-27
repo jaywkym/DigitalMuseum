@@ -136,7 +136,7 @@ export default function Profile() {
                         <List>
                             {
                                 Object.keys(posts_map).map((post) => (
-                                    <Post userObj={pageProfile} post={posts[post]} key={posts[post].id} />
+                                    <Post _userObj={pageProfile} _post={posts[post]} key={posts[post].id} />
                                 ))
                             }
                             

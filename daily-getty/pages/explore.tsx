@@ -150,7 +150,7 @@ export default function Asynchronous() {
                             
                             explorefeed.map((post, i) => (
                                 <ImageListItem key={i} >
-                                    <Post userObj={user} post={post} key={post.user_id + "-" + post.id} />
+                                    <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} />
                                 </ImageListItem>
                             ))
                         }
