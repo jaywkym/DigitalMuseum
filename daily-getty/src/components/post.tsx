@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Avatar, Skeleton } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Container } from '@mui/system';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
@@ -46,12 +47,12 @@ const Post = ({ userObj, post }) => {
     const profileImage = postProfile ? postProfile.image : ''
     const profileLink = postProfile ? postProfile.id : ''
 
-    const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id)
-    const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id)
+    const [likeSuccess, likeLoading, likePost] = useLikeImage(post.user_id, post.id)
+    const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(post.user_id, post.id)
     const [userLikesPost, setUserLikesPost] = useState(false);
 
     async function getUserLikesPost() {
-        const resp = await requestIfUserLikesPost(user.id, post.id);
+        const resp = await requestIfUserLikesPost(post.user_id, post.id);
         console.log({ resp: resp })
         setUserLikesPost(resp)
     }
@@ -128,7 +129,8 @@ const Post = ({ userObj, post }) => {
                     <Typography>Date Posted: {date}</Typography>
                 </Box>
                 <CardActions>
-                    < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
+                    {!userLikesPost && < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />}
+                    {userLikesPost && < Button startIcon={< ThumbUpIcon />} onClick={handleLike} />}
                     {/* <Button endIcon={<IosShareIcon />} onClick={handleShare} /> */}
                 </CardActions>
 
