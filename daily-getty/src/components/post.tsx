@@ -129,7 +129,7 @@ const Post = ({ userObj, post }) => {
                 </Box>
                 <CardActions>
                     < Button startIcon={< ThumbUpOffAltIcon />} onClick={handleLike} />
-                    <Button endIcon={<IosShareIcon />} onClick={handleShare} />
+                    {/* <Button endIcon={<IosShareIcon />} onClick={handleShare} /> */}
                 </CardActions>
 
             </Box>
