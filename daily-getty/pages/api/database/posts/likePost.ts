@@ -1,6 +1,8 @@
 import { database } from "../../../../firebase/clientApp";
 import { ref, onValue, set } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 import type { 
     DatabaseError, 
     DatabaseUserPostResponse,
@@ -66,7 +68,10 @@ export default async function likePost (
 
     console.log(userLiked)
 
-    if(userLiked.includes(user_id)) {
+    const session = await getServerSession(req, res, authOptions);
+    const session_id = (session.user as any).id;
+
+    if(userLiked.includes(session_id)) {
         res.status(200).json(
             generateDbResponse(
                 false, 
@@ -77,7 +82,7 @@ export default async function likePost (
         return;
     }
 
-    userLiked.push(user_id);
+    userLiked.push(session_id);
 
     post.likes = userLiked;
 
