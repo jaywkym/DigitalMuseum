@@ -47,7 +47,7 @@ const ProfileHeader = ({ user }) => {
 
         getFollowers()
             .catch(console.error)
-    }, [user.id, session_user.id, followLoading, unfollowLoading])
+    }, [user.id, followLoading, unfollowLoading])
 
 
     console.log({

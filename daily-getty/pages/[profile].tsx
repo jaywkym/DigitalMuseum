@@ -103,6 +103,8 @@ export default function Profile() {
             return dbPosts[id];
         })
 
+        blankPosts.sort().reverse()
+
         setPosts(blankPosts)
 
         return blankPosts;
