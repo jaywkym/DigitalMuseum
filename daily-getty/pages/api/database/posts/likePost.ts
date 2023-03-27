@@ -71,6 +71,8 @@ export default async function likePost (
     const session = await getServerSession(req, res, authOptions);
     const session_id = (session.user as any).id;
 
+    
+
     if(userLiked.includes(session_id)) {
         res.status(200).json(
             generateDbResponse(
