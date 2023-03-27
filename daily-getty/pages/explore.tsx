@@ -2,12 +2,15 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Fragment, useEffect, useState } from 'react';
-import { DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTypes';
+import { DatabasePost, DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
 import HomeSearch from '@/src/components/homesearch';
 import NavBar from '@/src/components/bottomnav';
+import Post from '@/src/components/post';
+import { requestPostFromUserById } from './database/posts';
+import { PostAddSharp } from '@mui/icons-material';
 
 export default function Asynchronous() {
 
@@ -19,12 +22,15 @@ export default function Asynchronous() {
     const [open, setOpen] = useState(false);
     const loading = open && users.length === 0;
 
+    const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
+
     const { push } = useRouter();
 
     useEffect(() => {
 
-        async function loadUsers() {
+        async function loadUserPosts() {
     
+            const posts = [];
             const resp = await fetch(`/api/database/profile/getAllUsers`, {method: 'POST'})
             const json = await resp.json() as DatabaseUsersResponse;
 
@@ -33,14 +39,38 @@ export default function Asynchronous() {
 
             const dbUsers = json.users;
 
-            const new_users: DatabaseUser[] = [];
+            const user_ids: DatabaseUser[] = [];
 
-            Object.keys(dbUsers).map((user_id) => new_users.push(dbUsers[user_id]))
+            Object.keys(dbUsers).map((user_id) => user_ids.push(dbUsers[user_id]))
 
-            setUsers(new_users);
+            setUsers(user_ids);
+
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate() ;
+
+            const post_id = year + "_" + month + "_" + day;
+
+            const promises = user_ids.map(async function (user) {
+
+                let post = await requestPostFromUserById(user.id, post_id);
+
+                return post.post
+
+            });
+
+            const returned_promises = await Promise.all(promises);
+            
+            return returned_promises.filter(post => {
+                return post.id
+            });
+
+            
         }
 
-        loadUsers()
+        loadUserPosts()
+        .then(setExplorefeed)
         .catch(console.error);
 
     }, [loading])
@@ -48,7 +78,7 @@ export default function Asynchronous() {
     useEffect(() => {
         if (!open) setUsers([]);
     }, [open]);
-
+    
     return (
         <>
             <HomeSearch />
@@ -112,7 +142,24 @@ export default function Asynchronous() {
                     </>
                 )}
             />
+
+            <Stack spacing={5}>
+                    <ImageList cols={1} rowHeight={600}>
+
+                        {
+                            
+                            explorefeed.map((post, i) => (
+                                <ImageListItem key={i} >
+                                    <Post userObj={user} post={post} key={post.user_id + "-" + post.id} />
+                                </ImageListItem>
+                            ))
+                        }
+
+                    </ImageList>
+            </Stack>
+
             <NavBar />
+            
         </>
        
     );

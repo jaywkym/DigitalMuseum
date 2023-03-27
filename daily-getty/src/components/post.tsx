@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Imagelist from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -10,7 +12,6 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import IosShareIcon from '@mui/icons-material/IosShare';
-import { Container } from '@mui/system';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
@@ -31,8 +32,6 @@ const visitProfile = () => { } //Visit Profile
 
 const Post = ({ userObj, post }) => {
 
-    //console.log("THE POST IS:")
-    //console.log(post)
     const { data: session, status } = useSession();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
@@ -67,7 +66,6 @@ const Post = ({ userObj, post }) => {
         if (resp_profile.id)
             setPostProfile(resp_profile)
     }
-
 
     useEffect(() => {
 
@@ -119,7 +117,9 @@ const Post = ({ userObj, post }) => {
                 />
                 {/* )} */}
             </div>
+
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+
                 <Link href={`/${profileLink}`}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', m: 2 }}>
                         {/*<Button onClick={visitProfile}>*/}
@@ -151,8 +151,12 @@ const Post = ({ userObj, post }) => {
                 </CardActions>
 
             </Box>
-        </Card >
+        </Card>
+
+
     );
-};
+
+}
+
 
 export default Post;
