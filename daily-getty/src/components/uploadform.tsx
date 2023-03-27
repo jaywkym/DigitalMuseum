@@ -116,7 +116,7 @@ const MuseForm = () => {
 
     const handleButtonClick = () => {
         setGenerate(true); //Open Modal
-        setPrompt(prompt + "in the style of " + artStyle); //Update Prompt with Artstyle Value
+        setPrompt(prompt + " in the style of " + artStyle); //Update Prompt with Artstyle Value
         generateImage(); //Generate Image
     };
 

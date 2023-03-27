@@ -53,6 +53,8 @@ export default async function request_image_handler(
 
     const image  = await requestToDalleAPI(prompt, amount);
 
+    console.log(image)
+
     /* ERROR generating image for various reasons */
     if(!image.success) {
         res.status(200).json(generateImageResponse(false, amount, undefined, image))

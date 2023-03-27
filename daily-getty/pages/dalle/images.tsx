@@ -72,10 +72,10 @@ const useImage = (prompt: string, amount: string):
         .then(res => res.json())
         .then(resj => {
             const res = resj
-            console.log(res)
+      
             if(res.success) {
                 //console.log(res);
-
+                console.log(res)
                 setImage2(`data:image/png;base64, ${res.image.data[0].b64_json}`)
                 setCreated2(`${res.image.created}`)
             } else {
