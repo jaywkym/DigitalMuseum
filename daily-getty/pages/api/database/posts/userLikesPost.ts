@@ -31,7 +31,7 @@ export default async function userLikesPost (
 
     const body = req.body;
 
-    if(!body.user_id || !body.post_id) {
+    if(!body.user_id || !body.post_id || !body.owner_id) {
         res.status(418).json(
             generateDbResponse(
                 false, 
@@ -44,9 +44,10 @@ export default async function userLikesPost (
 
     const user_id = body.user_id;
     const post_id = body.post_id;
+    const owner_id = body.owner_id;
 
     const db = database;
-    const dbref = ref(db, `posts/${user_id}/${post_id}`)
+    const dbref = ref(db, `posts/${owner_id}/${post_id}`)
 
     let post = await asyncOnValue(dbref);
     if(!post) {
@@ -64,10 +65,9 @@ export default async function userLikesPost (
     if(!post.likes)
         post.likes = []
 
-    let userLiked: string[] = post.likes;
-    console.log(userLiked)
+    let userLiked = post.likes;
 
-    console.log(userLiked)
+    //console.log(userLiked)
     console.log("RECEIVING SESSION")
     const session = await getServerSession(req, res, authOptions);
     console.log(session)
