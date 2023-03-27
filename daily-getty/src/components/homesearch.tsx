@@ -10,6 +10,7 @@ import InputBase from '@mui/material/InputBase';
 import { List } from '@mui/material';
 import { signOut } from 'next-auth/react';
 import { Button } from '@mui/material';
+import Link from 'next/link';
 
 const HomeSearch = () => {
 
@@ -40,7 +41,9 @@ const HomeSearch = () => {
                     align="center"
                     sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, textAlignContent: 'center' }}
                 >
-                    DailyMuse
+                    <Link href="/homefeed">
+                        DailyMuse
+                    </Link>
                 </Typography>
                 <Button style={{
                     borderRadius: 28,
