@@ -145,10 +145,11 @@ const MuseForm = () => {
     if (completed) {
         return (
             <Container fixed>
-                <Box sx={{ m: 10, p: 5, display: 'flex', bgcolor: '#FFFFFF', width: '', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                <Box sx={{ m: 10, p: 5, display: 'flex', bgcolor: '#FFFFFF', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                     <Typography component="h1" variant="h3">
-                        Thanks for the Post! Come back Tomorrow to post again!
+                        Thanks For The Post! Come Back Tomorrow To Post Again!
                     </Typography>
+
                 </Box>
             </Container>
         );
