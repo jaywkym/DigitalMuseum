@@ -128,6 +128,9 @@ export default function Asynchronous() {
                     <>
                     <TextField
                     {...params}
+                    sx={{
+                        p: 3,
+                    }}
                     label="Explore Users"
                     InputProps={{
                         ...params.InputProps,

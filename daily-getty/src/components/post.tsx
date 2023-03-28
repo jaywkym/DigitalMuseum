@@ -235,7 +235,7 @@ const Post = ({ _userObj, _post }) => {
                 {/* )} */}
             </div>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '350px'}}>
 
                 <Link href={`/${profileLink}`}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', m: 2 }}>
