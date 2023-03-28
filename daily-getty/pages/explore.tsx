@@ -84,7 +84,7 @@ export default function Asynchronous() {
             <HomeSearch />
             <Autocomplete
                 id="user-lookup"
-                sx={{ width: 300 }}
+                sx={{ width: 300  }}
                 open={open}
                 onOpen={() => {
                     setOpen(true);
@@ -107,7 +107,7 @@ export default function Asynchronous() {
                         <>
                             <li {...props}>
                                 <Grid container alignItems="center">
-                                <Grid item sx={{ display: 'flex', width: 44 }}>
+                                <Grid item sx={{ display: 'flex', width: 44}}>
                                     <img src={option.image} width={'50%'}/>
                                 </Grid>
                                 <Grid item sx={{ width: 'calc(100% - 44px)'}}>
@@ -143,7 +143,7 @@ export default function Asynchronous() {
                 )}
             />
 
-            <Stack spacing={5}>
+            <Stack spacing={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                     <ImageList cols={1} rowHeight={600}>
 
                         {
