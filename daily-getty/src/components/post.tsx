@@ -18,9 +18,10 @@ import { useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
 import { requestIfUserLikesPost, useLikeImage, useUnlikeImage, useUserLikesImage } from '@/pages/database/posts';
-import { useSession } from 'next-auth/react';
+import { useSession, getSession } from 'next-auth/react';
 import { request } from 'http';
 import { ToggleOnRounded } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface PostProps {
     user: string;
@@ -29,16 +30,37 @@ interface PostProps {
 }
 
 
+
 const visitProfile = () => { } //Visit Profile
 
 const Post = ({ _userObj, _post }) => {
 
+
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
+    const session2  =  getSession();
+    const [sessionTest, setSessionTest] = useState(null);
+    //console.log("the session testing is....");
+    let justTesting = null;
+    const pleaseWOrk = getSession().then(
+        (value) => {
+            justTesting = value.user;
+            setSessionTest(justTesting.id)
+        }
+    )
 
+   
+    //console.log(session2)
+
+    // componentDidMount() {
+    //     const session = await getSession()
+    //     this.setState({ session })
+    // }
+
+    // const [session, loading] = awaituseSession();
     const { data: session, status } = useSession();
 
-    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+    let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
     const [isHovering, setIsHovered] = useState(false);
 
@@ -48,10 +70,21 @@ const Post = ({ _userObj, _post }) => {
     const postQuestion = post.givenPrompt ? post.givenPrompt : "";
     const date = post.id ? post.id : "";
     const src = post.image ? `data:image/png;base64, ${post.image.b64}` : ``
+    const userPost = post.user_id ? post.user_id  : ""
     const profileName = postProfile ? postProfile.name : ''
     const profileImage = postProfile ? postProfile.image : ''
     const profileLink = postProfile ? postProfile.id : ''
+    const [deleteButton, setDeleteButton] = useState(null);
 
+    useEffect(() => {
+        //console.log("in the useEffect userTesting")
+        if(userPost == sessionTest){
+            //console.log("they are equal")
+            setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
+         }
+       
+
+    }, [sessionTest])
 
 
 
@@ -90,22 +123,74 @@ const Post = ({ _userObj, _post }) => {
     
     } //Overlay Share Window
 
-    useEffect(() => {
+    const deletePost = () => {
+        console.log("deleting post")
 
+        const deleteInfo = {
+            owner_id: sessionTest,
+            post_id: date
+        }
+
+        // console.log(uploadInfo);
+
+        const requesting = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(deleteInfo)
+        }
+
+        console.log(requesting)
+
+        fetch('/api/database/posts/deletePost', requesting)
+            .then(res => res.json())
+            .then(resj => {
+                console.log("good delete?")
+                window.location.reload();
+            })
+    }
+
+    useEffect(() => {
+        console.log("in the useEffect")
         getUserInfo()
             .catch(console.error)
 
         getUserLikesPost()
             .catch(console.error)
+        
+        
 
     }, [post])
 
+    // if(userPost == user.googleId){
+    //     console.log("they are equal")
+    //     setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
+    // }
+
+    
+
     useEffect(() => {
-        console.log(user.id)
-    }, [user.id])
+        // console.log(user.googleId)
+        // console.log("am i even getting into this thingy")
+        // console.log(user.googleId)
+        // console.log(post.user_id)
+
+    }, [post.user_id])
 
     async function handleLike() {
-        console.log({userLikesPost: userLikesPost})
+        // user = session ? session.user as DatabaseUser : {} as DatabaseUser;
+        //console.log("am i even getting into this thingy")
+        // console.log("user")
+        // console.log(user.googleId)
+        // console.log("post")
+        // console.log(post.user_id)
+        // console.log(session)
+        // if(userPost == user.googleId){
+        //     console.log("they are equal")
+        //     setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
+        // }
+        //console.log({userLikesPost: userLikesPost})
         if (userLikesPost)
             await unlikePost()
         else
@@ -115,6 +200,11 @@ const Post = ({ _userObj, _post }) => {
         console.log({userLikesPost: userLikesPost})
 
     }
+
+   
+
+    
+
 
     return (
         <Card raised sx={{ display: 'flex', width: '800px', mt: 5, boxShadow: 4 }}>
@@ -175,6 +265,7 @@ const Post = ({ _userObj, _post }) => {
                         }> <ThumbUpIcon/>
                     </ToggleButton>}
                     <Button endIcon={<DownloadIcon />} onClick={handleShare} />
+                    {deleteButton}
                 </CardActions>
 
             </Box>
