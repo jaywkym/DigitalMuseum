@@ -34,6 +34,18 @@ export default async function createPost (
     const day = date.getDate();
 
     const post_id = year + "_" + month + "_" + day;
+
+    const url = await generateTinyPNGUrl(body.image.url);
+    if(url === '') {
+        res.status(200).json(
+            generateDbResponse(
+                false, 
+                generateError(192, 'Error with TinyPNG api')
+            )
+        )
+        
+        return;
+    }
     
     const dbpost = {
         id: post_id,
@@ -43,13 +55,9 @@ export default async function createPost (
         likes: body.likes,
         image: {
             created: body.image.created as Number,
-            b64: body.image.b64 as String
+            url: url as String
         } as any
     } as DatabasePost
-
-
-    console.log("Attempting to store image in database")
-    console.log(dbpost)
 
     const db = database;
 
@@ -57,6 +65,37 @@ export default async function createPost (
 
     res.status(200).json(generateDbResponse(true, {} as DatabaseError))
   
+}
+
+async function generateTinyPNGUrl(url) {
+
+    const api_bytes = Buffer.from('api:'+process.env.TINY_PNG_API_KEY).toString('base64');
+
+    const request = {
+        method: 'POST',
+        headers: {
+            Host: 'api.tinify.com',
+            Authorization:'Basic ' + api_bytes,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({source: {url: url}})
+    }
+
+    try {
+        const tinyPNGResponse = await fetch('https://api.tinify.com/shrink', request);
+        const headers: any = tinyPNGResponse.headers;
+
+        if(tinyPNGResponse.status !== 201) {
+            console.error("ERROR: tinyPNG returned non 201 status code")
+            return '';
+        }
+
+        return headers.get('location')
+    } catch (err: any) {
+        console.error(err)
+        return ''
+    }
+
 }
 
  /**

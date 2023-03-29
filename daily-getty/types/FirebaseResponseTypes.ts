@@ -59,7 +59,7 @@ export type DatabasePost = {
   likes: string[],
   image: {
     created: number,
-    b64: string,
+    url: string,
   }
 }
 

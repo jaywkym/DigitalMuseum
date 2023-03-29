@@ -1,31 +1,26 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
-import { Avatar, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import List from '@mui/material/List';
-import { Container } from '@mui/system';
-import { Button } from '@mui/material';
 import Post from '@/src/components/post';
 import NavBar from '@/src/components/bottomnav';
 import ProfileHeader from '@/src/components/profileheader';
-import { signOut } from 'next-auth/react';
-import { useGetAllPostIds, requestPostFromUserById } from '@/pages/database/posts';
+import { requestPostFromUserById } from '@/pages/database/posts';
 import { useSession } from 'next-auth/react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
-import Test from './test';
 import HomeSearch from '@/src/components/homesearch';
-import BGImage from '@/src/components/backgroundImage';
 
 export default function Profile() {
 
     const { data: session, status } = useSession();
-
-    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
-
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
+
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+    const userSet = user.id !== undefined;
 
     async function loadImages(blankPosts) {
 
@@ -42,7 +37,7 @@ export default function Profile() {
 
             const newPosts = blankPosts.map((newPost) => {
                 if (newPost.id === rPost.id)
-                    newPost.image.b64 = rPost.image.b64
+                    newPost.image.url = rPost.image.url
 
                 return newPost;
             })
@@ -85,7 +80,7 @@ export default function Profile() {
 
     useEffect(() => {
 
-        if (!user.id)
+        if (!userSet)
             return;
 
         setLoading(true);
@@ -95,7 +90,7 @@ export default function Profile() {
             .then(loadImages)
             .catch(err => console.error(err))
 
-    }, [user.id])
+    }, [userSet])
 
     let posts_map = posts ? posts : {}
 
@@ -109,7 +104,7 @@ export default function Profile() {
                 <Box sx={{ flexGrow: 1, m: 10 }}>
                     {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
                     <CssBaseline />
-                    <ProfileHeader user={user} />
+                    <ProfileHeader user={user} session={session}/>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                         {loading && (
                             <CircularProgress
@@ -122,7 +117,7 @@ export default function Profile() {
                         <List>
                             {
                                 Object.keys(posts_map).map((post) => (
-                                    <Post _userObj={user} _post={posts[post]} key={posts[post].id} />
+                                    <Post _userObj={user} _post={posts[post]} key={posts[post].id} session={session} />
                                 ))
                             }
                         </List>

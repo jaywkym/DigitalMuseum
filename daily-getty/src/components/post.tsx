@@ -33,32 +33,11 @@ interface PostProps {
 
 const visitProfile = () => { } //Visit Profile
 
-const Post = ({ _userObj, _post }) => {
+const Post = ({ _userObj, _post, session }) => {
 
 
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
-    const session2  =  getSession();
-    const [sessionTest, setSessionTest] = useState(null);
-    //console.log("the session testing is....");
-    let justTesting = null;
-    const pleaseWOrk = getSession().then(
-        (value) => {
-            justTesting = value.user;
-            setSessionTest(justTesting.id)
-        }
-    )
-
-   
-    //console.log(session2)
-
-    // componentDidMount() {
-    //     const session = await getSession()
-    //     this.setState({ session })
-    // }
-
-    // const [session, loading] = awaituseSession();
-    const { data: session, status } = useSession();
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
@@ -69,27 +48,13 @@ const Post = ({ _userObj, _post }) => {
     const alt = post.image ? post.userPrompt : "";
     const postQuestion = post.givenPrompt ? post.givenPrompt : "";
     const date = post.id ? post.id : "";
-    const src = post.image ? `data:image/png;base64, ${post.image.b64}` : ``
+    const src = post.image ? post.image.url : ``
     const userPost = post.user_id ? post.user_id  : ""
     const profileName = postProfile ? postProfile.name : ''
     const profileImage = postProfile ? postProfile.image : ''
     const profileLink = postProfile ? postProfile.id : ''
     const [deleteButton, setDeleteButton] = useState(null);
-
-    useEffect(() => {
-        //console.log("in the useEffect userTesting")
-        if(userPost == sessionTest){
-            //console.log("they are equal")
-            setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
-         }
-       
-
-    }, [sessionTest])
-
-
-
     const [clicked, setClicked] = useState(false);
-
     const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
     const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id, post.user_id)
 
@@ -113,11 +78,10 @@ const Post = ({ _userObj, _post }) => {
 
         console.log(event.target)
         console.log(post.image)
-        const base64Data = post.image.b64;
-    
-        const linkSource = `data:${contentType};base64,${base64Data}`;
+        const url = post.image.url;
+
         const downloadLink = document.createElement("a");
-        downloadLink.href = linkSource;
+        downloadLink.href = url;
         downloadLink.download = post.userPrompt;
         downloadLink.click();
     
@@ -127,7 +91,7 @@ const Post = ({ _userObj, _post }) => {
         console.log("deleting post")
 
         const deleteInfo = {
-            owner_id: sessionTest,
+            // owner_id: sessionTest,
             post_id: date
         }
 

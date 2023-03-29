@@ -20,9 +20,7 @@ const style = {
     p: 4,
 };
 
-const ProfileHeader = ({ user }) => {
-
-    const { data: session, status } = useSession();
+const ProfileHeader = ({ user, session }) => {
 
     const session_user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
@@ -47,7 +45,7 @@ const ProfileHeader = ({ user }) => {
 
         getFollowers()
             .catch(console.error)
-    }, [user.id, followLoading, unfollowLoading])
+    }, [session, followLoading, unfollowLoading])
 
 
     console.log({

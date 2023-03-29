@@ -70,7 +70,7 @@ export default function Profile() {
             
             const newPosts = blankPosts.map((newPost) => {
                 if(newPost.id === rPost.id)
-                    newPost.image.b64 = rPost.image.b64
+                    newPost.image.url = rPost.image.url
 
                 return newPost;
             })
@@ -123,7 +123,7 @@ export default function Profile() {
                 <HomeSearch />
                 <Box sx={{ flexGrow: 1, m: 10 }}>
                     <CssBaseline />
-                    <ProfileHeader user={pageProfile}/>
+                    <ProfileHeader user={pageProfile} session={session}/>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                     {postsLoading && (
                         <CircularProgress
@@ -136,7 +136,7 @@ export default function Profile() {
                         <List>
                             {
                                 Object.keys(posts_map).map((post) => (
-                                    <Post _userObj={pageProfile} _post={posts[post]} key={posts[post].id} />
+                                    <Post _userObj={pageProfile} _post={posts[post]} key={posts[post].id} session={session}/>
                                 ))
                             }
                             

@@ -15,10 +15,10 @@ import { StringDecoder } from "string_decoder";
  * 
  * @param user_id User who is adding the post
  * @param created Timestamp from Dalle when the image was created
- * @param b64 Base64 encoded image string
+ * @param url Url image string
  * @returns Void. Like my cold dead heart...
  */
-export function useAddPost(user_id: string, created: number, b64: string):
+export function useAddPost(user_id: string, created: number, url: string):
     [boolean, boolean, () => Promise<void>] {
 
         const [success, setSuccess] = useState(false)
@@ -33,7 +33,7 @@ export function useAddPost(user_id: string, created: number, b64: string):
 
             if(user_id === undefined ||
                 created === undefined ||
-                b64 === undefined) {
+                url === undefined) {
 
                 setSuccess(false)
                 return;
@@ -42,7 +42,7 @@ export function useAddPost(user_id: string, created: number, b64: string):
 
             setLoading(true)
 
-            const dbResponse = await requestCreatePost(user_id, created, b64)
+            const dbResponse = await requestCreatePost(user_id, created, url)
 
             setSuccess(dbResponse.success)
 
@@ -364,7 +364,7 @@ export async function requestIfUserLikesPost(
 export async function requestCreatePost(
     user_id: string, 
     created: number,
-    b64: string):
+    url: string):
     Promise<DatabaseResponse> {
 
     const request = {
@@ -376,7 +376,7 @@ export async function requestCreatePost(
             user_id: user_id,
             image: {
                 created: created,
-                b64: b64
+                url: url
             }
         })
     }

@@ -121,7 +121,7 @@ export default function HomeFeed() {
                 posts.forEach((current_post) => {
 
                     if(current_post.id == post.id && current_post.user_id == post.user_id) {
-                        posts[current_index].image.b64 = post.image.b64
+                        posts[current_index].image.url = post.image.url
                         console.log(posts[current_index])
                         return;
                     }
@@ -170,7 +170,7 @@ export default function HomeFeed() {
                                         posts_updated && posts.map((post) => (
 
                                             <ImageListItem key={'li-' + post.user_id + '-' + post.id} >
-                                                <Post _userObj={user} _post={post} key={'p-' + post.user_id + '-' + post.id} />
+                                                <Post _userObj={user} _post={post} key={'p-' + post.user_id + '-' + post.id} session={session}/>
                                             </ImageListItem>
                                         ))
                                     }
