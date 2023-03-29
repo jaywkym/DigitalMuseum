@@ -23,16 +23,6 @@ import { request } from 'http';
 import { ToggleOnRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-interface PostProps {
-    user: string;
-    media: string;
-    likes: string;
-}
-
-
-
-const visitProfile = () => { } //Visit Profile
-
 const Post = ({ _userObj, _post, session }) => {
 
 
@@ -72,12 +62,8 @@ const Post = ({ _userObj, _post, session }) => {
             setPostProfile(resp_profile)
     }
 
-    const contentType = "image/png"
-
     const handleShare = (event) => { 
 
-        console.log(event.target)
-        console.log(post.image)
         const url = post.image.url;
 
         const downloadLink = document.createElement("a");
@@ -87,15 +73,14 @@ const Post = ({ _userObj, _post, session }) => {
     
     } //Overlay Share Window
 
-    const deletePost = () => {
+    const deletePost = async () => {
         console.log("deleting post")
 
         const deleteInfo = {
-            // owner_id: sessionTest,
+            owner_id: userPost,
             post_id: date
         }
 
-        // console.log(uploadInfo);
 
         const requesting = {
             method: 'POST',
@@ -105,70 +90,34 @@ const Post = ({ _userObj, _post, session }) => {
             body: JSON.stringify(deleteInfo)
         }
 
-        console.log(requesting)
-
-        fetch('/api/database/posts/deletePost', requesting)
-            .then(res => res.json())
-            .then(resj => {
-                console.log("good delete?")
+        try {
+            const resp = await fetch('/api/database/posts/deletePost', requesting)
+            if(resp.status === 200)
                 window.location.reload();
-            })
+        } catch (err: any) {
+            console.error(err)
+        }
     }
 
     useEffect(() => {
-        console.log("in the useEffect")
         getUserInfo()
             .catch(console.error)
 
         getUserLikesPost()
             .catch(console.error)
-        
-        
 
     }, [post])
 
-    // if(userPost == user.googleId){
-    //     console.log("they are equal")
-    //     setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
-    // }
-
-    
-
-    useEffect(() => {
-        // console.log(user.googleId)
-        // console.log("am i even getting into this thingy")
-        // console.log(user.googleId)
-        // console.log(post.user_id)
-
-    }, [post.user_id])
-
     async function handleLike() {
-        // user = session ? session.user as DatabaseUser : {} as DatabaseUser;
-        //console.log("am i even getting into this thingy")
-        // console.log("user")
-        // console.log(user.googleId)
-        // console.log("post")
-        // console.log(post.user_id)
-        // console.log(session)
-        // if(userPost == user.googleId){
-        //     console.log("they are equal")
-        //     setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
-        // }
-        //console.log({userLikesPost: userLikesPost})
+
         if (userLikesPost)
             await unlikePost()
         else
             await likePost()
 
         await getUserLikesPost()
-        console.log({userLikesPost: userLikesPost})
 
     }
-
-   
-
-    
-
 
     return (
         <Card raised sx={{ display: 'flex', width: '800px', mt: 5, boxShadow: 4 }}>
