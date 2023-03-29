@@ -17,9 +17,7 @@ import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
-import { requestIfUserLikesPost, useLikeImage, useUnlikeImage, useUserLikesImage } from '@/pages/database/posts';
-import { useSession, getSession } from 'next-auth/react';
-import { request } from 'http';
+import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
 import { ToggleOnRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -35,20 +33,24 @@ const Post = ({ _userObj, _post, session }) => {
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
-    const alt = post.image ? post.userPrompt : "";
-    const postQuestion = post.givenPrompt ? post.givenPrompt : "";
-    const date = post.id ? post.id : "";
-    const src = post.image ? post.image.url : ``
-    const userPost = post.user_id ? post.user_id  : ""
-    const profileName = postProfile ? postProfile.name : ''
-    const profileImage = postProfile ? postProfile.image : ''
-    const profileLink = postProfile ? postProfile.id : ''
+    const alt = post.userPrompt
+    const postQuestion = post.givenPrompt
+    const date = post.id
+    const src = post.image.url
+    const userPost = post.user_id
+
+    const profileName = postProfile.name
+    const profileImage = postProfile.image
+    const profileLink = postProfile.id
+
     const [deleteButton, setDeleteButton] = useState(null);
     const [clicked, setClicked] = useState(false);
     const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
     const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id, post.user_id)
 
     const [userLikesPost, setUserLikesPost] = useState(false)
+
+    const imageNeedsUpdate = post.id === undefined || post.user_id === undefined;
 
     async function getUserLikesPost() {
         const resp = await requestIfUserLikesPost(user.id, post.id, post.user_id);
@@ -74,13 +76,11 @@ const Post = ({ _userObj, _post, session }) => {
     } //Overlay Share Window
 
     const deletePost = async () => {
-        console.log("deleting post")
 
         const deleteInfo = {
             owner_id: userPost,
             post_id: date
         }
-
 
         const requesting = {
             method: 'POST',
@@ -100,13 +100,17 @@ const Post = ({ _userObj, _post, session }) => {
     }
 
     useEffect(() => {
+
+        if(imageNeedsUpdate)
+            return;
+
         getUserInfo()
             .catch(console.error)
 
         getUserLikesPost()
             .catch(console.error)
 
-    }, [post])
+    }, [])
 
     async function handleLike() {
 

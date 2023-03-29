@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { Avatar, Chip, Stack } from '@mui/material';
 import { Container } from '@mui/system';
-import { useFollowUser, useFollowers, useFollowing, useUnfollowUser } from '@/pages/database/profile';
+import { requestFriendsForUser, useFollowUser, useFollowers, useFollowing, useUnfollowUser } from '@/pages/database/profile';
 import { Button, Modal, Grid, List } from '@mui/material';
 
 const style = {
@@ -24,35 +24,55 @@ const ProfileHeader = ({ user, session }) => {
 
     const session_user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
-    const [following, followingLoading, getFollowing] = useFollowing(user.id)
-    const [followers, followersLoading, getFollowers] = useFollowers(user.id)
+    const [followers, setFollowers] = useState([] as string[]);
+    const [following, setFollowing] = useState([] as string[]);
+    const [loadingFriends, setLoadingFriends] = useState(true);
+
     const [sFollowing, sFollowingLoading, sGetFollowing] = useFollowing(session_user.id)
     const [followSuccess, followLoading, followUser] = useFollowUser(session_user.id, user.id)
     const [unfollowSuccess, unfollowLoading, unfollowUser] = useUnfollowUser(session_user.id, user.id);
     const [isFollowing, setIsFriend] = useState(false)
-    const selfAccount = session_user.id === user.id
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
+    const selfAccount = session_user.id === user.id
+    const userNeedsUpdate = user.id === undefined;
+
     useEffect(() => {
-        getFollowing()
-            .catch(console.error)
 
-        sGetFollowing()
-            .catch(console.error)
+        if(userNeedsUpdate)
+            return;
 
-        getFollowers()
-            .catch(console.error)
-    }, [session, followLoading, unfollowLoading])
+        async function pullFriends() {
+
+            setLoadingFriends(true);
+
+            const dbFriends = await requestFriendsForUser(user.id)
+            
+            if(!dbFriends.success)
+                return;
+
+            setFollowers(dbFriends.friends.followers);
+            setFollowing(dbFriends.friends.following)
+            setLoadingFriends(false)
+
+        }
+
+        pullFriends()
+        .catch(console.error)
+
+    }, [userNeedsUpdate, followLoading, unfollowLoading])
 
 
-    console.log({
-        user_id: user.id,
-        followers: followers,
-        following: following
-    })
+    // console.log({
+    //     user_id: user.id,
+    //     userNeedsUpdate: userNeedsUpdate,
+    //     friendsLoading: loadingFriends,
+    //     followers: followers,
+    //     following: following
+    // })
 
     useEffect(() => {
 
@@ -91,8 +111,8 @@ const ProfileHeader = ({ user, session }) => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    {!followingLoading && <Chip label={`Following ${following ? following.length : 0}`} />}
-                    {!followersLoading && <Chip label={`Followers ${followers ? followers.length : 0}`} />}
+                    {!loadingFriends && <Chip label={`Following ${following ? following.length : 0}`} />}
+                    {!loadingFriends && <Chip label={`Followers ${followers ? followers.length : 0}`} />}
                     {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
                         if (!isFollowing)
                             followUser()
@@ -101,8 +121,8 @@ const ProfileHeader = ({ user, session }) => {
 
                                 // TODO - Remove as following
 
-                                .then(sGetFollowing)
-                                .then(getFollowers)
+                                // .then(sGetFollowing)
+                                // .then(getFollowers)
                     }} />}
                 </Stack>
                 {/*

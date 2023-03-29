@@ -22,44 +22,56 @@ export default function Profile() {
     const [pageProfile, setPageProfile] = useState({} as DatabaseUser)
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [postsLoading, setLoading] = useState(false);
-    
-    
+
     const router = useRouter();
+
+    const loadProfile = router.query.profile === undefined;
+
+    console.log(pageProfile)
+
 
     let posts_map = posts? posts : {}
 
     useEffect(() => {
+
+        async function pullProfile() {
             const profile_id = router.query.profile as string;
 
             if(profile_id === undefined)
                 return;
 
-            pull_user({
+            const profile = await pull_user({
                 id: profile_id,
                 name: '',
                 email: '',
                 image: '',
                 googleId: ''
             })
-            .then(profile => {
-                if(profile.id) {
-                    setPageProfile(profile)
-                    
-                }
-                else
-                    console.log("NO PROFILE --> REDIRECT OR DISPLAY ERROR")
-            })
 
-            loadBlankPosts()
-            .then(loadImages)
-            .catch(console.error)
-    }, [router.query.profile, pageProfile.id, user.id])
+
+            if(profile.id) 
+                setPageProfile(profile)
+                    
+                return profile;
+            }
+
+
+            
+        pullProfile()
+        .then(loadBlankPosts)
+        .then(loadImages)
+        .catch(console.error)
+
+    }, [loadProfile])
+
 
     async function loadImages(blankPosts) {
 
+        console.log(blankPosts)
+
         blankPosts.forEach(async (post) => {
 
-            const postRequest = await requestPostFromUserById(pageProfile.id, post.id)
+            const postRequest = await requestPostFromUserById(post.user_id, post.id)
             const rPost = postRequest.post;
 
             if(!postRequest.success) {
@@ -83,7 +95,7 @@ export default function Profile() {
 
     }
 
-    async function loadBlankPosts() {
+    async function loadBlankPosts(profile: DatabaseUser) {
 
         const request = {
             method: 'POST',
@@ -91,7 +103,7 @@ export default function Profile() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                user_id: pageProfile.id,
+                user_id: profile.id,
             })
         }
     
@@ -135,7 +147,7 @@ export default function Profile() {
                     )}
                         <List>
                             {
-                                Object.keys(posts_map).map((post) => (
+                                Object.keys(posts).map((post) => (
                                     <Post _userObj={pageProfile} _post={posts[post]} key={posts[post].id} session={session}/>
                                 ))
                             }

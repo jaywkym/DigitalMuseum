@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { DatabasePost, DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -9,24 +9,23 @@ import { Box, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/mat
 import HomeSearch from '@/src/components/homesearch';
 import NavBar from '@/src/components/bottomnav';
 import Post from '@/src/components/post';
-import { requestPostFromUserById } from './database/posts';
+import { constructCurrentDateId, requestPostFromUserById } from './database/posts';
 import { PostAddSharp } from '@mui/icons-material';
 
 export default function Asynchronous() {
 
     const {data: session, status} = useSession();
-
-    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+    
     const [users, setUsers] = useState([]);
-
     const [open, setOpen] = useState(false);
-    const loading = open && users.length === 0;
-
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
 
     const { push } = useRouter();
 
-    useEffect(() => {
+    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+    const loading: boolean   = open && users.length === 0;
+
+    useMemo(() => {
 
         async function loadUserPosts() {
     
@@ -45,12 +44,7 @@ export default function Asynchronous() {
 
             setUsers(user_ids);
 
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate() ;
-
-            const post_id = year + "_" + month + "_" + day;
+            const post_id = constructCurrentDateId();
 
             const promises = user_ids.map(async function (user) {
 
@@ -73,7 +67,7 @@ export default function Asynchronous() {
         .then(setExplorefeed)
         .catch(console.error);
 
-    }, [loading])
+    }, [])
 
     useEffect(() => {
         if (!open) setUsers([]);
