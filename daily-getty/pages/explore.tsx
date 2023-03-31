@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Box, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
 import HomeSearch from '@/src/components/homesearch';
-import NavBar from '@/src/components/bottomnav';
+import NavBar from '@/src/components/navbar';
 import Post from '@/src/components/post';
 import { constructCurrentDateId, requestPostFromUserById } from './database/posts';
 import { PostAddSharp } from '@mui/icons-material';
@@ -75,7 +75,9 @@ export default function Asynchronous() {
     
     return (
         <>
-            <HomeSearch />
+            <NavBar />
+
+            {/* <HomeSearch />
             <Autocomplete
                 id="user-lookup"
                 sx={{ width: 300  }}
@@ -155,7 +157,7 @@ export default function Asynchronous() {
                     </ImageList>
             </Stack>
 
-            <NavBar />
+            <NavBar /> */}
             
         </>
        
