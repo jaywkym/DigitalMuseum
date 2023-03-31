@@ -6,7 +6,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 declare module "@mui/material/styles/createPalette" {
   interface CommonColors {
     blueScheme: {
-      darkestBlue: string;
+      foreground: string;
+      background: string;
       darkBlue: string;
       blue: string;
       notBlue: string;
@@ -27,7 +28,8 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
     palette: {
       common: {
         blueScheme: {
-          darkestBlue: '#1A1A2E',
+          foreground: '#0e0e1a',
+          background: '#1A1A2E',
           darkBlue: '#16213E',
           blue: '#0F3460',
           notBlue: '#E94560',

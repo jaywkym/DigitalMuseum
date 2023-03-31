@@ -5,7 +5,7 @@ import { CircularProgress } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import List from '@mui/material/List';
 import Post from '@/src/components/post';
-import NavBar from '@/src/components/bottomnav';
+import NavBar from '@/src/components/navbar';
 import ProfileHeader from '@/src/components/profileheader';
 import { requestPostFromUserById } from '@/pages/database/posts';
 import { useSession } from 'next-auth/react';
@@ -100,7 +100,7 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
-                <HomeSearch />
+            <NavBar />
                 <Box sx={{ flexGrow: 1, m: 10 }}>
                     {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
                     <CssBaseline />
@@ -123,7 +123,7 @@ export default function Profile() {
                         </List>
                     </Box>
                 </Box>
-                <NavBar />
+                
             </main>
         </>
     )

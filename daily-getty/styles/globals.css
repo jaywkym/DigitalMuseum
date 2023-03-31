@@ -86,6 +86,10 @@ body {
   overflow-x: hidden;
 }
 
+.MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] {
+  background: #ffff
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -94,7 +98,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-    height: 1000px;
+
 }
 #user-lookup-label{
   margin-left: 25px;
