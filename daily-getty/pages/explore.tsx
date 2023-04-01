@@ -28,6 +28,19 @@ export default function Asynchronous() {
 
     const [screenSize, setScreenSize] = useState(0)
 
+    const testPost = {
+        givenPrompt: 'Where do you see yourself in 5 years?',
+        userPrompt: 'myself but 5 years older',
+        id: '2023_3_29',
+        user_id: 'e75a20be-32a8-44a5-b9b9-da7dc512240f',
+        image: {
+            created: 0,
+            url: '/static/sunflower_example.png'
+        }
+    } as DatabasePost;
+
+    const testPosts: DatabasePost[] = [testPost, testPost, testPost, testPost, testPost, testPost, testPost, testPost, testPost];
+
     useEffect(() => {
         setScreenSize(window.innerWidth);
 
@@ -43,8 +56,9 @@ export default function Asynchronous() {
     }, []);
 
     const isMobile: boolean = screenSize <= 600;
+    const isMD: boolean = screenSize <= 900
 
-    useMemo(() => {
+    useEffect(() => {
 
         async function loadUserPosts() {
     
@@ -103,9 +117,9 @@ export default function Asynchronous() {
             >
 
             </Box>
-            <NavBar isMobile={isMobile}/>
+            <NavBar isMobile={isMobile} session={session}/>
            
-            <Box display={'flex'} justifyContent={'end'}>
+            <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                 <Box 
                     sx={{
                         width: {xs: '100%', sm: '90%', md: '80%'}, 
@@ -116,12 +130,54 @@ export default function Asynchronous() {
                 >
 
                     <ExploreSearch users={users}/>
-                    <Stack spacing={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                    {/* <Post _userObj={session} _post={testPost} key={1} session={session} /> */}
+
+                </Box>
+                <Box 
+                    sx={{
+                        width: {
+                            xs: '100%', 
+                            sm: '90%', 
+                            md: '80%'
+                        }, 
+                    }} 
+                    
+                    display={'block'}
+                    padding={4}
+                >
+                    
+                    <ImageList cols={isMobile? 1 : isMD? 2 : 3} gap={20}>
+
+                    {
+                                
+                        testPosts.map((post, i) => (
+                            <ImageListItem key={i} >
+                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
+                            </ImageListItem>
+                        ))
+                    }
+
+                    </ImageList>
+
+                </Box>
+                
+            </Box>
+           
+            
+{/* 
+                               <Stack 
+                        spacing={5} 
+                        sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            alignItems: 'center', 
+                            alignContent: 'center' 
+                        }}>
                         <ImageList cols={1} rowHeight={600}>
 
                             {
                                 
-                                explorefeed.map((post, i) => (
+                                testPosts.map((post, i) => (
                                     <ImageListItem key={i} >
                                         <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
                                     </ImageListItem>
@@ -129,13 +185,7 @@ export default function Asynchronous() {
                             }
 
                         </ImageList>
-                    </Stack>
-                </Box>
-            </Box>
-           
-            
-
-           
+                    </Stack> */}
 
            
 

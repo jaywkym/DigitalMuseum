@@ -8,13 +8,13 @@ import CardMedia from '@mui/material/CardMedia';
 import DownloadIcon from '@mui/icons-material/Download';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Avatar, Skeleton, ToggleButton } from '@mui/material';
+import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
 import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
@@ -23,6 +23,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const Post = ({ _userObj, _post, session }) => {
 
+    console.log({
+        userObj: _userObj,
+        post: _post,
+        session: session
+    })
 
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
@@ -42,6 +47,8 @@ const Post = ({ _userObj, _post, session }) => {
     const profileName = postProfile.name
     const profileImage = postProfile.image
     const profileLink = postProfile.id
+
+    const userName = userObj? userObj.name : ''
 
     const [deleteButton, setDeleteButton] = useState(null);
     const [clicked, setClicked] = useState(false);
@@ -124,69 +131,119 @@ const Post = ({ _userObj, _post, session }) => {
     }
 
     return (
-        <Card raised sx={{ display: 'flex', width: '800px', mt: 5, boxShadow: 4 }}>
-            {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
-            <div
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}>
-                {/* {isHovering ? (
-                    <div style={{ height: 500, width: 450 }}>
-                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                            <Typography>
-                                    Question: {postQuestion}
-                                    <br></br>
-                                    User Response: {alt}
-                                    <br></br>
-                                    Date: {date}:
-                            </Typography>
-                        </Box>
-                    </div>
-                ) : ( */}
-                < CardMedia
-                    component="img"
-                    alt={alt}
-                    height={500}
-                    width={500}
-                    image={src}
+        <Box
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <img
+                src={src}
+                loading='lazy'
+                width={'100%'}
+            />
+            <Collapse 
+                in={isHovering} 
+                collapsedSize={'20%'} 
+                orientation={'vertical'}
+                timeout={1000}
+                easing={'easeInCubic'}
+            >
+                <ImageListItemBar   
+                    title={'@' + profileName}
+                    subtitle={date}
+                    actionIcon={
+                        !userLikesPost && 
+                        <ThumbUpOffAltIcon 
+                            sx={{
+                                color: 'white', 
+                                paddingRight: .5
+                            }} 
+                            
+                            onClick={handleLike}
+                        />
+                        || userLikesPost && 
+                        <ThumbUpIcon
+                            sx={{
+                                color: 'white', 
+                                paddingRight: .5
+                            }} 
+                            
+                            onClick={handleLike}
+                        />
+                    }
+                    
+
+                    sx={{height: isHovering? '100%': '20%'}}
+
+
                 />
-                {/* )} */}
-            </div>
+            </Collapse>
+            
+        </Box>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '350px'}}>
+        
+        // <Card raised sx={{ display: 'flex', width: '800px', mt: 5, boxShadow: 4 }}>
+        //     {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
+        //     <div
+        //         onMouseEnter={() => setIsHovered(true)}
+        //         onMouseLeave={() => setIsHovered(false)}>
+        //         {/* {isHovering ? (
+        //             <div style={{ height: 500, width: 450 }}>
+        //                 <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+        //                     <Typography>
+        //                             Question: {postQuestion}
+        //                             <br></br>
+        //                             User Response: {alt}
+        //                             <br></br>
+        //                             Date: {date}:
+        //                     </Typography>
+        //                 </Box>
+        //             </div>
+        //         ) : ( */}
+        //         < CardMedia
+        //             component="img"
+        //             alt={alt}
+        //             height={500}
+        //             width={500}
+        //             image={src}
+        //         />
+        //         {/* )} */}
+        //     </div>
 
-                <Link href={`/${profileLink}`}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', m: 2 }}>
-                        {/*<Button onClick={visitProfile}>*/}
-                        <Avatar alt={userObj.name} src={profileImage} sx={{ mr: 2 }} />
-                        <Typography variant="body1" component="h1">
-                            <b>@{profileName}</b>
-                        </Typography>
-                    </Box>
-                </Link>
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', p: 3 }}>
-                    <Typography><b>Question:</b> {postQuestion}</Typography>
-                    <Typography><b>User Response:</b> {alt}</Typography>
-                    <Typography><b>Date Posted:</b> {date}</Typography>
-                </Box>
-                <CardActions>
-                    {!userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
-                        handleLike();
-                        setClicked(!clicked);
-                    }
-                        }> <ThumbUpOffAltIcon/>
-                    </ToggleButton>}
-                    {userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
-                        handleLike();
-                        setClicked(!clicked);
-                    }
-                        }> <ThumbUpIcon/>
-                    </ToggleButton>}
-                    <Button endIcon={<DownloadIcon />} onClick={handleShare} />
-                    {deleteButton}
-                </CardActions>
+        //     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '350px'}}>
 
-            </Box>
-        </Card>
+        //         <Link href={`/${profileLink}`}>
+        //             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', m: 2 }}>
+        //                 {/*<Button onClick={visitProfile}>*/}
+        //                 <Avatar alt={userName} src={profileImage} sx={{ mr: 2 }} />
+        //                 <Typography variant="body1" component="h1">
+        //                     <b>@{profileName}</b>
+        //                 </Typography>
+        //             </Box>
+        //         </Link>
+        //         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', p: 3 }}>
+        //             <Typography><b>Question:</b> {postQuestion}</Typography>
+        //             <Typography><b>User Response:</b> {alt}</Typography>
+        //             <Typography><b>Date Posted:</b> {date}</Typography>
+        //         </Box>
+        //         <CardActions>
+        //             {!userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
+        //                 handleLike();
+        //                 setClicked(!clicked);
+        //             }
+        //                 }> <ThumbUpOffAltIcon/>
+        //             </ToggleButton>}
+        //             {userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
+        //                 handleLike();
+        //                 setClicked(!clicked);
+        //             }
+        //                 }> <ThumbUpIcon/>
+        //             </ToggleButton>}
+        //             <Button endIcon={<DownloadIcon />} onClick={handleShare} />
+        //             {deleteButton}
+        //         </CardActions>
+
+        //     </Box>
+        // </Card>
 
 
     );

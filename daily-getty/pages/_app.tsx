@@ -16,14 +16,36 @@ declare module "@mui/material/styles/createPalette" {
   }
 }
 
+declare module '@mui/material/styles' {
+  interface TypographyVariants {
+    navButtonText: React.CSSProperties;
+  }
+
+  interface TypographyVariantsOptions {
+    navButtonText?: React.CSSProperties;
+  }
+}
+
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    navButtonText: true;
+  }
+}
+
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
   const blueTheme = createTheme({
     typography: {
       button:{
-        textTransform:'none'
+
+        // fontSize: '3.5rem',
       },
-      fontFamily: ['Montserrat'].join(',') ,
+      navButtonText: {
+        textTransform:'none',
+        fontWeight:'bolder',
+        fontFamily: ['Montserrat'].join(',') ,
+      }
+
     },
     palette: {
       common: {
