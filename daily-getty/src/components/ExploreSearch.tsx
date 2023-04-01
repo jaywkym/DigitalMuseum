@@ -3,7 +3,6 @@ import { Autocomplete, Box, CircularProgress, Grid, TextField } from "@mui/mater
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 
-
 export default function ExploreSearch({users}) {
 
     const [open, setOpen] = useState(false);
@@ -32,8 +31,6 @@ export default function ExploreSearch({users}) {
                 push(`/${newValue.id}`)
             }}
             renderOption={(props, option) => {
-
-                console.log(option)
                 
                 return (
                     <>
