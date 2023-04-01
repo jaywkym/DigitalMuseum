@@ -134,6 +134,7 @@ const Post = ({ _userObj, _post, session }) => {
         <Box
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            sx={{boxShadow: '1px 1px 3px 3px'}}
         >
             <img
                 src={src}

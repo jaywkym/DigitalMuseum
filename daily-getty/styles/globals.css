@@ -87,7 +87,11 @@ body {
 }
 
 .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] {
-  background: #ffff
+  background: #fff;
+}
+
+.MuiInputBase-root {
+  box-shadow: 1px 1px 7px 7px;
 }
 
 body {

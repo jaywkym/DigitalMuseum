@@ -14,7 +14,11 @@ export default function ExploreSearch({users}) {
     return (
         <Autocomplete
             id="user-lookup"
-            sx={{width: '90%'}}
+            sx={{
+                width: '98%', 
+                // boxShadow: '1px 1px 3px 3px',
+                // backgroundColor: 'common.blueScheme.foreground'
+            }}
             open={open}
             onOpen={() => {
                 setOpen(true);
