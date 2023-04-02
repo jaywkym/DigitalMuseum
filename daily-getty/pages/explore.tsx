@@ -150,33 +150,6 @@ export default function Asynchronous() {
                 
             </Box>
            
-            
-{/* 
-                               <Stack 
-                        spacing={5} 
-                        sx={{ 
-                            display: 'flex', 
-                            justifyContent: 'center', 
-                            alignItems: 'center', 
-                            alignContent: 'center' 
-                        }}>
-                        <ImageList cols={1} rowHeight={600}>
-
-                            {
-                                
-                                testPosts.map((post, i) => (
-                                    <ImageListItem key={i} >
-                                        <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
-                                    </ImageListItem>
-                                ))
-                            }
-
-                        </ImageList>
-                    </Stack> */}
-
-           
-
-            
         </>
        
     );
