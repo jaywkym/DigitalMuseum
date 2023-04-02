@@ -5,12 +5,13 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import { DatabasePost, DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Box, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
+import { Box, Container, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
 import HomeSearch from '@/src/components/homesearch';
-import NavBar from '@/src/components/bottomnav';
+import NavBar from '@/src/components/navbar';
 import Post from '@/src/components/post';
 import { constructCurrentDateId, requestPostFromUserById } from './database/posts';
 import { PostAddSharp } from '@mui/icons-material';
+import ExploreSearch from '@/src/components/ExploreSearch';
 
 export default function Asynchronous() {
 
@@ -25,7 +26,39 @@ export default function Asynchronous() {
     const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
     const loading: boolean   = open && users.length === 0;
 
-    useMemo(() => {
+    const [screenSize, setScreenSize] = useState(0)
+
+    const testPost = {
+        givenPrompt: 'Where do you see yourself in 5 years?',
+        userPrompt: 'myself but 5 years older',
+        id: '2023_3_29',
+        user_id: 'e75a20be-32a8-44a5-b9b9-da7dc512240f',
+        image: {
+            created: 0,
+            url: '/static/sunflower_example.png'
+        }
+    } as DatabasePost;
+
+    const testPosts: DatabasePost[] = [testPost, testPost, testPost, testPost, testPost, testPost, testPost, testPost, testPost];
+
+    useEffect(() => {
+        setScreenSize(window.innerWidth);
+
+        window.addEventListener('resize', () => {
+            setScreenSize(window.innerWidth);
+        })
+
+        return () => {
+            window.removeEventListener("resize", () => {
+                setScreenSize(window.innerWidth);
+            })
+        }
+    }, []);
+
+    const isMobile: boolean = screenSize <= 600;
+    const isMD: boolean = screenSize <= 900
+
+    useEffect(() => {
 
         async function loadUserPosts() {
     
@@ -75,87 +108,87 @@ export default function Asynchronous() {
     
     return (
         <>
-            <HomeSearch />
-            <Autocomplete
-                id="user-lookup"
-                sx={{ width: 300  }}
-                open={open}
-                onOpen={() => {
-                    setOpen(true);
-                }}
-                onClose={() => {
-                    setOpen(false);
-                }}
-                isOptionEqualToValue={(option, value) => option.name === value.name}
-                getOptionLabel={(option) => option.name}
-                options={users}
-                loading={loading}
-                onChange={(event: any, newValue: DatabaseUser | null) => {
-                    push(`/${newValue.id}`)
-                }}
-                renderOption={(props, option) => {
+            <Box 
+                position={'fixed'} 
+                width={'100vw'} 
+                height={'100vh'} 
+                sx={{backgroundColor: 'common.blueScheme.background'}} 
+                zIndex={-10}
+            >
 
-                    console.log(option)
-                    
-                    return (
-                        <>
-                            <li {...props}>
-                                <Grid container alignItems="center">
-                                <Grid item sx={{ display: 'flex', width: 44}}>
-                                    <img src={option.image} width={'50%'}/>
-                                </Grid>
-                                <Grid item sx={{ width: 'calc(100% - 44px)'}}>
-                                    <Box
-                                        key={option.id}
-                                        component="span"
-                                        sx={{ fontWeight: 'bold', color: 'black'}}
-                                    >
-                                        <p>{option.name}</p>
-                                    </Box>
-                                </Grid>
-                                </Grid>
-                            </li>
-                        </>
-                    )
-                }}
-                renderInput={(params) => (
-                    <>
-                    <TextField
-                    {...params}
+            </Box>
+            <NavBar isMobile={isMobile} session={session}/>
+           
+            <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
+                <Box 
                     sx={{
-                        p: 3,
+                        width: {xs: '100%', sm: '90%', md: '80%'}, 
                     }}
-                    label="Explore Users"
-                    InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                        <Fragment>
-                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
-                        </Fragment>
-                        ),
-                    }}
-                    />
-                    </>
-                )}
-            />
 
-            <Stack spacing={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                    <ImageList cols={1} rowHeight={600}>
+                    display={'flex'}
+                    justifyContent={'center'}
+                >
 
-                        {
-                            
-                            explorefeed.map((post, i) => (
-                                <ImageListItem key={i} >
-                                    <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
-                                </ImageListItem>
-                            ))
-                        }
+                    <ExploreSearch users={users}/>
+                    {/* <Post _userObj={session} _post={testPost} key={1} session={session} /> */}
+
+                </Box>
+                <Box 
+                    sx={{
+                        width: {
+                            xs: '100%', 
+                            sm: '90%', 
+                            md: '80%'
+                        }, 
+                    }} 
+                    
+                    display={'block'}
+                    padding={4}
+                >
+                    
+                    <ImageList cols={isMobile? 1 : isMD? 2 : 3} gap={20}>
+
+                    {
+                                
+                        testPosts.map((post, i) => (
+                            <ImageListItem key={i} >
+                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
+                            </ImageListItem>
+                        ))
+                    }
 
                     </ImageList>
-            </Stack>
 
-            <NavBar />
+                </Box>
+                
+            </Box>
+           
+            
+{/* 
+                               <Stack 
+                        spacing={5} 
+                        sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            alignItems: 'center', 
+                            alignContent: 'center' 
+                        }}>
+                        <ImageList cols={1} rowHeight={600}>
+
+                            {
+                                
+                                testPosts.map((post, i) => (
+                                    <ImageListItem key={i} >
+                                        <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
+                                    </ImageListItem>
+                                ))
+                            }
+
+                        </ImageList>
+                    </Stack> */}
+
+           
+
             
         </>
        
