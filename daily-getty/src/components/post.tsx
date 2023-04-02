@@ -23,12 +23,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const Post = ({ _userObj, _post, session }) => {
 
-    // console.log({
-    //     userObj: _userObj,
-    //     post: _post,
-    //     session: session
-    // })
-
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
 
@@ -158,55 +152,95 @@ const Post = ({ _userObj, _post, session }) => {
                     timeout={'auto'} 
                     collapsedSize={'20%'}
                 >
-                    <Box 
-                        width={'100%'} 
-                        sx={{
-                            backgroundColor: 'rgba(0, 0, 0, .7)', 
-                            height: imageHeight,
-                            color: 'common.blueScheme.notWhite'
-                        }}
+                    <Box
+                        width={'100%'}
                         display={'flex'}
-                        flexDirection={'row'}
+                        flexDirection={'column'}
                         justifyContent={'space-between'}
                     >
                         <Box 
+                            width={'100%'} 
+                            sx={{
+                                backgroundColor: 'rgba(0, 0, 0, .7)', 
+                                height: imageHeight,
+                                color: 'common.blueScheme.notWhite'
+                            }}
                             display={'flex'}
-                            flexDirection={'column'}>
-                            <Typography variant={'navButtonText'}>
-                                @{profileName}
-                            </Typography>
-                            <Typography variant={'navButtonText'}>
-                                {date}
-                            </Typography>
-                        </Box>
+                            flexDirection={'column'}
+                            justifyContent={'space-between'}
+                        >
+                            <Box
+                                width={'100%'}
+                                height={'100%'}
+                                display={'flex'}
+                                justifyContent={'space-between'}
+                            >
+                                <Box 
+                                    padding={1}
+                                    display={'flex'}
+                                    flexDirection={'column'}
+                                    justifyContent={'center'}
+                                    height={'20%'}
+                                >
 
-                        <Box>
-                            {
-                                !userLikesPost && 
-                                <ThumbUpOffAltIcon 
-                                    sx={{
-                                        color: 'white', 
-                                        paddingRight: .5
-                                    }} 
-                                    
-                                    onClick={handleLike}
-                                />
-                            }
-                            {
-                                userLikesPost && 
-                                <ThumbUpIcon
-                                    sx={{
-                                        color: 'white', 
-                                        paddingRight: .5
-                                    }} 
-                                    
-                                    onClick={handleLike}
-                                />
-                            }
-                        </Box>
+                                    <Typography>
+                                        @{profileName}
+                                    </Typography>
+                                    <Typography>
+                                        {date}
+                                    </Typography>
+                                </Box>
 
-                        
+                                <Box
+                                    display={'flex'}
+                                    flexDirection={'column'}
+                                    justifyContent={'center'}
+                                    height={'20%'}
+                                    padding={1}
+                                >
+                                    {
+                                        !userLikesPost && 
+                                        <ThumbUpOffAltIcon 
+                                            sx={{
+                                                color: 'common.blueScheme.notWhite', 
+                                                paddingRight: .5,
+                                                ":hover": {
+                                                    cursor: 'pointer'
+                                                }
+                                            }} 
+                                            
+                                            
+                                            onClick={handleLike}
+                                        />
+                                    }
+                                    {
+                                        userLikesPost && 
+                                        <ThumbUpIcon
+                                            sx={{
+                                                color: 'white', 
+                                                paddingRight: .5,
+                                                ":hover": {
+                                                    cursor: 'pointer'
+                                                }
+                                            }} 
+                                            
+                                            onClick={handleLike}
+                                        />
+                                    }
+                                </Box>
+                            </Box>
+                            <Box>
+                                <Typography textAlign={'center'}>
+                                    {postQuestion}
+                                </Typography>
+                                <Typography textAlign={'center'}>
+                                    {post.userPrompt}
+                                </Typography>
+                            </Box>
+                            
+                        </Box>
                     </Box>
+                    
                 </Collapse>
             </Box>
             
