@@ -28,19 +28,6 @@ export default function Asynchronous() {
 
     const [screenSize, setScreenSize] = useState(0)
 
-    const testPost = {
-        givenPrompt: 'Where do you see yourself in 5 years?',
-        userPrompt: 'myself but 5 years older',
-        id: '2023_3_29',
-        user_id: 'e75a20be-32a8-44a5-b9b9-da7dc512240f',
-        image: {
-            created: 0,
-            url: '/static/sunflower_example.png'
-        }
-    } as DatabasePost;
-
-    const testPosts: DatabasePost[] = [testPost, testPost, testPost, testPost, testPost, testPost, testPost, testPost, testPost];
-
     useEffect(() => {
         setScreenSize(window.innerWidth);
 
@@ -150,7 +137,7 @@ export default function Asynchronous() {
 
                     {
                                 
-                        testPosts.map((post, i) => (
+                        explorefeed.map((post, i) => (
                             <ImageListItem key={i} >
                                 <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
                             </ImageListItem>
