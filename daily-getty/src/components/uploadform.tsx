@@ -39,7 +39,7 @@ const MuseForm = () => {
     //GENERATE PROMPT
     const [question, setQuestion] = useState('');
 
-    const [image_urls, created, loading, error, generateImage] = useImage(prompt, style, "3");
+    const [image_urls, created, loading, error, generateImage] = useImage(prompt, style, "1");
     const { data: session, status } = useSession()
     const [completed, setCompleted] = useState(false);
 
