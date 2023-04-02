@@ -19,15 +19,15 @@ const HomeSearch = () => {
     return (
         <AppBar position="static" style={{ background: '#2B2B2B', display: 'flex', justifyContent: 'center', width: '100%' }}>
             <Toolbar>
-                <Button 
+                <Button
                     style={{
                         borderRadius: 28,
-                        backgroundColor: !hover? "#DEE2E2" : "#BBBBBB",
+                        backgroundColor: !hover ? "#DEE2E2" : "#BBBBBB",
                         padding: "14px 28px",
                         fontSize: "14px",
                         textDecorationColor: "black",
-                    }} 
-                    
+                    }}
+
                     onClick={() => signOut()}
                     onMouseEnter={() => setHover(true)}
                     onMouseLeave={() => setHover(false)}
@@ -35,7 +35,7 @@ const HomeSearch = () => {
                     <Typography color={'#000000'}>Logout</Typography>
                 </Button>
                 <Typography
-                    variant="h3"
+                    variant="h4"
                     noWrap
                     component="div"
                     align="center"

@@ -87,7 +87,6 @@ const Post = ({ _userObj, _post }) => {
     }, [sessionTest])
 
 
-
     const [clicked, setClicked] = useState(false);
 
     const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
@@ -201,44 +200,20 @@ const Post = ({ _userObj, _post }) => {
 
     }
 
-
-
-
-
-
     return (
-        <Card raised sx={{ display: 'flex', width: '800px', mt: 5, boxShadow: 4 }}>
+        <Card raised sx={{ display: 'flex', width: '700px', mt: 5, boxShadow: 4 }}>
             {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
-            <div
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}>
-                {/* {isHovering ? (
-                    <div style={{ height: 500, width: 450 }}>
-                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                            <Typography>
-                                    Question: {postQuestion}
-                                    <br></br>
-                                    User Response: {alt}
-                                    <br></br>
-                                    Date: {date}:
-                            </Typography>
-                        </Box>
-                    </div>
-                ) : ( */}
-                < CardMedia
-                    component="img"
-                    alt={alt}
-                    height={500}
-                    width={500}
-                    image={src}
-                />
-                {/* )} */}
-            </div>
+            < CardMedia
+                component="img"
+                alt={alt}
+                height={400}
+                width={400}
+                image={src}
+            />
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '350px'}}>
-
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '300px' }}>
                 <Link href={`/${profileLink}`}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', m: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center', m: 2 }}>
                         {/*<Button onClick={visitProfile}>*/}
                         <Avatar alt={userObj.name} src={profileImage} sx={{ mr: 2 }} />
                         <Typography variant="body1" component="h1">
@@ -246,10 +221,13 @@ const Post = ({ _userObj, _post }) => {
                         </Typography>
                     </Box>
                 </Link>
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', p: 3 }}>
-                    <Typography><b>Question:</b> {postQuestion}</Typography>
-                    <Typography><b>User Response:</b> {alt}</Typography>
-                    <Typography><b>Date Posted:</b> {date}</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', ml: 2 }}>
+                    <Typography><b>Question</b></Typography>
+                    <Typography>{postQuestion}</Typography>
+                    <Typography><b>User Response</b></Typography>
+                    <Typography>{alt}</Typography>
+                    <Typography><b>Date Posted</b></Typography>
+                    <Typography>{date}</Typography>
                 </Box>
                 <CardActions>
                     {!userLikesPost && <ToggleButton value="check" selected={clicked} onClick={() => {
@@ -267,11 +245,8 @@ const Post = ({ _userObj, _post }) => {
                     <Button endIcon={<DownloadIcon />} onClick={handleShare} />
                     {deleteButton}
                 </CardActions>
-
-            </Box>
-        </Card>
-
-
+            </Box >
+        </Card >
     );
 
 }

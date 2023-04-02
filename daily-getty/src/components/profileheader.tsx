@@ -80,7 +80,7 @@ const ProfileHeader = ({ user }) => {
     return (
         <Container fixed >
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Box sx={{ m: 5 }}>
+                <Box sx={{ mb: 5 }}>
                     <Typography variant='h3'>
                         Hey, {user.name}!
                     </Typography>
@@ -136,8 +136,8 @@ const ProfileHeader = ({ user }) => {
                         </List>
                     </Box>
                             </Modal> */}
-                            
-            </Box> 
+
+            </Box>
         </Container>
     );
 };

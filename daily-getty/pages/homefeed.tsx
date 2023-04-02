@@ -34,25 +34,25 @@ export default function HomeFeed() {
         async function pullFriends() {
             const dbFriendsResponse = await requestFriendsForUser(user.id);
 
-            if(!dbFriendsResponse.success)
+            if (!dbFriendsResponse.success)
                 return;
 
-            if(!dbFriendsResponse.friends)
+            if (!dbFriendsResponse.friends)
                 return;
 
-            if(!dbFriendsResponse.friends.following)
+            if (!dbFriendsResponse.friends.following)
                 setFriends([] as string[])
             else
                 setFriends(dbFriendsResponse.friends.following);
         }
 
         pullFriends()
-        .catch(console.error);
+            .catch(console.error);
 
     }, [user.id])
 
     useEffect(() => {
-        if(!friends_updated)
+        if (!friends_updated)
             return;
 
 
@@ -64,7 +64,7 @@ export default function HomeFeed() {
 
                 const request = {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -74,10 +74,10 @@ export default function HomeFeed() {
 
                 const dbResponse = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
                 const json = await dbResponse.json() as DatabaseUserPostsResponse;
-                if(!json.success)
+                if (!json.success)
                     return;
 
-                if(!json.posts)
+                if (!json.posts)
                     return;
 
                 const user_posts: DatabasePost[] = Object.keys(json.posts).map((post_id) => {
@@ -85,34 +85,34 @@ export default function HomeFeed() {
                 })
 
                 blankPosts.push(...user_posts)
-                
+
             });
 
             await Promise.all(promise);
 
-            blankPosts.sort((a, b) => {return a.id < b.id? 1 : 0});
+            blankPosts.sort((a, b) => { return a.id < b.id ? 1 : 0 });
             setPosts(blankPosts)
 
         }
 
         pullBlankPostsFromFriends()
-        .catch(console.error)
+            .catch(console.error)
 
     }, [friends_updated])
 
     useEffect(() => {
-        if(!posts_updated)
+        if (!posts_updated)
             return;
 
         async function pullAllPosts() {
 
             const promises = posts.map(async (blank_post) => {
-                
+
                 const dbResponse = await requestPostFromUserById(blank_post.user_id, blank_post.id)
-                if(!dbResponse.success)
+                if (!dbResponse.success)
                     return;
 
-                if(!dbResponse.post)
+                if (!dbResponse.post)
                     return;
 
                 const post = dbResponse.post;
@@ -120,7 +120,7 @@ export default function HomeFeed() {
 
                 posts.forEach((current_post) => {
 
-                    if(current_post.id == post.id && current_post.user_id == post.user_id) {
+                    if (current_post.id == post.id && current_post.user_id == post.user_id) {
                         posts[current_index].image.b64 = post.image.b64
                         console.log(posts[current_index])
                         return;
@@ -138,7 +138,7 @@ export default function HomeFeed() {
         }
 
         pullAllPosts()
-        .catch(console.error)
+            .catch(console.error)
 
     }, [posts_updated])
 
@@ -163,9 +163,8 @@ export default function HomeFeed() {
                             )}
 
                             {/* <center> */}
-                            <Stack spacing={5}>
-                                <ImageList cols={1} rowHeight={600}>
-
+                            <Stack spacing={10}>
+                                <ImageList cols={2} rowHeight={400} gap={10}>
                                     {
                                         posts_updated && posts.map((post) => (
 
