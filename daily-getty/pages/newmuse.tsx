@@ -3,8 +3,8 @@ import Head from 'next/head'
 import Box from '@mui/material/Box';
 import Image from 'next/image';
 import CssBaseline from '@mui/material/CssBaseline';
-import NavBar from '@/src/components/bottomnav';
-import HomeSearch from '@/src/components/homesearch';
+// import NavBar from '@/src/components/bottomnav';
+// import HomeSearch from '@/src/components/homesearch';
 import abstractbg from "./public/abstractbg.jpg"
 import CheckItemExists from "@/src/components/checkPostExistence"
 
@@ -23,7 +23,7 @@ export default function NewMuse() {
                 <title>Create Daily Image!</title>
             </Head>
             <main>
-                <HomeSearch />
+                {/* <HomeSearch /> */}
                 <CssBaseline />
                 <Box sx={{
                     flexGrow: 1,
@@ -37,7 +37,7 @@ export default function NewMuse() {
                     {/* <MuseForm /> */}
                     <CheckItemExists />
                 </Box>
-                <NavBar />
+                {/* <NavBar /> */}
             </main>
         </>
     )
