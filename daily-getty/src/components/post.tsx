@@ -50,8 +50,30 @@ const Post = ({ _userObj, _post, session }) => {
     const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id, post.user_id)
 
     const [userLikesPost, setUserLikesPost] = useState(false)
-1
+
     const imageNeedsUpdate = post.id === undefined || post.user_id === undefined;
+
+    function convertPostIdToDateObj(post_id) {
+        const dates = [...post_id.matchAll(/\d+/g) as any]
+        const date = new Date(dates[0], dates[1] - 1, dates[2])
+        return date
+    }
+
+    function generateTimeDifferenceString(post_date) {
+        const difference = Date.now() - post_date.getTime()
+        const days = Math.floor(difference / 86400000) // Milliseconds to days
+        const months = Math.floor(days / 31);
+        
+        if(days === 0) {
+            return "Today";
+        }
+
+        else if(days <= 30) {
+            return days + " days ago"
+        }
+
+        return months + " months ago"
+    }
 
     async function getUserLikesPost() {
         const resp = await requestIfUserLikesPost(user.id, post.id, post.user_id);
@@ -187,7 +209,7 @@ const Post = ({ _userObj, _post, session }) => {
                                         @{profileName}
                                     </Typography>
                                     <Typography>
-                                        {date}
+                                        {generateTimeDifferenceString(convertPostIdToDateObj(post.id))}
                                     </Typography>
                                 </Box>
 
