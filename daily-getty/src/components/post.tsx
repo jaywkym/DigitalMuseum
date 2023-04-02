@@ -38,7 +38,7 @@ const Post = ({ _userObj, _post }) => {
 
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
-    const session2  =  getSession();
+    const session2 = getSession();
     const [sessionTest, setSessionTest] = useState(null);
     //console.log("the session testing is....");
     let justTesting = null;
@@ -49,7 +49,7 @@ const Post = ({ _userObj, _post }) => {
         }
     )
 
-   
+
     //console.log(session2)
 
     // componentDidMount() {
@@ -70,7 +70,7 @@ const Post = ({ _userObj, _post }) => {
     const postQuestion = post.givenPrompt ? post.givenPrompt : "";
     const date = post.id ? post.id : "";
     const src = post.image ? `data:image/png;base64, ${post.image.b64}` : ``
-    const userPost = post.user_id ? post.user_id  : ""
+    const userPost = post.user_id ? post.user_id : ""
     const profileName = postProfile ? postProfile.name : ''
     const profileImage = postProfile ? postProfile.image : ''
     const profileLink = postProfile ? postProfile.id : ''
@@ -78,11 +78,11 @@ const Post = ({ _userObj, _post }) => {
 
     useEffect(() => {
         //console.log("in the useEffect userTesting")
-        if(userPost == sessionTest){
+        if (userPost == sessionTest) {
             //console.log("they are equal")
             setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
-         }
-       
+        }
+
 
     }, [sessionTest])
 
@@ -100,7 +100,7 @@ const Post = ({ _userObj, _post }) => {
         setUserLikesPost(resp)
         setClicked(resp)
     }
-    
+
     async function getUserInfo() {
         const resp_profile = await pull_user({ id: post.user_id } as DatabaseUser);
         if (resp_profile.id)
@@ -109,18 +109,18 @@ const Post = ({ _userObj, _post }) => {
 
     const contentType = "image/png"
 
-    const handleShare = (event) => { 
+    const handleShare = (event) => {
 
         console.log(event.target)
         console.log(post.image)
         const base64Data = post.image.b64;
-    
+
         const linkSource = `data:${contentType};base64,${base64Data}`;
         const downloadLink = document.createElement("a");
         downloadLink.href = linkSource;
         downloadLink.download = post.userPrompt;
         downloadLink.click();
-    
+
     } //Overlay Share Window
 
     const deletePost = () => {
@@ -158,8 +158,8 @@ const Post = ({ _userObj, _post }) => {
 
         getUserLikesPost()
             .catch(console.error)
-        
-        
+
+
 
     }, [post])
 
@@ -168,7 +168,7 @@ const Post = ({ _userObj, _post }) => {
     //     setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
     // }
 
-    
+
 
     useEffect(() => {
         // console.log(user.googleId)
@@ -197,13 +197,13 @@ const Post = ({ _userObj, _post }) => {
             await likePost()
 
         await getUserLikesPost()
-        console.log({userLikesPost: userLikesPost})
+        console.log({ userLikesPost: userLikesPost })
 
     }
 
-   
 
-    
+
+
 
 
     return (
@@ -252,17 +252,17 @@ const Post = ({ _userObj, _post }) => {
                     <Typography><b>Date Posted:</b> {date}</Typography>
                 </Box>
                 <CardActions>
-                    {!userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
+                    {!userLikesPost && <ToggleButton value="check" selected={clicked} onClick={() => {
                         handleLike();
                         setClicked(!clicked);
                     }
-                        }> <ThumbUpOffAltIcon/>
+                    }> <ThumbUpOffAltIcon />
                     </ToggleButton>}
-                    {userLikesPost && <ToggleButton value = "check" selected={clicked} onClick= {() => {
+                    {userLikesPost && <ToggleButton value="check" selected={clicked} onClick={() => {
                         handleLike();
                         setClicked(!clicked);
                     }
-                        }> <ThumbUpIcon/>
+                    }> <ThumbUpIcon />
                     </ToggleButton>}
                     <Button endIcon={<DownloadIcon />} onClick={handleShare} />
                     {deleteButton}
