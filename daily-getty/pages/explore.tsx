@@ -14,9 +14,9 @@ import { PostAddSharp } from '@mui/icons-material';
 
 export default function Asynchronous() {
 
-    const {data: session, status} = useSession();
+    const { data: session, status } = useSession();
 
-    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const [users, setUsers] = useState([]);
 
     const [open, setOpen] = useState(false);
@@ -29,12 +29,12 @@ export default function Asynchronous() {
     useEffect(() => {
 
         async function loadUserPosts() {
-    
+
             const posts = [];
-            const resp = await fetch(`/api/database/profile/getAllUsers`, {method: 'POST'})
+            const resp = await fetch(`/api/database/profile/getAllUsers`, { method: 'POST' })
             const json = await resp.json() as DatabaseUsersResponse;
 
-            if(!json.success)
+            if (!json.success)
                 return;
 
             const dbUsers = json.users;
@@ -48,7 +48,7 @@ export default function Asynchronous() {
             const date = new Date();
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
-            const day = date.getDate() ;
+            const day = date.getDate();
 
             const post_id = year + "_" + month + "_" + day;
 
@@ -61,30 +61,30 @@ export default function Asynchronous() {
             });
 
             const returned_promises = await Promise.all(promises);
-            
+
             return returned_promises.filter(post => {
                 return post.id
             });
 
-            
+
         }
 
         loadUserPosts()
-        .then(setExplorefeed)
-        .catch(console.error);
+            .then(setExplorefeed)
+            .catch(console.error);
 
     }, [loading])
 
     useEffect(() => {
         if (!open) setUsers([]);
     }, [open]);
-    
+
     return (
         <>
             <HomeSearch />
             <Autocomplete
                 id="user-lookup"
-                sx={{ width: 300  }}
+                sx={{ width: 300 }}
                 open={open}
                 onOpen={() => {
                     setOpen(true);
@@ -102,23 +102,23 @@ export default function Asynchronous() {
                 renderOption={(props, option) => {
 
                     console.log(option)
-                    
+
                     return (
                         <>
                             <li {...props}>
                                 <Grid container alignItems="center">
-                                <Grid item sx={{ display: 'flex', width: 44}}>
-                                    <img src={option.image} width={'50%'}/>
-                                </Grid>
-                                <Grid item sx={{ width: 'calc(100% - 44px)'}}>
-                                    <Box
-                                        key={option.id}
-                                        component="span"
-                                        sx={{ fontWeight: 'bold', color: 'black'}}
-                                    >
-                                        <p>{option.name}</p>
-                                    </Box>
-                                </Grid>
+                                    <Grid item sx={{ display: 'flex', width: 44 }}>
+                                        <img src={option.image} width={'50%'} />
+                                    </Grid>
+                                    <Grid item sx={{ width: 'calc(100% - 44px)' }}>
+                                        <Box
+                                            key={option.id}
+                                            component="span"
+                                            sx={{ fontWeight: 'bold', color: 'black' }}
+                                        >
+                                            <p>{option.name}</p>
+                                        </Box>
+                                    </Grid>
                                 </Grid>
                             </li>
                         </>
@@ -126,41 +126,39 @@ export default function Asynchronous() {
                 }}
                 renderInput={(params) => (
                     <>
-                    <TextField
-                    {...params}
-                    label="Explore Users"
-                    InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                        <Fragment>
-                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
-                        </Fragment>
-                        ),
-                    }}
-                    />
+                        <TextField
+                            {...params}
+                            label="Explore Users"
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <Fragment>
+                                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </Fragment>
+                                ),
+                            }}
+                        />
                     </>
                 )}
             />
 
             <Stack spacing={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                    <ImageList cols={1} rowHeight={600}>
+                <ImageList cols={1} rowHeight={600}>
+                    {
+                        explorefeed.map((post, i) => (
+                            <ImageListItem key={i} >
+                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} />
+                            </ImageListItem>
+                        ))
+                    }
 
-                        {
-                            
-                            explorefeed.map((post, i) => (
-                                <ImageListItem key={i} >
-                                    <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} />
-                                </ImageListItem>
-                            ))
-                        }
-
-                    </ImageList>
+                </ImageList>
             </Stack>
 
             <NavBar />
-            
+
         </>
-       
+
     );
 }
