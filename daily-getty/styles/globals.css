@@ -90,9 +90,9 @@ body {
   background: #fff;
 }
 
-.MuiInputBase-root {
+/* .MuiInputBase-root {
   box-shadow: 1px 1px 7px 7px;
-}
+} */
 
 body {
   color: rgb(var(--foreground-rgb));
