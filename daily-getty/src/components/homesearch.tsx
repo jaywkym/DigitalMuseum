@@ -17,7 +17,7 @@ const HomeSearch = () => {
     const [hover, setHover] = useState(false);
 
     return (
-        <AppBar position="static" style={{ background: '#000000', display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <AppBar position="static" style={{ background: '#2B2B2B', display: 'flex', justifyContent: 'center', width: '100%' }}>
             <Toolbar>
                 <Button 
                     style={{

@@ -30,6 +30,7 @@ export default function Asynchronous() {
 
         async function loadUserPosts() {
 
+
             const posts = [];
             const resp = await fetch(`/api/database/profile/getAllUsers`, { method: 'POST' })
             const json = await resp.json() as DatabaseUsersResponse;
@@ -62,9 +63,11 @@ export default function Asynchronous() {
 
             const returned_promises = await Promise.all(promises);
 
+
             return returned_promises.filter(post => {
                 return post.id
             });
+
 
 
         }
@@ -78,6 +81,7 @@ export default function Asynchronous() {
     useEffect(() => {
         if (!open) setUsers([]);
     }, [open]);
+
 
     return (
         <>
@@ -102,6 +106,7 @@ export default function Asynchronous() {
                 renderOption={(props, option) => {
 
                     console.log(option)
+
 
                     return (
                         <>
@@ -128,6 +133,9 @@ export default function Asynchronous() {
                     <>
                         <TextField
                             {...params}
+                            sx={{
+                                p: 3,
+                            }}
                             label="Explore Users"
                             InputProps={{
                                 ...params.InputProps,
@@ -152,13 +160,24 @@ export default function Asynchronous() {
                             </ImageListItem>
                         ))
                     }
+                    <ImageList cols={1} rowHeight={600}>
+                        {
+                            explorefeed.map((post, i) => (
+                                <ImageListItem key={i} >
+                                    <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} />
+                                </ImageListItem>
+                            ))
+                        }
 
+                    </ImageList>
                 </ImageList>
             </Stack>
 
             <NavBar />
 
+
         </>
+
 
     );
 }
