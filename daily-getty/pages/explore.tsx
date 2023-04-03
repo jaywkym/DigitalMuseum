@@ -13,6 +13,7 @@ import { constructCurrentDateId, requestPostFromUserById } from './database/post
 import { PostAddSharp } from '@mui/icons-material';
 import ExploreSearch from '@/src/components/ExploreSearch';
 import useScreenSize from './database/pages';
+import { green } from '@mui/material/colors';
 
 export default function Asynchronous() {
 
@@ -21,6 +22,7 @@ export default function Asynchronous() {
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
+    const postsLoading = explorefeed.length === 0
 
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
@@ -116,6 +118,19 @@ export default function Asynchronous() {
                     display={'block'}
                     padding={4}
                 >
+
+                    {postsLoading && (
+                        <Box width={'100%'} display={'flex'} justifyContent={'center'}>
+
+                            <CircularProgress
+                                size={68}
+                                sx={{
+                                    color: green[500],
+                                }}
+                            />
+
+                        </Box>
+                    )}
                     
                     <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20}>
 
