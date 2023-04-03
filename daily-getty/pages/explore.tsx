@@ -12,6 +12,7 @@ import Post from '@/src/components/post';
 import { constructCurrentDateId, requestPostFromUserById } from './database/posts';
 import { PostAddSharp } from '@mui/icons-material';
 import ExploreSearch from '@/src/components/ExploreSearch';
+import useScreenSize from './database/pages';
 
 export default function Asynchronous() {
 
@@ -21,29 +22,12 @@ export default function Asynchronous() {
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
 
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
+
     const { push } = useRouter();
 
     const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
     const loading: boolean   = open && users.length === 0;
-
-    const [screenSize, setScreenSize] = useState(0)
-
-    useEffect(() => {
-        setScreenSize(window.innerWidth);
-
-        window.addEventListener('resize', () => {
-            setScreenSize(window.innerWidth);
-        })
-
-        return () => {
-            window.removeEventListener("resize", () => {
-                setScreenSize(window.innerWidth);
-            })
-        }
-    }, []);
-
-    const isMobile: boolean = screenSize <= 600;
-    const isMD: boolean = screenSize <= 900
 
     useEffect(() => {
 
@@ -104,7 +88,7 @@ export default function Asynchronous() {
             >
 
             </Box>
-            <NavBar isMobile={isMobile} session={session}/>
+            <NavBar isMobile={isXS} session={session}/>
            
             <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                 <Box 
@@ -133,7 +117,7 @@ export default function Asynchronous() {
                     padding={4}
                 >
                     
-                    <ImageList cols={isMobile? 1 : isMD? 2 : 3} gap={20}>
+                    <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20}>
 
                     {
                                 

@@ -96,10 +96,22 @@ const ProfileHeader = ({ user, session }) => {
     }, [following, followers, sFollowing])
 
     return (
-        <Container fixed >
+        <Container 
+            sx={{
+                backgroundColor: 'common.blueScheme.foreground', 
+                margin: 0, 
+                padding: 5,
+                boxShadow: '5px 5px 5px 3px'
+            }}
+            
+        >
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Box sx={{ m: 5 }}>
-                    <Typography variant='h3'>
+                <Box sx={{ m: 0 }}>
+                    <Typography 
+                        sx={{fontSize: {xs: 25, sm: 40, md: 50, lg: 60}}}
+                        color={'common.blueScheme.notWhite'}
+                        paddingBottom={3}
+                    >
                         Hey, {user.name}!
                     </Typography>
                 </Box>
@@ -111,8 +123,8 @@ const ProfileHeader = ({ user, session }) => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    {!loadingFriends && <Chip label={`Following ${following ? following.length : 0}`} />}
-                    {!loadingFriends && <Chip label={`Followers ${followers ? followers.length : 0}`} />}
+                    {!loadingFriends && <Chip label={`Following ${following ? following.length : 0}`} sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}}/>}
+                    {!loadingFriends && <Chip label={`Followers ${followers ? followers.length : 0}`} sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}}/>}
                     {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
                         if (!isFollowing)
                             followUser()

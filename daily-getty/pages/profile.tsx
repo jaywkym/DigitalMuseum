@@ -12,32 +12,18 @@ import { signOut, useSession } from 'next-auth/react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
 import HomeSearch from '@/src/components/homesearch';
+import useScreenSize from './database/pages';
 
 export default function Profile() {
 
     const { data: session, status } = useSession();
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
-    const [screenSize, setScreenSize] = useState(0)
+
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const userSet = user.id !== undefined;
-    const isMobile: boolean = screenSize <= 600;
-    const isMD: boolean = screenSize <= 900
-
-    useEffect(() => {
-        setScreenSize(window.innerWidth);
-
-        window.addEventListener('resize', () => {
-            setScreenSize(window.innerWidth);
-        })
-
-        return () => {
-            window.removeEventListener("resize", () => {
-                setScreenSize(window.innerWidth);
-            })
-        }
-    }, []);
 
     async function loadImages(blankPosts) {
 
@@ -126,7 +112,7 @@ export default function Profile() {
                 >
 
                 </Box>
-                <NavBar isMobile={isMobile} session={session}/>
+                <NavBar isMobile={isXS} session={session}/>
                 <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                     <Box 
                         sx={{
@@ -160,7 +146,7 @@ export default function Profile() {
                                     />
                                 )}
 
-                                <ImageList cols={isMobile? 1 : isMD? 2 : 3} gap={20}>
+                                <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20}>
 
                                 {
                                             

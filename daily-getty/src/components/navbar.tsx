@@ -5,6 +5,7 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import HomeIcon from '@mui/icons-material/Home';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import LogoutIcon from '@mui/icons-material/Logout';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { useEffect, useRef, useState } from 'react';
 import { DatabaseUser } from '@/types/FirebaseResponseTypes';
@@ -148,18 +149,20 @@ const NavBar = ({isMobile, session}) => {
                                         </Button>
                                     </Box>
                                     <Box sx={{width:'100%', display: {xs: 'flex', md: 'none'},}}>
-                                        <Button 
-                                            sx={{
-                                                color:'white', 
-                                                paddingRight: 0,
-                                                display: {xs: 'none', sm: 'inherit'}
-                                            }}
-                                            size='large'
-                                            variant='text'
-                                            startIcon={icon}
-                                        >
-                                            <Link href={url}></Link>
-                                        </Button>
+                                        <Link href={url}>
+                                            <Button 
+                                                sx={{
+                                                    color:'white', 
+                                                    paddingRight: 0,
+                                                    display: {xs: 'none', sm: 'inherit'}
+                                                }}
+                                                size='large'
+                                                variant='text'
+                                                startIcon={icon}
+                                            >
+                                           
+                                            </Button>
+                                        </Link>
                                     </Box>
                                 </>
                             )
@@ -174,21 +177,24 @@ const NavBar = ({isMobile, session}) => {
                     flexDirection={'column'}
                     alignItems={'center'}
                 >
-                    <Avatar
-                        alt="placeholder"
-                        src={user.image}
-                        sx={{ 
-                            width: {
-                                sm: 45, 
-                                md: 70
-                            }, 
-                            height: {
-                                sm: 45, 
-                                md: 70
-                            }, 
-                            marginBottom: '20px'
-                        }}
-                    />
+                    <Link href={'/profile'}>
+                        <Avatar
+                            alt="placeholder"
+                            src={user.image}
+                            sx={{ 
+                                width: {
+                                    sm: 45, 
+                                    md: 70
+                                }, 
+                                height: {
+                                    sm: 45, 
+                                    md: 70
+                                }, 
+                                marginBottom: '20px'
+                            }}
+                        />
+                    </Link>
+
                     <Typography 
                         variant='navButtonText' 
                         color={'common.blueScheme.notWhite'}
@@ -197,6 +203,18 @@ const NavBar = ({isMobile, session}) => {
                     >
                         @{user.name}
                     </Typography>
+                    <LogoutIcon 
+                        sx={{
+                            marginBottom: 4,
+                            display: {xs: 'flex', md: 'none'},
+                            color: 'common.blueScheme.notWhite',
+                            ":hover": {
+                                cursor: 'pointer'
+                            }
+                        }}
+
+                        onClick={() => signOut()}
+                    />
                 
                         <Box sx={{display: {xs: 'none', md: 'flex', flexDirection: 'row', justifyItems: 'space-between'}}}>
                             {

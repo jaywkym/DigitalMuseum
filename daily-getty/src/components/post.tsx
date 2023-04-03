@@ -198,17 +198,22 @@ const Post = ({ _userObj, _post, session }) => {
                                 justifyContent={'space-between'}
                             >
                                 <Box 
-                                    padding={1}
+                                    padding={0.5}
                                     display={'flex'}
                                     flexDirection={'column'}
-                                    justifyContent={'center'}
-                                    height={'20%'}
+                                    justifyContent={'start'}
+                                    height={'30%'}
                                 >
 
-                                    <Typography>
+                                    <Typography
+                                        sx={{fontSize: {xs: 16, sm: 16, md: 18, lg: 20}}}
+                                    >
                                         @{profileName}
                                     </Typography>
-                                    <Typography>
+                                    <Typography
+                                        sx={{fontSize: {xs: 14, sm: 14, md: 16, lg: 18}}}
+                                        color={'#bbb'}
+                                    >
                                         {generateTimeDifferenceString(convertPostIdToDateObj(post.id))}
                                     </Typography>
                                 </Box>
