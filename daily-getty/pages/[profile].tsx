@@ -11,7 +11,7 @@ import ProfileHeader from '@/src/components/profileheader';
 import { green } from '@mui/material/colors';
 import Post from '@/src/components/post';
 import HomeSearch from '@/src/components/homesearch';
-import NavBar from '@/src/components/bottomnav';
+// import NavBar from '@/src/components/bottomnav';
 
 export default function Profile() {
 
@@ -154,9 +154,9 @@ export default function Profile() {
                             
                         </List>
                     </Box>
-                    <NavBar />
+                    {/* <NavBar /> */}
                 </Box>
-                <NavBar />
+                {/* <NavBar /> */}
             </main>
         </>
     )

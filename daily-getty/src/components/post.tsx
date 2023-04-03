@@ -68,6 +68,10 @@ const Post = ({ _userObj, _post, session }) => {
             return "Today";
         }
 
+        else if(days === 1) {
+            return "Yesterday"
+        }
+
         else if(days <= 30) {
             return days + " days ago"
         }

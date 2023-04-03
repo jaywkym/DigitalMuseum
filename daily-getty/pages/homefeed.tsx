@@ -10,7 +10,7 @@ import List from '@mui/material/List';
 import { Container } from '@mui/system';
 import HomeSearch from '@/src/components/homesearch';
 import Post from '@/src/components/post';
-import NavBar from '@/src/components/bottomnav';
+// import NavBar from '@/src/components/bottomnav';
 import { requestPostFromUserById } from './database/posts';
 import { CircularProgress } from '@mui/material';
 import { green } from '@mui/material/colors';
@@ -179,7 +179,7 @@ export default function HomeFeed() {
                             </Stack>
                         </Box>
                     </Container>
-                    <NavBar />
+                    {/* <NavBar /> */}
                 </Box>
             </main>
         </>

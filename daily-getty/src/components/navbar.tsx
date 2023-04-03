@@ -83,7 +83,7 @@ const NavBar = ({isMobile, session}) => {
                 {
                     navButtons.map(({name, icon, url}) => {
                         return (
-                            <Link href={url} >
+                            <Link href={url} key={name} >
                                 <BottomNavigationAction 
                                     label={name} 
                                     icon={icon}
