@@ -17,6 +17,8 @@ import { green } from '@mui/material/colors';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { requestFriendsForUser } from './database/profile';
+import NavBar from '@/src/components/navbar';
+import useScreenSize from './database/pages';
 
 export default function HomeFeed() {
 
@@ -25,6 +27,7 @@ export default function HomeFeed() {
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const [friends, setFriends] = useState([] as string[]);
     const [posts, setPosts] = useState([] as DatabasePost[])
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
     const friends_updated = friends && friends.length !== 0;
     const posts_updated = posts && posts.length !== 0;
@@ -148,7 +151,31 @@ export default function HomeFeed() {
                 <title>Home Feed</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1, mb: 10, width: '100%', height: '100vh' }}>
+            <Box 
+                position={'fixed'} 
+                width={'100vw'} 
+                height={'100vh'} 
+                sx={{backgroundColor: 'common.blueScheme.background'}} 
+                zIndex={-10}
+            >
+
+            </Box>
+            <NavBar isMobile={isXS} session={session}/>
+           
+            <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
+                <Box 
+                    sx={{
+                        width: {xs: '100%', sm: '90%', md: '80%'}, 
+                    }}
+
+                    display={'flex'}
+                    justifyContent={'center'}
+                >
+
+                </Box>
+            </Box>
+                    
+                {/* <Box sx={{ flexGrow: 1, mb: 10, width: '100%', height: '100vh' }}>
                     <HomeSearch />
                     <Container fixed>
                         <CssBaseline />
@@ -162,7 +189,6 @@ export default function HomeFeed() {
                                 />
                             )}
 
-                            {/* <center> */}
                             <Stack spacing={5}>
                                 <ImageList cols={1} rowHeight={600}>
 
@@ -179,8 +205,7 @@ export default function HomeFeed() {
                             </Stack>
                         </Box>
                     </Container>
-                    {/* <NavBar /> */}
-                </Box>
+                </Box> */}
             </main>
         </>
     )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import CheckItemExists from "@/src/components/checkPostExistence"
 import NavBar from '@/src/components/navbar';
 import { useSession } from 'next-auth/react';
 import useScreenSize from './database/pages';
-import { Button, Container, Step, StepLabel, Stepper, TextField, Typography } from '@mui/material';
+import { Button, Container, FormControl, InputLabel, MenuItem, Select, Slide, Step, StepLabel, Stepper, TextField, Typography } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
@@ -27,6 +27,9 @@ export default function NewMuse() {
 
     const [prompt, setPrompt] = useState('')
     const [userResponse, setUserResponse] = useState('');
+    const [artStyle, setArtStyle] = useState('');
+
+    const inputContainerRef = useRef(null);
 
     const handleNext = () => {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -102,6 +105,8 @@ export default function NewMuse() {
                                     boxShadow: '3px 3px 6px 6px',
                                     padding: 5
                                 }}
+
+                                ref={inputContainerRef}
                             >
                                 <Box>
                                     <Typography variant={'h3'} color={'common.blueScheme.notWhite'} paddingBottom={2}>
@@ -112,29 +117,84 @@ export default function NewMuse() {
                                     <Typography variant={'h5'} color={'#888'} paddingBottom={2}>
                                         {prompt}
                                     </Typography>
+                                    
                                 </Box>
-                                <TextField
-                                    id="prompt-field"
-                                    label="Like a spoon in the wind..."
-                                    sx={{backgroundColor: 'common.blueScheme.notWhite', height: '100%'}}
-                                    size={'medium'}
-                                    fullWidth
-                                    multiline
-                                    onChange={(e) => setUserResponse(e.target.value)}
-                                >
+                                <Box
+                                    display={'flex'}
 
-                                </TextField>
+                                >
+                                    <Slide
+                                        direction={activeStep === 0? 'left' : 'right'}
+                                        in={activeStep === 0}
+                                        container={inputContainerRef.current}
+                                        mountOnEnter
+                                        unmountOnExit
+                                    >
+                                        <TextField
+                                            id="prompt-field"
+                                            label="Place Response here"
+                                            sx={{backgroundColor: 'common.blueScheme.notWhite'}}
+                                            size={'medium'}
+                                            fullWidth
+                                            multiline
+                                            onChange={(e) => setUserResponse(e.target.value)}
+                                            value={userResponse}
+                                            placeholder='Like a spoon in the wind...'
+                                        ></TextField>
+                                    </Slide>
+                                    <Slide
+                                        direction={activeStep === 1? 'left' : 'right'}
+                                        in={activeStep === 1}
+                                        container={inputContainerRef.current}
+                                        mountOnEnter
+                                        unmountOnExit
+                                    >
+                                    <FormControl fullWidth>
+                                        <InputLabel id="select-label">Art Style</InputLabel>
+                                        <Select
+                                            labelId={'select-art-style'}
+                                            id={'select-art-style'}
+                                            value={artStyle}
+                                            label="Art Style"
+                                            onChange={(e) => setArtStyle(e.target.value)}
+                                            color={'primary'}
+                                            sx={{backgroundColor: 'white'}}
+                                        >
+
+                                            <MenuItem value={"abstract"}>Abstract</MenuItem>
+                                            <MenuItem value={"animated"}>Animated</MenuItem>
+                                            <MenuItem value={"pop-art"}>Pop Art</MenuItem>
+                                            <MenuItem value={"realism"}>Realism</MenuItem>
+                                            <MenuItem value={"retro"}>Retro</MenuItem>
+
+                                        </Select>
+                                    </FormControl>
+                                    </Slide>
+                                </Box>
+                                
                                 <Box
                                     display={'flex'}
                                     flexDirection={'row'}
                                     justifyContent={'space-between'}
                                     alignContent={'center'}
                                 >
-                                    <Button onClick={handleBack} sx={{margin: '10px 0'}}>
-                                        <NavigateBeforeIcon /> Prev
+                                    <Button onClick={handleBack} sx={{margin: '40px 0'}} disabled={activeStep !== 1}>
+                                        <NavigateBeforeIcon /> 
+                                        {
+                                            activeStep === 1 && <Typography>Edit Response</Typography>
+                                        }
                                     </Button>
-                                    <Button onClick={handleNext} sx={{margin: '10px 0'}}>
-                                        Next <NavigateNextIcon />
+                                    <Button onClick={handleNext} sx={{margin: '40px 0'}}>
+                                        {
+                                            activeStep === 0 && <Typography>Select Art Style</Typography>
+                                        }{
+                                            activeStep === 1 && <Typography>Generate Images</Typography>
+                                        }{
+                                            activeStep === 2 && <Typography>Post Image</Typography>
+                                        }{
+                                            activeStep === 3 && <Typography>See Image</Typography>
+                                        }
+                                         <NavigateNextIcon />
                                     </Button>
 
                                 </Box>
@@ -153,7 +213,6 @@ export default function NewMuse() {
                                 </Stepper>
 
                             </Container>
-
                         </Box>
                     </Box>
             </main>
