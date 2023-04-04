@@ -124,7 +124,7 @@ const ProfileHeader = ({ user, session }) => {
     }, [following, followers, sFollowing, isFollowing])
 
     return (
-        <Container 
+        <Box
             sx={{
                 backgroundColor: 'common.blueScheme.foreground', 
                 margin: 0, 
@@ -196,7 +196,7 @@ const ProfileHeader = ({ user, session }) => {
                             </Modal> */}
                             
             </Box> 
-        </Container>
+        </Box>
     );
 };
 
