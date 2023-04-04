@@ -23,6 +23,7 @@ export default function Asynchronous() {
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
     const [checkedForPosts, setCheckedForPosts] = useState(false)
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const postsLoading = explorefeed.length === 0 && !checkedForPosts
     const noPosts = explorefeed.length === 0 && checkedForPosts
@@ -95,7 +96,7 @@ export default function Asynchronous() {
             >
 
             </Box>
-            <NavBar isMobile={isXS} session={session}/>
+            <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
            
             <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                 <Box 
