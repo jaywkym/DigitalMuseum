@@ -22,7 +22,10 @@ export default function Asynchronous() {
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
-    const postsLoading = explorefeed.length === 0
+    const [checkedForPosts, setCheckedForPosts] = useState(false)
+
+    const postsLoading = explorefeed.length === 0 && !checkedForPosts
+    const noPosts = explorefeed.length === 0 && checkedForPosts
 
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
@@ -61,6 +64,8 @@ export default function Asynchronous() {
             });
 
             const returned_promises = await Promise.all(promises);
+
+            setCheckedForPosts(true)
             
             return returned_promises.filter(post => {
                 return post.id
@@ -118,6 +123,15 @@ export default function Asynchronous() {
                     display={'block'}
                     padding={4}
                 >
+
+                    {noPosts &&
+
+                        <Typography variant={'h4'} color={'common.blueScheme.notWhite'} textAlign={'center'}>
+                            No Posts Today... Dang...
+                        </Typography>
+                        
+                    }
+
 
                     {postsLoading && (
                         <Box width={'100%'} display={'flex'} justifyContent={'center'}>
