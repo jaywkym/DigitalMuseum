@@ -14,9 +14,9 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
 import useImage from './dalle/images';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import SwipeableViews from 'react-swipeable-views';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
+import SwipeableViews from 'react-swipeable-views';
 
 type Step = {
     label: string;
@@ -27,6 +27,8 @@ export default function NewMuse() {
     const { data: session, status } = useSession();
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
     const [activeStep, setActiveStep] = useState(0);
+
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const [prompt, setPrompt] = useState('')
     const [userResponse, setUserResponse] = useState('');
@@ -163,7 +165,7 @@ export default function NewMuse() {
                     sx={{backgroundColor: 'common.blueScheme.background'}} 
                     zIndex={-10}
                 ></Box>
-                <NavBar isMobile={isXS} session={session}/>
+                <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
                     <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                         <Box 
                             sx={{

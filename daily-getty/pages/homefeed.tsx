@@ -28,6 +28,7 @@ export default function HomeFeed() {
     const [friends, setFriends] = useState([] as string[]);
     const [posts, setPosts] = useState([] as DatabasePost[])
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const friends_updated = friends && friends.length !== 0;
     const posts_updated = posts && posts.length !== 0;
@@ -162,7 +163,7 @@ export default function HomeFeed() {
             >
 
             </Box>
-            <NavBar isMobile={isXS} session={session}/>
+            <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
            
             <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                 <Box 
@@ -171,21 +172,36 @@ export default function HomeFeed() {
                     }}
 
                     display={'flex'}
-                    justifyContent={'right'}
+                    justifyContent={'center'}
+                    padding={4}
                 >
 
-                    <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20}>
+                    <Box sx={{ flexGrow: 1}}>
+                        <Box 
+                            sx={{ 
+                                display: 'flex', 
+                                justifyContent: 'center', 
+                                alignItems: 'center', 
+                                alignContent: 'center' 
+                            }}
 
-                    {
-                                
-                            posts.map((post, i) => (
-                            <ImageListItem key={i} >
-                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
-                            </ImageListItem>
-                        ))
-                    }
+                                marginTop={4}
+                        >
+                            
+                             <ImageList cols={isSM? 1 : isLG? 2 : 3} gap={20}>
 
-                    </ImageList>
+                                {
+                                            
+                                        posts.map((post, i) => (
+                                        <ImageListItem key={i} >
+                                            <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
+                                        </ImageListItem>
+                                    ))
+                                }
+
+                             </ImageList>
+                             </Box>
+                        </Box>
 
                 </Box>
             </Box>

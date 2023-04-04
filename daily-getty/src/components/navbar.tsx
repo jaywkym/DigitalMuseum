@@ -25,7 +25,7 @@ type navButton = {
     url: string
 }
 
-const NavBar = ({isMobile, session}) => {
+const NavBar = ({isMobile, session, isUpdated}) => {
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const userNeedsUpdate = user.id === undefined;
@@ -64,6 +64,35 @@ const NavBar = ({isMobile, session}) => {
         .catch(console.error)
 
     }, [userNeedsUpdate])
+
+    useEffect(() => {
+
+        if(isUpdated == false){
+            return;
+        }
+
+        async function pullFriends() {
+
+            setLoadingFriends(true);
+
+            console.log("start got here")
+            const dbFriends = await requestFriendsForUser(user.id)
+            
+            console.log("got here?")
+            console.log(dbFriends)
+            if(!dbFriends.success)
+                return;
+
+            setFollowers(dbFriends.friends.followers);
+            setFollowing(dbFriends.friends.following)
+            setLoadingFriends(false)
+
+        }
+
+        pullFriends()
+        .catch(console.error)
+
+    }, [isUpdated])
 
     function mobile(): JSX.Element{
         return(

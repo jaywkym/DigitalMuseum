@@ -20,13 +20,24 @@ import Link from 'next/link';
 import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
 import { ToggleOnRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const Post = ({ _userObj, _post, session }) => {
 
+
+    console.log(session.user.id)
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
 
+    console.log(userObj)
+    console.log(post)
+
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+
+    
+    const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
+
+    console.log(owner)
 
     const [isHovering, setIsHovered] = useState(false);
 
@@ -227,7 +238,7 @@ const Post = ({ _userObj, _post, session }) => {
 
                                 <Box
                                     display={'flex'}
-                                    flexDirection={'column'}
+                                    flexDirection={'row'}
                                     justifyContent={'center'}
                                     height={'20%'}
                                     padding={1}
@@ -260,6 +271,35 @@ const Post = ({ _userObj, _post, session }) => {
                                             
                                             onClick={handleLike}
                                         />
+                                    }
+                                    {
+                                        <ExitToAppIcon
+                                        sx={{
+                                            color: 'white', 
+                                            paddingRight: .5,
+                                            ":hover": {
+                                                cursor: 'pointer'
+                                            }
+                                        }} 
+                                        
+                                        onClick={handleShare}
+                                    />
+    
+                                    }
+                                    {
+                                        owner &&
+                                        <DeleteIcon
+                                        sx={{
+                                            color: 'white', 
+                                            paddingRight: .5,
+                                            ":hover": {
+                                                cursor: 'pointer'
+                                            }
+                                        }} 
+                                        
+                                        onClick={deletePost}
+                                    />
+    
                                     }
                                 </Box>
                             </Box>
