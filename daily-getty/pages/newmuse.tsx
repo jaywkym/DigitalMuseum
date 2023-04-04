@@ -8,7 +8,7 @@ import CheckItemExists from "@/src/components/checkPostExistence"
 import NavBar from '@/src/components/navbar';
 import { useSession } from 'next-auth/react';
 import useScreenSize from './database/pages';
-import { Button, Container, FormControl, InputLabel, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
+import { Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
@@ -16,6 +16,7 @@ import useImage from './dalle/images';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import SwipeableViews from 'react-swipeable-views';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { green } from '@mui/material/colors';
 
 type Step = {
     label: string;
@@ -31,12 +32,14 @@ export default function NewMuse() {
     const [userResponse, setUserResponse] = useState('');
     const [artStyle, setArtStyle] = useState('');
 
-    const [image_urls, created, loading, error, generateImage] = useImage(userResponse, artStyle, "1");
+    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "1");
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = image_urls.length;
 
     const [hoveringImage, setHoveringImage] = useState(false);
     const [imageSelected, setImageSelected] = useState(-1)
+
+    const [imageSaving, setImageSaving] = useState(false);
 
     const inputContainerRef = useRef(null);
     const theme = useTheme();
@@ -49,22 +52,26 @@ export default function NewMuse() {
             if(userResponse === undefined ||
                userResponse === '') {
                 //ERROR
+                return
             }
 
             if(artStyle === undefined ||
                artStyle === '') {
                 //ERROR
+                return
             }
             
             generateImage()
-
-            console.log("GENERATING MUSE")
+            .catch(console.error)
         }
 
         else if(activeStep === 2) {
 
-            if(imageSelected <= 0 || imageSelected > 2) {
+            console.log(imageSelected)
+
+            if(imageSelected < 0 || imageSelected > 2) {
                 // ERROR
+                return
             }
 
             const selected_url = image_urls[imageSelected];
@@ -87,24 +94,22 @@ export default function NewMuse() {
                 },
                 body: JSON.stringify(uploadInfo)
             }
+
+            setImageSaving(true);
     
             fetch('/api/database/posts/createPost', request)
                 .then(res => res.json())
                 .then(resj => {
-                    console.log("IMAGE UPLOADED")
                     setActiveStep((prevActiveStep) => prevActiveStep + 1);
                 })
                 .catch(console.error)
+                .finally(() => setImageSaving(false))
             return
         }
 
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
     };
-
-    console.log({
-        selected: imageSelected
-    })
   
     const handleBack = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -126,10 +131,6 @@ export default function NewMuse() {
         setImageActiveStep(step);
     };
 
-    console.log({
-        userResponse: userResponse
-    })
-
     const steps: Step[] = [
         {label: 'Answer prompt'},
         {label: 'Choose Art Style'},
@@ -143,7 +144,10 @@ export default function NewMuse() {
         .catch(console.error)
     }, [])
 
-    
+    console.log({
+        activeStep: activeStep,
+        image: imageSelected
+    })
 
     return (
         <>
@@ -262,6 +266,17 @@ export default function NewMuse() {
                                         justifyContent={'center'}
                                         width={'100%'}
                                     >
+                                        {
+                                            (images_loading || imageSaving) &&
+                                            <CircularProgress
+                                                size={68}
+                                                sx={{
+                                                    color: green[500],
+                                                }}
+                                            />
+                                        }
+                                        {
+                                        !images_loading && images_success && !imageSaving && 
                                         <Box sx={{ flexGrow: 1, maxWidth: '400px'}}>
                                             <Paper
                                                 square
@@ -341,8 +356,9 @@ export default function NewMuse() {
                                                 }
                                             />
                                             </Box>
-                                        </Box>
                                         }
+                                        </Box>
+                                    }
                                     <Box>
                                     </Box>
                                 </Box>
@@ -367,7 +383,7 @@ export default function NewMuse() {
                                         }{
                                             activeStep === 2 && <Typography>Post Image</Typography>
                                         }{
-                                            activeStep === 3 && <Typography>See Image</Typography>
+                                            activeStep === 3 && <Link href={'/profile'}><Typography>See Image</Typography></Link>
                                         }
                                          <NavigateNextIcon />
                                     </Button>

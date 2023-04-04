@@ -91,7 +91,7 @@ const MuseForm = () => {
 
     const handleButtonClick = () => {
         setGenerate(true); //Open Modal
-        generateImage(); //Generate Image
+        // generateImage(); //Generate Image
     };
 
 
