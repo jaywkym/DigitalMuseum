@@ -33,6 +33,7 @@ const NavBar = ({isMobile, session}) => {
     const [followers, setFollowers] = useState([] as string[]);
     const [following, setFollowing] = useState([] as string[]);
     const [loadingFriends, setLoadingFriends] = useState(true);
+    const [changeTest, setChangeTest] = useState(false);
 
     const [hover, setHover] = useState(false);
 
@@ -45,8 +46,11 @@ const NavBar = ({isMobile, session}) => {
 
             setLoadingFriends(true);
 
+            console.log("start got here")
             const dbFriends = await requestFriendsForUser(user.id)
             
+            console.log("got here?")
+            console.log(dbFriends)
             if(!dbFriends.success)
                 return;
 
@@ -116,7 +120,7 @@ const NavBar = ({isMobile, session}) => {
                 boxShadow: '1px 1px 7px 7px'
             }}>
                 <Box sx={{width: '100%', maxWidth: 120}}>
-                    <img src='../static/logo.png' width='100%'></img>
+                    <a href='/homefeed'><img src='../static/logo.png' width='100%'></img></a>
                 </Box>
                 <Stack spacing={2} >
                     {

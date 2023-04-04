@@ -28,10 +28,12 @@ const ProfileHeader = ({ user, session }) => {
     const [following, setFollowing] = useState([] as string[]);
     const [loadingFriends, setLoadingFriends] = useState(true);
 
-    const [sFollowing, sFollowingLoading, sGetFollowing] = useFollowing(session_user.id)
+    const [sFollowing, sFollowingLoading, sGetFollowing] = useFollowing(user.id)
     const [followSuccess, followLoading, followUser] = useFollowUser(session_user.id, user.id)
     const [unfollowSuccess, unfollowLoading, unfollowUser] = useUnfollowUser(session_user.id, user.id);
     const [isFollowing, setIsFriend] = useState(false)
+
+   // sGetFollowing();
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -76,24 +78,47 @@ const ProfileHeader = ({ user, session }) => {
 
     useEffect(() => {
 
-        let foundFriend = false;
+        async function checkFriendship() {
 
-        if (!sFollowing)
-            return;
+            let foundFriend = false;
+            // setLoadingFriends(true);
 
-        sFollowing.forEach(friend => {
+            const dbFriends = await requestFriendsForUser(user.id)
+            
+            console.log("session id is")
+            console.log( session_user.id )
+            if(dbFriends.friends.followers)
 
-            if (friend == session_user.id ||
-                friend == user.id) {
-                foundFriend = true
-                return;
-            }
+            dbFriends.friends.followers.forEach(friend => {    
+                if (friend == session_user.id ||
+                    friend == user.id) {
+                    foundFriend = true
+                } 
+            });
+            console.log("im inside the use effect:")
+            console.log(foundFriend);
+            setIsFriend(foundFriend)
 
-        })
+        }
 
-        setIsFriend(foundFriend)
+        // if (!sFollowing)
+        //     return;
 
-    }, [following, followers, sFollowing])
+        //console.log(sFollowing);
+        // sFollowing.forEach(friend => {
+
+        //     if (friend == session_user.id ||
+        //         friend == user.id) {
+        //         foundFriend = true
+        //         return;
+        //     }
+
+        // })
+
+        checkFriendship()
+        .catch(console.error)
+
+    }, [following, followers, sFollowing, isFollowing])
 
     return (
         <Container 
@@ -125,13 +150,13 @@ const ProfileHeader = ({ user, session }) => {
                 <Stack direction="row" spacing={1}>
                     {!loadingFriends && <Chip label={`Following ${following ? following.length : 0}`} sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}}/>}
                     {!loadingFriends && <Chip label={`Followers ${followers ? followers.length : 0}`} sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}}/>}
-                    {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" onClick={() => {
+                    {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}} onClick={() => {
                         if (!isFollowing)
                             followUser()
                         else
                             unfollowUser()
-
-                                // TODO - Remove as following
+    
+                             // TODO - Remove as following
 
                                 // .then(sGetFollowing)
                                 // .then(getFollowers)

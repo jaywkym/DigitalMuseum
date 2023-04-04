@@ -3,25 +3,29 @@ import { useRouter } from 'next/router'
 import Head from 'next/head';
 import React, {useEffect, useMemo, useState} from 'react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
+import { Button, CircularProgress, ImageList, ImageListItem } from '@mui/material';
 import { pull_user } from './database/profile';
 import { profile } from 'console';
 import { requestPostFromUserById } from './database/posts';
-import { Box, Button, CircularProgress, CssBaseline, List } from '@mui/material';
+import { Box, CssBaseline, List } from '@mui/material';
 import ProfileHeader from '@/src/components/profileheader';
 import { green } from '@mui/material/colors';
 import Post from '@/src/components/post';
 import HomeSearch from '@/src/components/homesearch';
-// import NavBar from '@/src/components/bottomnav';
+import NavBar from '@/src/components/navbar';
+import useScreenSize from './database/pages';
 
 export default function Profile() {
 
     const {data: session, status} = useSession();
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
     const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
 
     const [pageProfile, setPageProfile] = useState({} as DatabaseUser)
     const [posts, setPosts] = useState([] as DatabasePost[]);
-    const [postsLoading, setLoading] = useState(false);
+   // const [postsLoading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const router = useRouter();
 
@@ -132,8 +136,70 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
-                <HomeSearch />
-                <Box sx={{ flexGrow: 1, m: 10 }}>
+                <Box 
+                    position={'fixed'} 
+                    width={'100vw'} 
+                    height={'100vh'} 
+                    sx={{backgroundColor: 'common.blueScheme.background'}} 
+                    zIndex={-10}
+                >
+
+                </Box>
+                <NavBar isMobile={isXS} session={session}/>
+                {/* <HomeSearch /> */}
+                <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
+                    <Box 
+                        sx={{
+                            width: {xs: '100%', sm: '90%', md: '80%'}, 
+                        }}
+
+                        display={'flex'}
+                        justifyContent={'center'}
+                        padding={4}
+                    >
+
+                        <Box sx={{ flexGrow: 1}}>
+                            <CssBaseline />
+                            <ProfileHeader user={pageProfile} session={session}/>
+                            <Box 
+                                sx={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'center', 
+                                    alignItems: 'center', 
+                                    alignContent: 'center' 
+                                }}
+
+                                marginTop={4}
+                            >
+                                {loading && (
+                                    <CircularProgress
+                                        size={68}
+                                        sx={{
+                                            color: green[500],
+                                        }}
+                                    />
+                                )}
+
+                                <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20}>
+
+                                {
+                                            
+                                    posts.map((post, i) => (
+                                        <ImageListItem key={i} >
+                                            <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
+                                        </ImageListItem>
+                                    ))
+                                }
+
+                                </ImageList>
+                            </Box>
+                        </Box>
+                        
+
+                    </Box>
+                </Box>
+            
+                {/* <Box sx={{ flexGrow: 1, m: 10 }}>
                     <CssBaseline />
                     <ProfileHeader user={pageProfile} session={session}/>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
@@ -154,8 +220,8 @@ export default function Profile() {
                             
                         </List>
                     </Box>
-                    {/* <NavBar /> */}
-                </Box>
+                    <NavBar /> 
+                </Box> */}
                 {/* <NavBar /> */}
             </main>
         </>
