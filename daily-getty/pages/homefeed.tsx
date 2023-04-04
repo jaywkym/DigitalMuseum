@@ -127,7 +127,7 @@ export default function HomeFeed() {
                 posts.forEach((current_post) => {
 
                     if (current_post.id == post.id && current_post.user_id == post.user_id) {
-                        posts[current_index].image.b64 = post.image.b64
+                        posts[current_index].image = post.image
                         console.log(posts[current_index])
                         return;
                     }
@@ -235,10 +235,7 @@ export default function HomeFeed() {
 
                     </ImageList>
                 </Stack>
-            </Box>
-        </Container >
-                </Box > * /}
-            </main >
+            </main>
         </>
     )
 }

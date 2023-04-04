@@ -285,7 +285,6 @@ const Post = ({ _userObj, _post, session }) => {
 
                                             onClick={handleShare}
                                         />
-
                                     }
                                     {
                                         owner &&
@@ -300,7 +299,6 @@ const Post = ({ _userObj, _post, session }) => {
 
                                             onClick={deletePost}
                                         />
-
                                     }
                                 </Box>
                             </Box>
