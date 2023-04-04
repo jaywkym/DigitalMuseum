@@ -26,6 +26,7 @@ export default function Profile() {
     const [posts, setPosts] = useState([] as DatabasePost[]);
    // const [postsLoading, setLoading] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const router = useRouter();
 
@@ -145,7 +146,7 @@ export default function Profile() {
                 >
 
                 </Box>
-                <NavBar isMobile={isXS} session={session}/>
+                <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
                 {/* <HomeSearch /> */}
                 <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                     <Box 
@@ -159,7 +160,7 @@ export default function Profile() {
                     >
 
                         <Box sx={{ flexGrow: 1}}>
-                            <CssBaseline />
+                            {/* <CssBaseline /> */}
                             <ProfileHeader user={pageProfile} session={session}/>
                             <Box 
                                 sx={{ 

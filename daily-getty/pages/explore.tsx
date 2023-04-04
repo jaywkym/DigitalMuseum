@@ -22,7 +22,8 @@ export default function Asynchronous() {
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
-    const postsLoading = explorefeed.length === 0
+    const postsLoading = explorefeed.length === 0;
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
@@ -90,7 +91,7 @@ export default function Asynchronous() {
             >
 
             </Box>
-            <NavBar isMobile={isXS} session={session}/>
+            <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
            
             <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                 <Box 
