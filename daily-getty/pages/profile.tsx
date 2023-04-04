@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
-import { Button, CircularProgress, ImageList, ImageListItem } from '@mui/material';
+import { CircularProgress, ImageList, ImageListItem } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import List from '@mui/material/List';
 import Post from '@/src/components/post';
 import NavBar from '@/src/components/navbar';
 import ProfileHeader from '@/src/components/profileheader';
 import { requestPostFromUserById } from '@/pages/database/posts';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
-import HomeSearch from '@/src/components/homesearch';
 import useScreenSize from './database/pages';
 
 export default function Profile() {
@@ -113,7 +111,7 @@ export default function Profile() {
 
                 </Box>
                 <NavBar isMobile={isXS} session={session}/>
-                <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
+                <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'} width={'100%'}>
                     <Box 
                         sx={{
                             width: {xs: '100%', sm: '90%', md: '80%'}, 

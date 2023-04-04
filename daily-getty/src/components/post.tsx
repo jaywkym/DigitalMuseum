@@ -51,7 +51,8 @@ const Post = ({ _userObj, _post, session }) => {
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
-    const profileLink = postProfile.id
+    const profileLink = postProfile.id;
+    const profileId    = postProfile.id
 
     const userName = userObj? userObj.name : ''
 
@@ -219,12 +220,14 @@ const Post = ({ _userObj, _post, session }) => {
                                     justifyContent={'start'}
                                     height={'30%'}
                                 >
-
-                                    <Typography
-                                        sx={{fontSize: {xs: 16, sm: 16, md: 18, lg: 20}}}
-                                    >
-                                        @{profileName}
-                                    </Typography>
+                                    <Link href={`/${profileId}`}>
+                                        <Typography
+                                            sx={{fontSize: {xs: 16, sm: 16, md: 18, lg: 20}}}
+                                        >
+                                            @{profileName}
+                                        </Typography>
+                                    </Link>
+                                   
                                     <Typography
                                         sx={{fontSize: {xs: 14, sm: 14, md: 16, lg: 18}}}
                                         color={'#bbb'}
