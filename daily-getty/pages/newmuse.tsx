@@ -3,17 +3,20 @@ import Head from 'next/head'
 import Box from '@mui/material/Box';
 import Image from 'next/image';
 import CssBaseline from '@mui/material/CssBaseline';
-// import NavBar from '@/src/components/bottomnav';
-// import HomeSearch from '@/src/components/homesearch';
 import abstractbg from "./public/abstractbg.jpg"
 import CheckItemExists from "@/src/components/checkPostExistence"
 import NavBar from '@/src/components/navbar';
 import { useSession } from 'next-auth/react';
 import useScreenSize from './database/pages';
-import { Button, Container, FormControl, InputLabel, MenuItem, Select, Slide, Step, StepLabel, Stepper, TextField, Typography } from '@mui/material';
+import { Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
+import useImage from './dalle/images';
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+import SwipeableViews from 'react-swipeable-views';
+import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { green } from '@mui/material/colors';
 
 type Step = {
     label: string;
@@ -31,10 +34,83 @@ export default function NewMuse() {
     const [userResponse, setUserResponse] = useState('');
     const [artStyle, setArtStyle] = useState('');
 
+    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
+    const [imageActiveStep, setImageActiveStep] = useState(0);
+    const maxSteps = image_urls.length;
+
+    const [hoveringImage, setHoveringImage] = useState(false);
+    const [imageSelected, setImageSelected] = useState(-1)
+
+    const [imageSaving, setImageSaving] = useState(false);
+
     const inputContainerRef = useRef(null);
+    const theme = useTheme();
+
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
     const handleNext = () => {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+        if(activeStep === 1) {
+            if(userResponse === undefined ||
+               userResponse === '') {
+                //ERROR
+                return
+            }
+
+            if(artStyle === undefined ||
+               artStyle === '') {
+                //ERROR
+                return
+            }
+            
+            generateImage()
+            .catch(console.error)
+        }
+
+        else if(activeStep === 2) {
+
+            console.log(imageSelected)
+
+            if(imageSelected < 0 || imageSelected > 2) {
+                // ERROR
+                return
+            }
+
+            const selected_url = image_urls[imageSelected];
+
+            const uploadInfo: DatabasePost = {
+                id: null,
+                user_id: user.id,
+                userPrompt: userResponse,
+                givenPrompt: prompt,
+                likes: [],
+                image: {
+                    created: Date.now(),
+                    url: selected_url
+                } as any
+            }
+            const request = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(uploadInfo)
+            }
+
+            setImageSaving(true);
+    
+            fetch('/api/database/posts/createPost', request)
+                .then(res => res.json())
+                .then(resj => {
+                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                })
+                .catch(console.error)
+                .finally(() => setImageSaving(false))
+            return
+        }
+
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
     };
   
     const handleBack = () => {
@@ -45,15 +121,23 @@ export default function NewMuse() {
       setActiveStep(0);
     };
 
-    console.log({
-        userResponse: userResponse
-    })
+    const handleNextImage = () => {
+        setImageActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBackImage = () => {
+        setImageActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleImageStepChange = (step: number) => {
+        setImageActiveStep(step);
+    };
 
     const steps: Step[] = [
         {label: 'Answer prompt'},
-        {label: 'Choose Art Style'},
-        {label: 'Choose Image'},
-        {label: 'Complete'}
+        {label: 'Select Art Style'},
+        {label: 'Select Image'},
+        {label: 'See Post'}
     ]
 
     useEffect(() => {
@@ -62,7 +146,10 @@ export default function NewMuse() {
         .catch(console.error)
     }, [])
 
-    
+    console.log({
+        activeStep: activeStep,
+        image: imageSelected
+    })
 
     return (
         <>
@@ -123,7 +210,6 @@ export default function NewMuse() {
                                 </Box>
                                 <Box
                                     display={'flex'}
-
                                 >
                                     <Slide
                                         direction={activeStep === 0? 'left' : 'right'}
@@ -172,6 +258,132 @@ export default function NewMuse() {
                                         </Select>
                                     </FormControl>
                                     </Slide>
+
+
+
+{                                   activeStep === 2 &&
+                                    <Box
+                                        display={'flex'}
+                                        alignContent={'center'}
+                                        justifyContent={'center'}
+                                        width={'100%'}
+                                    >
+                                        {
+                                            (images_loading || imageSaving) &&
+                                            <Box
+                                                display={'flex'}
+                                                flexDirection={'column'}
+                                                alignContent={'center'}
+                                                justifyContent={'center'}
+                                                alignItems={'center'}
+                                                justifyItems={'center'}
+                                            >
+                                                <Typography 
+                                                    textAlign={'center'} 
+                                                    color={'common.blueScheme.notWhite'} 
+                                                    variant={'h5'} 
+                                                    paddingBottom={3}
+                                                >
+                                                    Generating images! This may take up to 2 minutes to complete.
+                                                </Typography>
+                                                <CircularProgress
+                                                    size={68}
+                                                    sx={{
+                                                        color: green[500],
+                                                    }}
+
+                                                    
+                                                />
+                                                
+                                            </Box>
+  
+                                        }
+                                        {
+                                        !images_loading && images_success && !imageSaving && 
+                                        <Box sx={{ flexGrow: 1, maxWidth: '400px'}}>
+                                            <Paper
+                                                square
+                                                elevation={0}
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    height: 50,
+                                                    pl: 2,
+                                                    bgcolor: 'common.blueScheme.background',
+                                                }}
+                                            >
+                                                <Typography variant={'body1'} color={'common.blueScheme.notWhite'}>{imageSelected === -1? 'Select your image' : 'Post your selection!'}</Typography>
+                                            </Paper>
+                                            <SwipeableViews
+                                                axis={'x'}
+                                                index={imageActiveStep}
+                                                onChangeIndex={handleImageStepChange}
+                                                enableMouseEvents
+                                            >
+                                                {image_urls.map((url, index) => (
+                                                <Box key={url}>
+                                                    {Math.abs(imageActiveStep - index) <= 2 ? (
+                                                    <Image
+                                                        // fill
+                                                        src={url}
+                                                        width={400}
+                                                        height={400}
+                                                        alt={`image ${1}`}
+                                                        style={{
+                                                            border: imageSelected === index? '1px solid white' : 'none',
+                                                            cursor: hoveringImage? 'pointer' : 'auto',
+                                                        }}
+
+                                                        onMouseEnter={() => setHoveringImage(true)}
+                                                        onMouseLeave={() => setHoveringImage(false)}
+                                                        onClick={() => setImageSelected(index)}
+                                                    />
+                                                    ) : null}
+                                                </Box>
+                                                ))}
+                                            </SwipeableViews>
+                                            <MobileStepper
+                                                steps={maxSteps}
+                                                position="static"
+                                                activeStep={imageActiveStep}
+                                                sx={{backgroundColor: 'common.blueScheme.background'}}
+                                                nextButton={
+                                                <Button
+                                                    size="small"
+                                                    onClick={handleNextImage}
+                                                    disabled={imageActiveStep === maxSteps - 1}
+                                                    sx={{color: 'common.blueScheme.notWhite'}}
+                                                >
+                                                    Next
+                                                    {theme.direction === 'rtl' ? (
+                                                    <KeyboardArrowLeft />
+                                                    ) : (
+                                                    <KeyboardArrowRight />
+                                                    )}
+                                                </Button>
+                                                }
+                                                backButton={
+                                                <Button 
+                                                    size="small" 
+                                                    onClick={handleBackImage} 
+                                                    disabled={imageActiveStep === 0}
+                                                    sx={{color: 'common.blueScheme.notWhite'}}
+                                                >
+                                                    {theme.direction === 'rtl' ? (
+                                                    <KeyboardArrowRight />
+                                                    ) : (
+                                                    <KeyboardArrowLeft />
+                                                    )}
+                                                    Back
+                                                </Button>
+                                                }
+                                            />
+                                            </Box>
+                                        }
+                                        </Box>
+                                    }
+                                    <Box>
+                                    </Box>
                                 </Box>
                                 
                                 <Box
@@ -194,7 +406,7 @@ export default function NewMuse() {
                                         }{
                                             activeStep === 2 && <Typography>Post Image</Typography>
                                         }{
-                                            activeStep === 3 && <Typography>See Image</Typography>
+                                            activeStep === 3 && <Link href={'/profile'}><Typography>See Image</Typography></Link>
                                         }
                                          <NavigateNextIcon />
                                     </Button>

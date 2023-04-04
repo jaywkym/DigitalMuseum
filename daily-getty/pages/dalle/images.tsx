@@ -17,7 +17,7 @@ import type {
  *          loading boolean, and a function to generate the image.
  */
 const useImage = (prompt: string, style: string, amount: string): 
-    [string[], string, boolean, DalleError, Dispatch<void>] => {
+    [string[], string, boolean, boolean, DalleError, () => Promise<void>] => {
 
     const [image_urls, setImageUrls]: [string[], Dispatch<string[]>] = useState([] as string[]);
     const [success, setSuccess]: [boolean, Dispatch<boolean>] = useState(false);
@@ -42,7 +42,7 @@ const useImage = (prompt: string, style: string, amount: string):
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                'prompt': prompt,
+                'prompt': `${prompt}, in the style of ${style}`,
                 'amount': 1
             })
         }
@@ -78,7 +78,7 @@ const useImage = (prompt: string, style: string, amount: string):
 
     };
     
-    return [image_urls, created, loading, error, generate];
+    return [image_urls, created, success, loading, error, generate];
 }
 
 function checkParams(prompt: string, amount: number): boolean {

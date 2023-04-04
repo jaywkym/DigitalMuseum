@@ -87,6 +87,9 @@ const ProfileHeader = ({ user, session }) => {
             
             console.log("session id is")
             console.log( session_user.id )
+            
+            if(dbFriends)
+            if(dbFriends.friends)
             if(dbFriends.friends.followers)
 
             dbFriends.friends.followers.forEach(friend => {    

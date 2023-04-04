@@ -149,7 +149,7 @@ const NavBar = ({isMobile, session, isUpdated}) => {
                 boxShadow: '1px 1px 7px 7px'
             }}>
                 <Box sx={{width: '100%', maxWidth: 120}}>
-                    <a href='/homefeed'><img src='../static/logo.png' width='100%'></img></a>
+                    <Link href='/homefeed'><img src='../static/logo.png' width='100%'></img></Link>
                 </Box>
                 <Stack spacing={2} >
                     {
