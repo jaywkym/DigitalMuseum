@@ -32,7 +32,7 @@ export default function NewMuse() {
     const [userResponse, setUserResponse] = useState('');
     const [artStyle, setArtStyle] = useState('');
 
-    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "1");
+    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = image_urls.length;
 
@@ -133,9 +133,9 @@ export default function NewMuse() {
 
     const steps: Step[] = [
         {label: 'Answer prompt'},
-        {label: 'Choose Art Style'},
-        {label: 'Choose Image'},
-        {label: 'Post!'}
+        {label: 'Select Art Style'},
+        {label: 'Select Image'},
+        {label: 'See Post'}
     ]
 
     useEffect(() => {
@@ -268,12 +268,33 @@ export default function NewMuse() {
                                     >
                                         {
                                             (images_loading || imageSaving) &&
-                                            <CircularProgress
-                                                size={68}
-                                                sx={{
-                                                    color: green[500],
-                                                }}
-                                            />
+                                            <Box
+                                                display={'flex'}
+                                                flexDirection={'column'}
+                                                alignContent={'center'}
+                                                justifyContent={'center'}
+                                                alignItems={'center'}
+                                                justifyItems={'center'}
+                                            >
+                                                <Typography 
+                                                    textAlign={'center'} 
+                                                    color={'common.blueScheme.notWhite'} 
+                                                    variant={'h5'} 
+                                                    paddingBottom={3}
+                                                >
+                                                    Generating images! This may take up to 2 minutes to complete.
+                                                </Typography>
+                                                <CircularProgress
+                                                    size={68}
+                                                    sx={{
+                                                        color: green[500],
+                                                    }}
+
+                                                    
+                                                />
+                                                
+                                            </Box>
+  
                                         }
                                         {
                                         !images_loading && images_success && !imageSaving && 

@@ -42,7 +42,7 @@ const useImage = (prompt: string, style: string, amount: string):
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                'prompt': prompt,
+                'prompt': `${prompt}, in the style of ${style}`,
                 'amount': 1
             })
         }
