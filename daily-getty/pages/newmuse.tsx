@@ -14,9 +14,9 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
 import useImage from './dalle/images';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import SwipeableViews from 'react-swipeable-views';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
+import SwipeableViews from 'react-swipeable-views';
 
 type Step = {
     label: string;

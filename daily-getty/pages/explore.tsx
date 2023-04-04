@@ -23,6 +23,7 @@ export default function Asynchronous() {
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
     const [checkedForPosts, setCheckedForPosts] = useState(false)
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const postsLoading = explorefeed.length === 0 && !checkedForPosts
     const noPosts = explorefeed.length === 0 && checkedForPosts
