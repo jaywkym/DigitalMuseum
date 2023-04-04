@@ -153,6 +153,7 @@ const Post = ({ _userObj, _post, session }) => {
 
     const imageRef = useRef(null);
     const imageHeight = imageRef.current? imageRef.current.height : 0
+    
 
     return (
         <Box
@@ -177,7 +178,7 @@ const Post = ({ _userObj, _post, session }) => {
                     in={isHovering} 
                     orientation='vertical' 
                     timeout={'auto'} 
-                    collapsedSize={'20%'}
+                    // collapsedSize={'20%'} // Uncomment when bug fixed on first load
                 >
                     <Box
                         width={'100%'}

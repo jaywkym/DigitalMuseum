@@ -127,10 +127,15 @@ const NavBar = ({isMobile, session}) => {
                         navButtons.map(({name, icon, url}) => {
                             return (
                                 <>
-                                    <Box sx={{
+                                    <Box 
+                                    
+                                    sx={{
                                         width:'100%', 
                                         display: {xs: 'none', md: 'flex'},
-                                    }}>
+                                    }}
+                                    
+                                    key={"nav-button" + name}
+                                    >
                                         <Button 
                                             sx={{
                                                 color:'white', 

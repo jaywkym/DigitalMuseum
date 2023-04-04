@@ -34,7 +34,7 @@ export default function NewMuse() {
 
     const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
     const [imageActiveStep, setImageActiveStep] = useState(0);
-    const maxSteps = image_urls.length;
+    const maxSteps = 3;
 
     const [hoveringImage, setHoveringImage] = useState(false);
     const [imageSelected, setImageSelected] = useState(-1)
