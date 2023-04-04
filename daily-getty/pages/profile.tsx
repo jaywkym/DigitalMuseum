@@ -17,6 +17,7 @@ export default function Profile() {
     const { data: session, status } = useSession();
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
@@ -110,7 +111,7 @@ export default function Profile() {
                 >
 
                 </Box>
-                <NavBar isMobile={isXS} session={session}/>
+                <NavBar isMobile={isXS} session={session} isUpdated = {udatedQuestion}/>
                 <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'} width={'100%'}>
                     <Box 
                         sx={{
