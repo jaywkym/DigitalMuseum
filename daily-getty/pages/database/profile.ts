@@ -32,16 +32,16 @@ export function useFollowing(user_id: string):
 
         console.log(dbFriendsResponse)
 
-        if(dbFriendsResponse.success) {
-            if(dbFriendsResponse.friends)
-                if(dbFriendsResponse.friends.following)
-                    setFollowing(dbFriendsResponse.friends.following)
-            else {
-                setFollowing([]);
-            }
-        } else {
-            setFollowing([])
-        }
+        // if(dbFriendsResponse.success) {
+        //     if(dbFriendsResponse.friends)
+        //         if(dbFriendsResponse.friends.following)
+        //             setFollowing(dbFriendsResponse.friends.following)
+        //     else {
+        //         setFollowing([]);
+        //     }
+        // } else {
+        //     setFollowing([])
+        // }
 
        setLoading(false);
     }
@@ -123,11 +123,12 @@ export function useFollowUser(user_id: string, friend_id: string):
 
 export function useUnfollowUser(user_id: string, friend_id: string):
     [boolean, boolean, () => Promise<void>] {
+        //console.log("test this dogddamit ")
 
         const [success, setSuccess] = useState(false);
         const [loading, setLoading] = useState(false);
 
-        async function followUser() {
+        async function unfollowUser() {
 
             if(loading)
                 return;
@@ -143,7 +144,7 @@ export function useUnfollowUser(user_id: string, friend_id: string):
             
         }
 
-    return [success, loading, followUser];
+    return [success, loading, unfollowUser];
 }
 
 export async function requestUnfollowUser(user_id: string, friend_id: string): Promise<DatabaseResponse> {
@@ -168,24 +169,17 @@ export async function requestUnfollowUser(user_id: string, friend_id: string): P
 
 }
 
-export async function requestFollowingForUser(user_id: string): Promise<DatabaseFriendsResponse> {
-    const request = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            id: user_id,
-        })
-    }
+export async function requestFollowingForUser(user_id: string): Promise<String[]> {
+    const friends = await requestFriendsForUser(user_id) as DatabaseFriendsResponse
 
-    try {
-        const resp = await fetch(`/api/database/profile/getFriends`, request)
-        return await resp.json() as DatabaseFriendsResponse
-    } catch (err: any) {
-        return {success: false} as DatabaseFriendsResponse
-    }
+    if(!friends.success)
+        return [];
 
+    if(!friends.friends)
+        return [];
+
+    return friends.friends.following;
+    
 }
 
 export async function requestFriendsForUser(user_id: string): Promise<DatabaseFriendsResponse> {
@@ -201,7 +195,14 @@ export async function requestFriendsForUser(user_id: string): Promise<DatabaseFr
 
     try {
         const resp = await fetch(`/api/database/profile/getFriends`, request)
-        return await resp.json() as DatabaseFriendsResponse
+        const json = await resp.json() as DatabaseFriendsResponse
+        if(!json.friends.followers)
+            json.friends.followers = [];
+        
+        if(!json.friends.following)
+            json.friends.following = [];
+
+        return json;
     } catch (err: any) {
         return {success: false} as DatabaseFriendsResponse
     }

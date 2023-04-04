@@ -1,31 +1,28 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
-import { Avatar, CircularProgress } from '@mui/material';
+import { CircularProgress, ImageList, ImageListItem } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import List from '@mui/material/List';
-import { Container } from '@mui/system';
-import { Button } from '@mui/material';
 import Post from '@/src/components/post';
-import NavBar from '@/src/components/bottomnav';
+import NavBar from '@/src/components/navbar';
 import ProfileHeader from '@/src/components/profileheader';
-import { signOut } from 'next-auth/react';
-import { useGetAllPostIds, requestPostFromUserById } from '@/pages/database/posts';
+import { requestPostFromUserById } from '@/pages/database/posts';
 import { useSession } from 'next-auth/react';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
-import Test from './test';
-import HomeSearch from '@/src/components/homesearch';
-import BGImage from '@/src/components/backgroundImage';
+import useScreenSize from './database/pages';
 
 export default function Profile() {
 
     const { data: session, status } = useSession();
-
-    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
-
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
+    const [udatedQuestion, setUpdated] = useState(false);
+
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
+
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+    const userSet = user.id !== undefined;
 
     async function loadImages(blankPosts) {
 
@@ -42,7 +39,7 @@ export default function Profile() {
 
             const newPosts = blankPosts.map((newPost) => {
                 if (newPost.id === rPost.id)
-                    newPost.image.b64 = rPost.image.b64
+                    newPost.image.url = rPost.image.url
 
                 return newPost;
             })
@@ -85,7 +82,7 @@ export default function Profile() {
 
     useEffect(() => {
 
-        if (!user.id)
+        if (!userSet)
             return;
 
         setLoading(true);
@@ -95,7 +92,7 @@ export default function Profile() {
             .then(loadImages)
             .catch(err => console.error(err))
 
-    }, [user.id])
+    }, [userSet])
 
     let posts_map = posts ? posts : {}
 
@@ -105,30 +102,69 @@ export default function Profile() {
                 <title>Profile Page</title>
             </Head>
             <main>
-                <HomeSearch />
-                <Box sx={{ flexGrow: 1, m: 10 }}>
-                    {/* <Button onClick={() => { signOut(); }}>Logout</Button> */}
-                    <CssBaseline />
-                    <ProfileHeader user={user} />
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                        {loading && (
-                            <CircularProgress
-                                size={68}
-                                sx={{
-                                    color: green[500],
+                <Box 
+                    position={'fixed'} 
+                    width={'100vw'} 
+                    height={'100vh'} 
+                    sx={{backgroundColor: 'common.blueScheme.background'}} 
+                    zIndex={-10}
+                >
+
+                </Box>
+                <NavBar isMobile={isXS} session={session} isUpdated = {udatedQuestion}/>
+                <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'} width={'100%'}>
+                    <Box 
+                        sx={{
+                            width: {xs: '100%', sm: '90%', md: '80%'}, 
+                        }}
+
+                        display={'flex'}
+                        justifyContent={'center'}
+                        padding={4}
+                    >
+
+                        <Box sx={{ flexGrow: 1}}>
+                            <CssBaseline />
+                            <ProfileHeader user={user} session={session}/>
+                            <Box 
+                                sx={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'center', 
+                                    alignItems: 'center', 
+                                    alignContent: 'center' 
                                 }}
-                            />
-                        )}
-                        <List>
-                            {
-                                Object.keys(posts_map).map((post) => (
-                                    <Post _userObj={user} _post={posts[post]} key={posts[post].id} />
-                                ))
-                            }
-                        </List>
+
+                                marginTop={4}
+                            >
+                                {loading && (
+                                    <CircularProgress
+                                        size={68}
+                                        sx={{
+                                            color: green[500],
+                                        }}
+                                    />
+                                )}
+
+                                <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20} sx={{overflow: 'hidden'}}>
+
+                                {
+                                            
+                                    posts.map((post, i) => (
+                                        <ImageListItem key={i} >
+                                            <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
+                                        </ImageListItem>
+                                    ))
+                                }
+
+                                </ImageList>
+                            </Box>
+                        </Box>
+                        
+
                     </Box>
                 </Box>
-                <NavBar />
+                
+                
             </main>
         </>
     )

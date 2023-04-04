@@ -8,91 +8,88 @@ import CardMedia from '@mui/material/CardMedia';
 import DownloadIcon from '@mui/icons-material/Download';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Avatar, Skeleton, ToggleButton } from '@mui/material';
+import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
-import { requestIfUserLikesPost, useLikeImage, useUnlikeImage, useUserLikesImage } from '@/pages/database/posts';
-import { useSession, getSession } from 'next-auth/react';
-import { request } from 'http';
+import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
 import { ToggleOnRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
-interface PostProps {
-    user: string;
-    media: string;
-    likes: string;
-}
+const Post = ({ _userObj, _post, session }) => {
 
 
-
-const visitProfile = () => { } //Visit Profile
-
-const Post = ({ _userObj, _post }) => {
-
-
+    console.log(session.user.id)
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
-    const session2 = getSession();
-    const [sessionTest, setSessionTest] = useState(null);
-    //console.log("the session testing is....");
-    let justTesting = null;
-    const pleaseWOrk = getSession().then(
-        (value) => {
-            justTesting = value.user;
-            setSessionTest(justTesting.id)
-        }
-    )
 
-
-    //console.log(session2)
-
-    // componentDidMount() {
-    //     const session = await getSession()
-    //     this.setState({ session })
-    // }
-
-    // const [session, loading] = awaituseSession();
-    const { data: session, status } = useSession();
+    console.log(userObj)
+    console.log(post)
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+
+
+    const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
+
+    console.log(owner)
 
     const [isHovering, setIsHovered] = useState(false);
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
-    const alt = post.image ? post.userPrompt : "";
-    const postQuestion = post.givenPrompt ? post.givenPrompt : "";
-    const date = post.id ? post.id : "";
-    const src = post.image ? `data:image/png;base64, ${post.image.b64}` : ``
-    const userPost = post.user_id ? post.user_id : ""
-    const profileName = postProfile ? postProfile.name : ''
-    const profileImage = postProfile ? postProfile.image : ''
-    const profileLink = postProfile ? postProfile.id : ''
+    const alt = post.userPrompt
+    const postQuestion = post.givenPrompt
+    const date = post.id
+    const src = post.image.url
+    const userPost = post.user_id
+
+    const profileName = postProfile.name
+    const profileImage = postProfile.image
+    const profileLink = postProfile.id;
+    const profileId = postProfile.id
+
+    const userName = userObj ? userObj.name : ''
+
     const [deleteButton, setDeleteButton] = useState(null);
-
-    useEffect(() => {
-        //console.log("in the useEffect userTesting")
-        if (userPost == sessionTest) {
-            //console.log("they are equal")
-            setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
-        }
-
-
-    }, [sessionTest])
-
-
     const [clicked, setClicked] = useState(false);
-
     const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
     const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id, post.user_id)
 
     const [userLikesPost, setUserLikesPost] = useState(false)
+
+    const imageNeedsUpdate = post.id === undefined || post.user_id === undefined;
+
+    function convertPostIdToDateObj(post_id) {
+        const dates = [...post_id.matchAll(/\d+/g) as any]
+        const date = new Date(dates[0], dates[1] - 1, dates[2])
+        return date
+    }
+
+    function generateTimeDifferenceString(post_date) {
+        const difference = Date.now() - post_date.getTime()
+        const days = Math.floor(difference / 86400000) // Milliseconds to days
+        const months = Math.floor(days / 31);
+
+        if (days === 0) {
+            return "Today";
+        }
+
+        else if (days === 1) {
+            return "Yesterday"
+        }
+
+        else if (days <= 30) {
+            return days + " days ago"
+        }
+
+        return months + " months ago"
+    }
 
     async function getUserLikesPost() {
         const resp = await requestIfUserLikesPost(user.id, post.id, post.user_id);
@@ -106,31 +103,23 @@ const Post = ({ _userObj, _post }) => {
             setPostProfile(resp_profile)
     }
 
-    const contentType = "image/png"
-
     const handleShare = (event) => {
 
-        console.log(event.target)
-        console.log(post.image)
-        const base64Data = post.image.b64;
+        const url = post.image.url;
 
-        const linkSource = `data:${contentType};base64,${base64Data}`;
         const downloadLink = document.createElement("a");
-        downloadLink.href = linkSource;
+        downloadLink.href = url;
         downloadLink.download = post.userPrompt;
         downloadLink.click();
 
     } //Overlay Share Window
 
-    const deletePost = () => {
-        console.log("deleting post")
+    const deletePost = async () => {
 
         const deleteInfo = {
-            owner_id: sessionTest,
+            owner_id: userPost,
             post_id: date
         }
-
-        // console.log(uploadInfo);
 
         const requesting = {
             method: 'POST',
@@ -140,113 +129,198 @@ const Post = ({ _userObj, _post }) => {
             body: JSON.stringify(deleteInfo)
         }
 
-        console.log(requesting)
-
-        fetch('/api/database/posts/deletePost', requesting)
-            .then(res => res.json())
-            .then(resj => {
-                console.log("good delete?")
+        try {
+            const resp = await fetch('/api/database/posts/deletePost', requesting)
+            if (resp.status === 200)
                 window.location.reload();
-            })
+        } catch (err: any) {
+            console.error(err)
+        }
     }
 
     useEffect(() => {
-        console.log("in the useEffect")
+
+        if (imageNeedsUpdate)
+            return;
+
         getUserInfo()
             .catch(console.error)
 
         getUserLikesPost()
             .catch(console.error)
 
-
-
-    }, [post])
-
-    // if(userPost == user.googleId){
-    //     console.log("they are equal")
-    //     setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
-    // }
-
-
-
-    useEffect(() => {
-        // console.log(user.googleId)
-        // console.log("am i even getting into this thingy")
-        // console.log(user.googleId)
-        // console.log(post.user_id)
-
-    }, [post.user_id])
+    }, [])
 
     async function handleLike() {
-        // user = session ? session.user as DatabaseUser : {} as DatabaseUser;
-        //console.log("am i even getting into this thingy")
-        // console.log("user")
-        // console.log(user.googleId)
-        // console.log("post")
-        // console.log(post.user_id)
-        // console.log(session)
-        // if(userPost == user.googleId){
-        //     console.log("they are equal")
-        //     setDeleteButton(<Button endIcon={<DeleteIcon />} onClick={deletePost} ></Button>)
-        // }
-        //console.log({userLikesPost: userLikesPost})
+
         if (userLikesPost)
             await unlikePost()
         else
             await likePost()
 
         await getUserLikesPost()
-        console.log({ userLikesPost: userLikesPost })
 
     }
 
-    return (
-        <Card raised sx={{ display: 'flex', width: '700px', mt: 5, boxShadow: 4 }}>
-            {src === `data:image/png;base64, ` && <Skeleton variant="rectangular" animation="pulse" height={280} /> /*src !== `data:image/png;base64, ` && */}
-            < CardMedia
-                component="img"
-                alt={alt}
-                height={400}
-                width={400}
-                image={src}
-            />
+    const imageRef = useRef(null);
+    const imageHeight = imageRef.current ? imageRef.current.height : 0
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '300px' }}>
-                <Link href={`/${profileLink}`}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center', m: 2 }}>
-                        {/*<Button onClick={visitProfile}>*/}
-                        <Avatar alt={userObj.name} src={profileImage} sx={{ mr: 2 }} />
-                        <Typography variant="body1" component="h1">
-                            <b>@{profileName}</b>
-                        </Typography>
+
+    return (
+        <Box
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <img
+                src={src}
+                loading='lazy'
+                width={'100%'}
+                ref={imageRef}
+            />
+            <Box
+                sx={{
+                    height: '100%',
+                    width: '100%',
+                    position: 'absolute',
+                    top: 0,
+                }}
+            >
+                <Collapse
+                    in={isHovering}
+                    orientation='vertical'
+                    timeout={'auto'}
+                // collapsedSize={'20%'} // Uncomment when bug fixed on first load
+                >
+                    <Box
+                        width={'100%'}
+                        display={'flex'}
+                        flexDirection={'column'}
+                        justifyContent={'space-between'}
+                    >
+                        <Box
+                            width={'100%'}
+                            sx={{
+                                backgroundColor: 'rgba(0, 0, 0, .7)',
+                                height: imageHeight,
+                                color: 'common.blueScheme.notWhite'
+                            }}
+                            display={'flex'}
+                            flexDirection={'column'}
+                            justifyContent={'space-between'}
+                        >
+                            <Box
+                                width={'100%'}
+                                height={'100%'}
+                                display={'flex'}
+                                justifyContent={'space-between'}
+                            >
+                                <Box
+                                    padding={0.5}
+                                    display={'flex'}
+                                    flexDirection={'column'}
+                                    justifyContent={'start'}
+                                    height={'30%'}
+                                >
+                                    <Link href={`/${profileId}`}>
+                                        <Typography
+                                            sx={{ fontSize: { xs: 16, sm: 16, md: 18, lg: 20 } }}
+                                        >
+                                            @{profileName}
+                                        </Typography>
+                                    </Link>
+
+                                    <Typography
+                                        sx={{ fontSize: { xs: 14, sm: 14, md: 16, lg: 18 } }}
+                                        color={'#bbb'}
+                                    >
+                                        {generateTimeDifferenceString(convertPostIdToDateObj(post.id))}
+                                    </Typography>
+                                </Box>
+
+                                <Box
+                                    display={'flex'}
+                                    flexDirection={'row'}
+                                    justifyContent={'center'}
+                                    height={'20%'}
+                                    padding={1}
+                                >
+                                    {
+                                        !userLikesPost &&
+                                        <ThumbUpOffAltIcon
+                                            sx={{
+                                                color: 'common.blueScheme.notWhite',
+                                                paddingRight: .5,
+                                                ":hover": {
+                                                    cursor: 'pointer'
+                                                }
+                                            }}
+
+
+                                            onClick={handleLike}
+                                        />
+                                    }
+                                    {
+                                        userLikesPost &&
+                                        <ThumbUpIcon
+                                            sx={{
+                                                color: 'white',
+                                                paddingRight: .5,
+                                                ":hover": {
+                                                    cursor: 'pointer'
+                                                }
+                                            }}
+
+                                            onClick={handleLike}
+                                        />
+                                    }
+                                    {
+                                        <ExitToAppIcon
+                                            sx={{
+                                                color: 'white',
+                                                paddingRight: .5,
+                                                ":hover": {
+                                                    cursor: 'pointer'
+                                                }
+                                            }}
+
+                                            onClick={handleShare}
+                                        />
+
+                                    }
+                                    {
+                                        owner &&
+                                        <DeleteIcon
+                                            sx={{
+                                                color: 'white',
+                                                paddingRight: .5,
+                                                ":hover": {
+                                                    cursor: 'pointer'
+                                                }
+                                            }}
+
+                                            onClick={deletePost}
+                                        />
+
+                                    }
+                                </Box>
+                            </Box>
+                            <Box>
+                                <Typography textAlign={'center'}>
+                                    {postQuestion}
+                                </Typography>
+                                <Typography textAlign={'center'}>
+                                    {post.userPrompt}
+                                </Typography>
+                            </Box>
+
+                        </Box>
                     </Box>
-                </Link>
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', ml: 2 }}>
-                    <Typography><b>Question</b></Typography>
-                    <Typography>{postQuestion}</Typography>
-                    <Typography><b>User Response</b></Typography>
-                    <Typography>{alt}</Typography>
-                    <Typography><b>Date Posted</b></Typography>
-                    <Typography>{date}</Typography>
-                </Box>
-                <CardActions>
-                    {!userLikesPost && <ToggleButton value="check" selected={clicked} onClick={() => {
-                        handleLike();
-                        setClicked(!clicked);
-                    }
-                    }> <ThumbUpOffAltIcon />
-                    </ToggleButton>}
-                    {userLikesPost && <ToggleButton value="check" selected={clicked} onClick={() => {
-                        handleLike();
-                        setClicked(!clicked);
-                    }
-                    }> <ThumbUpIcon />
-                    </ToggleButton>}
-                    <Button endIcon={<DownloadIcon />} onClick={handleShare} />
-                    {deleteButton}
-                </CardActions>
-            </Box >
-        </Card >
+
+                </Collapse>
+            </Box>
+
+        </Box>
+
     );
 
 }

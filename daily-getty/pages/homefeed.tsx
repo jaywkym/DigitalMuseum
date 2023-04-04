@@ -10,13 +10,15 @@ import List from '@mui/material/List';
 import { Container } from '@mui/system';
 import HomeSearch from '@/src/components/homesearch';
 import Post from '@/src/components/post';
-import NavBar from '@/src/components/bottomnav';
+// import NavBar from '@/src/components/bottomnav';
 import { requestPostFromUserById } from './database/posts';
 import { CircularProgress } from '@mui/material';
 import { green } from '@mui/material/colors';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { requestFriendsForUser } from './database/profile';
+import NavBar from '@/src/components/navbar';
+import useScreenSize from './database/pages';
 
 export default function HomeFeed() {
 
@@ -25,6 +27,8 @@ export default function HomeFeed() {
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const [friends, setFriends] = useState([] as string[]);
     const [posts, setPosts] = useState([] as DatabasePost[])
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
+    const [udatedQuestion, setUpdated] = useState(false);
 
     const friends_updated = friends && friends.length !== 0;
     const posts_updated = posts && posts.length !== 0;
@@ -109,6 +113,7 @@ export default function HomeFeed() {
             const promises = posts.map(async (blank_post) => {
 
                 const dbResponse = await requestPostFromUserById(blank_post.user_id, blank_post.id)
+                console.log(dbResponse)
                 if (!dbResponse.success)
                     return;
 
@@ -118,6 +123,7 @@ export default function HomeFeed() {
                 const post = dbResponse.post;
                 let current_index = 0;
 
+                console.log("testing 1")
                 posts.forEach((current_post) => {
 
                     if (current_post.id == post.id && current_post.user_id == post.user_id) {
@@ -148,7 +154,59 @@ export default function HomeFeed() {
                 <title>Home Feed</title>
             </Head>
             <main>
-                <Box sx={{ flexGrow: 1, mb: 10, width: '100%', height: '100vh' }}>
+                <Box
+                    position={'fixed'}
+                    width={'100vw'}
+                    height={'100vh'}
+                    sx={{ backgroundColor: 'common.blueScheme.background' }}
+                    zIndex={-10}
+                >
+
+                </Box>
+                <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion} />
+
+                <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
+                    <Box
+                        sx={{
+                            width: { xs: '100%', sm: '90%', md: '80%' },
+                        }}
+
+                        display={'flex'}
+                        justifyContent={'center'}
+                        padding={4}
+                    >
+
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    alignContent: 'center'
+                                }}
+
+                                marginTop={4}
+                            >
+
+                                <ImageList cols={isSM ? 1 : isLG ? 2 : 3} gap={20}>
+
+                                    {
+
+                                        posts.map((post, i) => (
+                                            <ImageListItem key={i} >
+                                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session} />
+                                            </ImageListItem>
+                                        ))
+                                    }
+
+                                </ImageList>
+                            </Box>
+                        </Box>
+
+                    </Box>
+                </Box>
+
+                {/* <Box sx={{ flexGrow: 1, mb: 10, width: '100%', height: '100vh' }}>
                     <HomeSearch />
                     <Container fixed>
                         <CssBaseline />
@@ -163,24 +221,24 @@ export default function HomeFeed() {
                             )}
 
                             {/* <center> */}
-                            <Stack spacing={10}>
-                                <ImageList cols={2} rowHeight={400} gap={10}>
-                                    {
-                                        posts_updated && posts.map((post) => (
+                <Stack spacing={5}>
+                    <ImageList cols={1} rowHeight={600}>
 
-                                            <ImageListItem key={'li-' + post.user_id + '-' + post.id} >
-                                                <Post _userObj={user} _post={post} key={'p-' + post.user_id + '-' + post.id} />
-                                            </ImageListItem>
-                                        ))
-                                    }
+                        {
+                            posts_updated && posts.map((post) => (
 
-                                </ImageList>
-                            </Stack>
-                        </Box>
-                    </Container>
-                    <NavBar />
-                </Box>
-            </main>
+                                <ImageListItem key={'li-' + post.user_id + '-' + post.id} >
+                                    <Post _userObj={user} _post={post} key={'p-' + post.user_id + '-' + post.id} session={session} />
+                                </ImageListItem>
+                            ))
+                        }
+
+                    </ImageList>
+                </Stack>
+            </Box>
+        </Container >
+                </Box > * /}
+            </main >
         </>
     )
 }
