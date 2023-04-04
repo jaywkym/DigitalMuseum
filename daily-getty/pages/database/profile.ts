@@ -123,11 +123,12 @@ export function useFollowUser(user_id: string, friend_id: string):
 
 export function useUnfollowUser(user_id: string, friend_id: string):
     [boolean, boolean, () => Promise<void>] {
+        //console.log("test this dogddamit ")
 
         const [success, setSuccess] = useState(false);
         const [loading, setLoading] = useState(false);
 
-        async function followUser() {
+        async function unfollowUser() {
 
             if(loading)
                 return;
@@ -143,7 +144,7 @@ export function useUnfollowUser(user_id: string, friend_id: string):
             
         }
 
-    return [success, loading, followUser];
+    return [success, loading, unfollowUser];
 }
 
 export async function requestUnfollowUser(user_id: string, friend_id: string): Promise<DatabaseResponse> {

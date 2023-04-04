@@ -112,6 +112,7 @@ export default function HomeFeed() {
             const promises = posts.map(async (blank_post) => {
                 
                 const dbResponse = await requestPostFromUserById(blank_post.user_id, blank_post.id)
+                console.log(dbResponse)
                 if(!dbResponse.success)
                     return;
 
@@ -121,6 +122,7 @@ export default function HomeFeed() {
                 const post = dbResponse.post;
                 let current_index = 0;
 
+                console.log("testing 1")
                 posts.forEach((current_post) => {
 
                     if(current_post.id == post.id && current_post.user_id == post.user_id) {
@@ -169,8 +171,21 @@ export default function HomeFeed() {
                     }}
 
                     display={'flex'}
-                    justifyContent={'center'}
+                    justifyContent={'right'}
                 >
+
+                    <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20}>
+
+                    {
+                                
+                            posts.map((post, i) => (
+                            <ImageListItem key={i} >
+                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
+                            </ImageListItem>
+                        ))
+                    }
+
+                    </ImageList>
 
                 </Box>
             </Box>
