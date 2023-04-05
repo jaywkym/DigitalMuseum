@@ -90,6 +90,7 @@ const CommentsModal = ({ _userObj, _post, session }) => {
                 <DialogContent sx={{ backgroundColor: '#303f9f', color: '#ffffff' }}>
                     {/* Map through the comments and display each comment with user's name, profile image, and content */}
                     {/* Replace `comments` with the actual comments data */}
+                    {/*
                     {comments.map((comment) => (
                         <Box key={comment.id} display="flex" alignItems="center" mb={1}>
                             <Link href={`/profile/${comment.user.id}`}>
@@ -104,6 +105,7 @@ const CommentsModal = ({ _userObj, _post, session }) => {
                             </Typography>
                         </Box>
                     ))}
+                    */}
                 </DialogContent>
                 <DialogActions sx={{ backgroundColor: '#1a237e' }}>
                     <TextField

@@ -331,7 +331,7 @@ const Post = ({ _userObj, _post, session }) => {
                                     Prompt: {postQuestion}
                                 </Typography>
                                 <Typography variant={'h4'} textAlign={'center'}>
-                                    {profileName} said: "{post.userPrompt}"
+                                    {profileName} said: {post.userPrompt}
                                 </Typography>
                             </Box>
                             <Box display={'flex'} alignContent={'center'} justifyContent={'center'}>
