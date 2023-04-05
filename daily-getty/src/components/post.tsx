@@ -5,22 +5,23 @@ import ImageListItem from '@mui/material/ImageListItem';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import DownloadIcon from '@mui/icons-material/Download';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import IosShareIcon from '@mui/icons-material/IosShare';
 import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
 import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
-import { ToggleOnRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import DownloadIcon from '@mui/icons-material/Download';
+import {
+    RedditShareButton,
+    RedditIcon,
+} from 'next-share'
 
 const Post = ({ _userObj, _post, session }) => {
 
@@ -34,7 +35,7 @@ const Post = ({ _userObj, _post, session }) => {
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
-    
+
     const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
 
     console.log(owner)
@@ -48,13 +49,14 @@ const Post = ({ _userObj, _post, session }) => {
     const date = post.id
     const src = post.image.url
     const userPost = post.user_id
+    const postLikes = post.likes.length
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
     const profileLink = postProfile.id;
-    const profileId    = postProfile.id
+    const profileId = postProfile.id
 
-    const userName = userObj? userObj.name : ''
+    const userName = userObj ? userObj.name : ''
 
     const [deleteButton, setDeleteButton] = useState(null);
     const [clicked, setClicked] = useState(false);
@@ -75,16 +77,16 @@ const Post = ({ _userObj, _post, session }) => {
         const difference = Date.now() - post_date.getTime()
         const days = Math.floor(difference / 86400000) // Milliseconds to days
         const months = Math.floor(days / 31);
-        
-        if(days === 0) {
+
+        if (days === 0) {
             return "Today";
         }
 
-        else if(days === 1) {
+        else if (days === 1) {
             return "Yesterday"
         }
 
-        else if(days <= 30) {
+        else if (days <= 30) {
             return days + " days ago"
         }
 
@@ -96,14 +98,14 @@ const Post = ({ _userObj, _post, session }) => {
         setUserLikesPost(resp)
         setClicked(resp)
     }
-    
+
     async function getUserInfo() {
         const resp_profile = await pull_user({ id: post.user_id } as DatabaseUser);
         if (resp_profile.id)
             setPostProfile(resp_profile)
     }
 
-    const handleShare = (event) => { 
+    const handleShare = (event) => {
 
         const url = post.image.url;
 
@@ -111,7 +113,6 @@ const Post = ({ _userObj, _post, session }) => {
         downloadLink.href = url;
         downloadLink.download = post.userPrompt;
         downloadLink.click();
-    
     } //Overlay Share Window
 
     const deletePost = async () => {
@@ -131,7 +132,7 @@ const Post = ({ _userObj, _post, session }) => {
 
         try {
             const resp = await fetch('/api/database/posts/deletePost', requesting)
-            if(resp.status === 200)
+            if (resp.status === 200)
                 window.location.reload();
         } catch (err: any) {
             console.error(err)
@@ -140,7 +141,7 @@ const Post = ({ _userObj, _post, session }) => {
 
     useEffect(() => {
 
-        if(imageNeedsUpdate)
+        if (imageNeedsUpdate)
             return;
 
         getUserInfo()
@@ -152,7 +153,6 @@ const Post = ({ _userObj, _post, session }) => {
     }, [])
 
     async function handleLike() {
-
         if (userLikesPost)
             await unlikePost()
         else
@@ -163,8 +163,8 @@ const Post = ({ _userObj, _post, session }) => {
     }
 
     const imageRef = useRef(null);
-    const imageHeight = imageRef.current? imageRef.current.height : 0
-    
+    const imageHeight = imageRef.current ? imageRef.current.height : 0
+
 
     return (
         <Box
@@ -185,11 +185,11 @@ const Post = ({ _userObj, _post, session }) => {
                     top: 0,
                 }}
             >
-                <Collapse 
-                    in={isHovering} 
-                    orientation='vertical' 
-                    timeout={'auto'} 
-                    // collapsedSize={'20%'} // Uncomment when bug fixed on first load
+                <Collapse
+                    in={isHovering}
+                    orientation='vertical'
+                    timeout={'auto'}
+                // collapsedSize={'20%'} // Uncomment when bug fixed on first load
                 >
                     <Box
                         width={'100%'}
@@ -197,10 +197,10 @@ const Post = ({ _userObj, _post, session }) => {
                         flexDirection={'column'}
                         justifyContent={'space-between'}
                     >
-                        <Box 
-                            width={'100%'} 
+                        <Box
+                            width={'100%'}
                             sx={{
-                                backgroundColor: 'rgba(0, 0, 0, .7)', 
+                                backgroundColor: 'rgba(0, 0, 0, .7)',
                                 height: imageHeight,
                                 color: 'common.blueScheme.notWhite'
                             }}
@@ -214,7 +214,7 @@ const Post = ({ _userObj, _post, session }) => {
                                 display={'flex'}
                                 justifyContent={'space-between'}
                             >
-                                <Box 
+                                <Box
                                     padding={0.5}
                                     display={'flex'}
                                     flexDirection={'column'}
@@ -223,14 +223,14 @@ const Post = ({ _userObj, _post, session }) => {
                                 >
                                     <Link href={`/${profileId}`}>
                                         <Typography
-                                            sx={{fontSize: {xs: 16, sm: 16, md: 18, lg: 20}}}
+                                            sx={{ fontSize: { xs: 16, sm: 16, md: 18, lg: 20 } }}
                                         >
                                             @{profileName}
                                         </Typography>
                                     </Link>
-                                   
+
                                     <Typography
-                                        sx={{fontSize: {xs: 14, sm: 14, md: 16, lg: 18}}}
+                                        sx={{ fontSize: { xs: 14, sm: 14, md: 16, lg: 18 } }}
                                         color={'#bbb'}
                                     >
                                         {generateTimeDifferenceString(convertPostIdToDateObj(post.id))}
@@ -245,80 +245,107 @@ const Post = ({ _userObj, _post, session }) => {
                                     padding={1}
                                 >
                                     {
-                                        !userLikesPost && 
-                                        <ThumbUpOffAltIcon 
+                                        !userLikesPost &&
+                                        <Box display={'flex'}
+                                            flexDirection={'row'}
+                                        >
+                                            <p>{postLikes} Likes</p>
+                                            <ThumbUpOffAltIcon
+                                                sx={{
+                                                    color: 'common.blueScheme.notWhite',
+                                                    paddingRight: .5,
+                                                    marginLeft: 1,
+                                                    ":hover": {
+                                                        cursor: 'pointer'
+                                                    }
+                                                }}
+
+
+                                                onClick={handleLike}
+                                            />
+                                        </Box>
+                                    }
+                                    {
+                                        userLikesPost &&
+                                        <Box display={'flex'}
+                                            flexDirection={'row'}
+                                        >
+                                            <p>{postLikes} Likes</p>
+                                            <ThumbUpIcon
+                                                sx={{
+                                                    color: 'white',
+                                                    paddingRight: 1,
+                                                    marginLeft: 1,
+                                                    ":hover": {
+                                                        cursor: 'pointer'
+                                                    }
+                                                }}
+
+                                                onClick={handleLike}
+                                            />
+                                        </Box>
+                                    }
+                                    {
+                                        <DownloadIcon
                                             sx={{
-                                                color: 'common.blueScheme.notWhite', 
+                                                color: 'white',
                                                 paddingRight: .5,
                                                 ":hover": {
                                                     cursor: 'pointer'
                                                 }
-                                            }} 
-                                            
-                                            
-                                            onClick={handleLike}
+                                            }}
+
+                                            onClick={handleShare}
                                         />
-                                    }
-                                    {
-                                        userLikesPost && 
-                                        <ThumbUpIcon
-                                            sx={{
-                                                color: 'white', 
-                                                paddingRight: .5,
-                                                ":hover": {
-                                                    cursor: 'pointer'
-                                                }
-                                            }} 
-                                            
-                                            onClick={handleLike}
-                                        />
-                                    }
-                                    {
-                                        <ExitToAppIcon
-                                        sx={{
-                                            color: 'white', 
-                                            paddingRight: .5,
-                                            ":hover": {
-                                                cursor: 'pointer'
-                                            }
-                                        }} 
-                                        
-                                        onClick={handleShare}
-                                    />
-    
+
                                     }
                                     {
                                         owner &&
                                         <DeleteIcon
-                                        sx={{
-                                            color: 'white', 
-                                            paddingRight: .5,
-                                            ":hover": {
-                                                cursor: 'pointer'
-                                            }
-                                        }} 
-                                        
-                                        onClick={deletePost}
-                                    />
-    
+                                            sx={{
+                                                color: 'white',
+                                                paddingRight: .5,
+                                                ":hover": {
+                                                    cursor: 'pointer'
+                                                }
+                                            }}
+
+                                            onClick={deletePost}
+                                        />
+
+                                    }
+                                    {
+                                        <Box>
+                                            <RedditShareButton
+                                                url={post.image.url}
+                                                title={'My Latest Muse'}
+                                            >
+                                                <RedditIcon size={24} round />
+                                            </RedditShareButton>
+                                        </Box>
                                     }
                                 </Box>
                             </Box>
-                            <Box>
-                                <Typography textAlign={'center'}>
-                                    {postQuestion}
+                            <Box sx={{ marginBottom: '30%', padding: '10%' }}>
+                                <Typography variant={'h3'} textAlign={'center'}>
+                                    Prompt: {postQuestion}
                                 </Typography>
-                                <Typography textAlign={'center'}>
-                                    {post.userPrompt}
+                                <Typography variant={'h4'} textAlign={'center'}>
+                                    {profileName} said: {post.userPrompt}
                                 </Typography>
                             </Box>
-                            
+                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}>
+                                <Button>
+                                    <Typography>
+                                        Critiques...
+                                    </Typography>
+                                </Button>
+                            </Box>
                         </Box>
                     </Box>
-                    
                 </Collapse>
             </Box>
-            
+
         </Box>
 
     );

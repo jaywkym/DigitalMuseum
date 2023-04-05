@@ -17,8 +17,8 @@ import { green } from '@mui/material/colors';
 
 export default function Asynchronous() {
 
-    const {data: session, status} = useSession();
-    
+    const { data: session, status } = useSession();
+
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
@@ -32,18 +32,18 @@ export default function Asynchronous() {
 
     const { push } = useRouter();
 
-    const user: DatabaseUser = session? session.user as DatabaseUser : {} as DatabaseUser;
-    const loading: boolean   = open && users.length === 0;
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+    const loading: boolean = open && users.length === 0;
 
     useEffect(() => {
 
         async function loadUserPosts() {
-    
+
             const posts = [];
-            const resp = await fetch(`/api/database/profile/getAllUsers`, {method: 'POST'})
+            const resp = await fetch(`/api/database/profile/getAllUsers`, { method: 'POST' })
             const json = await resp.json() as DatabaseUsersResponse;
 
-            if(!json.success)
+            if (!json.success)
                 return;
 
             const dbUsers = json.users;
@@ -67,60 +67,60 @@ export default function Asynchronous() {
             const returned_promises = await Promise.all(promises);
 
             setCheckedForPosts(true)
-            
+
             return returned_promises.filter(post => {
                 return post.id
             });
 
-            
+
         }
 
         loadUserPosts()
-        .then(setExplorefeed)
-        .catch(console.error);
+            .then(setExplorefeed)
+            .catch(console.error);
 
     }, [])
 
     useEffect(() => {
         if (!open) setUsers([]);
     }, [open]);
-    
+
     return (
         <>
-            <Box 
-                position={'fixed'} 
-                width={'100vw'} 
-                height={'100vh'} 
-                sx={{backgroundColor: 'common.blueScheme.background'}} 
+            <Box
+                position={'fixed'}
+                width={'100vw'}
+                height={'100vh'}
+                sx={{ backgroundColor: 'common.blueScheme.background' }}
                 zIndex={-10}
             >
 
             </Box>
-            <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
-           
+            <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion} />
+
             <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
-                <Box 
+                <Box
                     sx={{
-                        width: {xs: '100%', sm: '90%', md: '80%'}, 
+                        width: { xs: '100%', sm: '90%', md: '80%' },
                     }}
 
                     display={'flex'}
                     justifyContent={'center'}
                 >
 
-                    <ExploreSearch users={users}/>
+                    <ExploreSearch users={users} />
                     {/* <Post _userObj={session} _post={testPost} key={1} session={session} /> */}
 
                 </Box>
-                <Box 
+                <Box
                     sx={{
                         width: {
-                            xs: '100%', 
-                            sm: '90%', 
+                            xs: '100%',
+                            sm: '90%',
                             md: '80%'
-                        }, 
-                    }} 
-                    
+                        },
+                    }}
+
                     display={'block'}
                     padding={4}
                 >
@@ -130,7 +130,7 @@ export default function Asynchronous() {
                         <Typography variant={'h4'} color={'common.blueScheme.notWhite'} textAlign={'center'}>
                             No Posts Today... Dang...
                         </Typography>
-                        
+
                     }
 
 
@@ -146,25 +146,25 @@ export default function Asynchronous() {
 
                         </Box>
                     )}
-                    
-                    <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20} sx={{overflow:'hidden'}}>
 
-                    {
-                                
-                        explorefeed.map((post, i) => (
-                            <ImageListItem key={i} >
-                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
-                            </ImageListItem>
-                        ))
-                    }
+                    <ImageList cols={isXS ? 1 : isLG ? 2 : 3} gap={20} sx={{ overflow: 'hidden' }}>
+
+                        {
+
+                            explorefeed.map((post, i) => (
+                                <ImageListItem key={i} >
+                                    <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session} />
+                                </ImageListItem>
+                            ))
+                        }
 
                     </ImageList>
 
                 </Box>
-                
+
             </Box>
-           
+
         </>
-       
+
     );
 }
