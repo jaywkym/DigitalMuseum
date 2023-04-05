@@ -36,7 +36,7 @@ export default async function createPost (
         posts = {} as DatabasePost[]
 
     Object.keys(posts).forEach((post_id) => {
-        posts[post_id].image.b64 = ''
+        posts[post_id].image.url = ''
     })
 
     res.status(200).json(generateDbResponse(true, posts, {} as DatabaseError))

@@ -16,20 +16,12 @@ const CheckItemExists = () => {
 
     let user_id = status === 'authenticated' ? (session.user as any).id : "";
 
-
-   // console.log(session);
-
-   
-
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
     const post_id = year + "_" + month + "_" + day;
-
-    //console.log(post
-    
 
     const uploadInfo = {
         post_id: post_id,
@@ -47,9 +39,6 @@ const CheckItemExists = () => {
     fetch('/api/database/posts/checkPostExist', request)
         .then(res => res.json())
         .then(resj => {
-            console.log(resj.exist);
-
-            console.log("THE VALUE OF THE EXISTENCE IS:" + resj.exist)
             if(resj.exist){
                 setItemExists(true);
             }

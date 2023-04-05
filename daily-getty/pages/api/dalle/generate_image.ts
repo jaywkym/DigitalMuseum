@@ -52,85 +52,14 @@ export default async function request_image_handler(
     const prompt = req.body.prompt;
     const amount = req.body.amount;
 
-    console.log("AM I EVEN GETTING IN????")
-    console.log(prompt)
     const image  = await requestToDalleAPI(prompt, amount);
-    console.log("fuck?")
-    console.log(image)
 
     /* ERROR generating image for various reasons */
     if(!image.success) {
-        console.log("do i go in here at all?")
         res.status(200).json(generateImageResponse(false, amount, undefined, image))
 
         return;
     } 
-
-    console.log("Pulling session")
-
-    const session = await getServerSession(req, res, authOptions);
-
-    console.log("Received session")
-    console.log(session)
-
-    /* Check for valid session */
-    if(!session ||
-       !session.user ||
-       !session.expires ||
-       !session.user.email ||
-       !session.user.name ||
-       !session.user.image ||
-       !(session.user as any).id) {
-        res.status(200).json(
-            generateImageResponse(
-                false,
-                0,
-                {} as DalleResponse,
-                generateError(-12, "Invalid Session")
-            )
-        );
-        return;
-       }
-
-
-    const userGet = {
-        id: (session.user as any).id,
-        name: session.user.name,
-        email: session.user.email,
-        image: session.user.image,
-        googleId: null // TODO - Add google id to user object
-    } as DatabaseUser;
-
-    let user_obj = await pull_user(userGet);
-
-    /* Make sure user is a valid user */
-    if(!user_obj) {
-        res.status(200).json(
-            generateImageResponse(
-                false,
-                0,
-                {} as DalleResponse,
-                generateError(-14, "User does not exist")
-            )
-        );
-        return;
-    }
-
-
-    //THIS SHOULD ALL BE IN A DIFFERENT SECTION!!!
-    // const uploadInfo: DatabasePost = {
-    //     id: null,
-    //     user_id: user_obj.id,
-    //     userPrompt: prompt,
-    //     givenPrompt: null, 
-    //     likes: [],
-    //     image: {
-    //         created: image.created as Number,
-    //         b64: image.data[0].b64_json as String
-    //     } as any
-    // }
-
-    //const resp = await addPostApi(uploadInfo);
 
     /* Respond with image information */
     res.status(200).json(generateImageResponse(true, amount, image))
@@ -160,17 +89,15 @@ async function requestToDalleAPI(prompt: string, amount: string) {
             'prompt': prompt,
             'n'     : Number.parseInt(amount),
             'size'  : "1024x1024",
-            'response_format': 'b64_json'
+            'response_format': 'url'
         })
     }
 
     try {
 
         /* Fetch images from DALLE api */
-        console.log("here in try?")
         const resp = await fetch(url, dalle_request);
         const json = await resp.json()
-        console.log("end of try?")
         /* TODO - Handle error for successful request but invalid parameters (Invalid api key, invalid request...) */
         if(json.error) {
             json.error.success = false

@@ -1,3 +1,4 @@
+import { DatabasePost } from "@/types/FirebaseResponseTypes";
 import {useState, useEffect, Dispatch } from "react";
 import type { 
     DalleError, 
@@ -16,34 +17,24 @@ import type {
  *          loading boolean, and a function to generate the image.
  */
 const useImage = (prompt: string, style: string, amount: string): 
-    [string, string, string, string, string, string, DalleError, boolean, boolean, boolean, () => void] => {
+    [string[], string, boolean, boolean, DalleError, () => Promise<void>] => {
 
-    const [b64_image1, setImage1]: [string, Dispatch<string>] = useState('');
-    const [b64_image2, setImage2]: [string, Dispatch<string>] = useState('');
-    const [b64_image3, setImage3]: [string, Dispatch<string>] = useState('');
-    const [created1, setCreated1]: [string, Dispatch<string>] = useState('');
-    const [created2, setCreated2]: [string, Dispatch<string>] = useState('');
-    const [created3, setCreated3]: [string, Dispatch<string>] = useState('');
+    const [image_urls, setImageUrls]: [string[], Dispatch<string[]>] = useState([] as string[]);
+    const [success, setSuccess]: [boolean, Dispatch<boolean>] = useState(false);
+    const [created, setCreated]: [string, Dispatch<string>] = useState('');
     const [error    , setError]: [DalleError, Dispatch<DalleError>] = useState(null);
-    const [loading1  , setLoading1] = useState(false);
-    const [loading2  , setLoading2] = useState(false);
-    const [loading3  , setLoading3] = useState(false);
+    const [loading  , setLoading] = useState(false);
 
-    function generate() {
+    async function generate() {
 
         if(!checkParams(prompt, Number.parseInt(amount)))
             return;
 
-        if(loading1 || loading2 || loading3)
+        if(loading)
             return;
 
-        setLoading1(true);
-        setLoading2(true);
-        setLoading3(true);
-
-        console.log("THE PROMPT IS:   ")
-        console.log(prompt + style); 
-        prompt = prompt + style;
+        setLoading(true);
+        setSuccess(false)
 
         const request = {
             method: 'POST',
@@ -51,63 +42,43 @@ const useImage = (prompt: string, style: string, amount: string):
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                'prompt': prompt,
-                'amount': amount
+                'prompt': `${prompt}, in the style of ${style}`,
+                'amount': 1
             })
         }
+
+        const posts: string[] = []
+        const promises: Promise<void>[] = [];
+
+        /* Generate all images in parallel */
+        for(let i = 0; i < parseInt(amount); ++i) {
+
+            try {
+                promises.push(fetch('/api/dalle/generate_image' , request)
+                .then(async (dalle_response) => {
+                    const image_response = await dalle_response.json() as ImageResponse;
+                    if(!image_response.success)
+                        return;
     
-        fetch('/api/dalle/generate_image', request)
-        .then(res => res.json())
-        .then(resj => {
-            const res = resj
-            console.log(res)
-            if(res.success) {
-                //console.log(res);
-                setImage1(`data:image/png;base64, ${res.image.data[0].b64_json}`) 
-                setCreated1(`${res.image.created}`) 
-            } else {
-                setError(res.error)
+                    posts.push(image_response.image.data[0].url);
+                }))
+                
+            } catch (err: any) {
+                console.error(err)
             }
+        }
 
-            setLoading1(false);
-        })
+        /* Wait for all images to finish processing before continuing */
+        await Promise.all(promises);
 
-        fetch('/api/dalle/generate_image', request)
-        .then(res => res.json())
-        .then(resj => {
-            const res = resj
-      
-            if(res.success) {
-                //console.log(res);
-                console.log(res)
-                setImage2(`data:image/png;base64, ${res.image.data[0].b64_json}`)
-                setCreated2(`${res.image.created}`)
-            } else {
-                setError(res.error)
-            }
+        setImageUrls(posts)
 
-            setLoading2(false);
-        })
+        setSuccess(true);
+        setLoading(false)
 
-        fetch('/api/dalle/generate_image', request)
-        .then(res => res.json())
-        .then(resj => {
-            const res = resj
-            console.log(res)
-            if(res.success) {
-                //console.log(res);
-                setImage3(`data:image/png;base64, ${res.image.data[0].b64_json}`)
-                setCreated3(`${res.image.created}`)
-
-            } else {
-                setError(res.error)
-            }
-
-            setLoading3(false);
-        })
     };
     
-    return [b64_image1, b64_image2, b64_image3, created1, created2, created3,  error, loading1, loading2, loading3, generate];
+    return [image_urls, created, success, loading, error, generate];
 }
 
 function checkParams(prompt: string, amount: number): boolean {

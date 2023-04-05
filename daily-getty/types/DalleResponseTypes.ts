@@ -16,7 +16,7 @@ export type ImageResponse = {
 export type DalleResponse = {
     created: number,
     data   : {
-        b64_json: string
+        url: string
     }[],
     success: boolean
 }

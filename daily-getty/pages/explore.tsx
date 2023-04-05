@@ -1,30 +1,39 @@
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { DatabasePost, DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Box, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
+import { Box, Container, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
 import HomeSearch from '@/src/components/homesearch';
-import NavBar from '@/src/components/bottomnav';
+import NavBar from '@/src/components/navbar';
 import Post from '@/src/components/post';
-import { requestPostFromUserById } from './database/posts';
+import { constructCurrentDateId, requestPostFromUserById } from './database/posts';
 import { PostAddSharp } from '@mui/icons-material';
+import ExploreSearch from '@/src/components/ExploreSearch';
+import useScreenSize from './database/pages';
+import { green } from '@mui/material/colors';
 
 export default function Asynchronous() {
 
     const { data: session, status } = useSession();
 
-    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const [users, setUsers] = useState([]);
-
     const [open, setOpen] = useState(false);
-    const loading = open && users.length === 0;
-
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
+    const [checkedForPosts, setCheckedForPosts] = useState(false)
+    const [udatedQuestion, setUpdated] = useState(false);
+
+    const postsLoading = explorefeed.length === 0 && !checkedForPosts
+    const noPosts = explorefeed.length === 0 && checkedForPosts
+
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
     const { push } = useRouter();
+
+    const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+    const loading: boolean = open && users.length === 0;
 
     useEffect(() => {
 
@@ -45,12 +54,7 @@ export default function Asynchronous() {
 
             setUsers(user_ids);
 
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-
-            const post_id = year + "_" + month + "_" + day;
+            const post_id = constructCurrentDateId();
 
             const promises = user_ids.map(async function (user) {
 
@@ -61,6 +65,8 @@ export default function Asynchronous() {
             });
 
             const returned_promises = await Promise.all(promises);
+
+            setCheckedForPosts(true)
 
             return returned_promises.filter(post => {
                 return post.id
@@ -73,7 +79,7 @@ export default function Asynchronous() {
             .then(setExplorefeed)
             .catch(console.error);
 
-    }, [loading])
+    }, [])
 
     useEffect(() => {
         if (!open) setUsers([]);
@@ -81,85 +87,82 @@ export default function Asynchronous() {
 
     return (
         <>
-            <HomeSearch />
-            <Autocomplete
-                id="user-lookup"
-                sx={{ width: 300 }}
-                open={open}
-                onOpen={() => {
-                    setOpen(true);
-                }}
-                onClose={() => {
-                    setOpen(false);
-                }}
-                isOptionEqualToValue={(option, value) => option.name === value.name}
-                getOptionLabel={(option) => option.name}
-                options={users}
-                loading={loading}
-                onChange={(event: any, newValue: DatabaseUser | null) => {
-                    push(`/${newValue.id}`)
-                }}
-                renderOption={(props, option) => {
+            <Box
+                position={'fixed'}
+                width={'100vw'}
+                height={'100vh'}
+                sx={{ backgroundColor: 'common.blueScheme.background' }}
+                zIndex={-10}
+            >
 
-                    console.log(option)
+            </Box>
+            <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion} />
 
-                    return (
-                        <>
-                            <li {...props}>
-                                <Grid container alignItems="center">
-                                    <Grid item sx={{ display: 'flex', width: 44 }}>
-                                        <img src={option.image} width={'50%'} />
-                                    </Grid>
-                                    <Grid item sx={{ width: 'calc(100% - 44px)' }}>
-                                        <Box
-                                            key={option.id}
-                                            component="span"
-                                            sx={{ fontWeight: 'bold', color: 'black' }}
-                                        >
-                                            <p>{option.name}</p>
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                            </li>
-                        </>
-                    )
-                }}
-                renderInput={(params) => (
-                    <>
-                        <TextField
-                            {...params}
-                            sx={{
-                                p: 3,
-                            }}
-                            label="Explore Users"
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <Fragment>
-                                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                        {params.InputProps.endAdornment}
-                                    </Fragment>
-                                ),
-                            }}
-                        />
-                    </>
-                )}
-            />
+            <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
+                <Box
+                    sx={{
+                        width: { xs: '100%', sm: '90%', md: '80%' },
+                    }}
 
-            <Stack spacing={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                <ImageList cols={1} rowHeight={600}>
-                    {
-                        explorefeed.map((post, i) => (
-                            <ImageListItem key={i} >
-                                <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} />
-                            </ImageListItem>
-                        ))
+                    display={'flex'}
+                    justifyContent={'center'}
+                >
+
+                    <ExploreSearch users={users} />
+                    {/* <Post _userObj={session} _post={testPost} key={1} session={session} /> */}
+
+                </Box>
+                <Box
+                    sx={{
+                        width: {
+                            xs: '100%',
+                            sm: '90%',
+                            md: '80%'
+                        },
+                    }}
+
+                    display={'block'}
+                    padding={4}
+                >
+
+                    {noPosts &&
+
+                        <Typography variant={'h4'} color={'common.blueScheme.notWhite'} textAlign={'center'}>
+                            No Posts Today... Dang...
+                        </Typography>
+
                     }
 
-                </ImageList>
-            </Stack>
 
-            <NavBar />
+                    {postsLoading && (
+                        <Box width={'100%'} display={'flex'} justifyContent={'center'}>
+
+                            <CircularProgress
+                                size={68}
+                                sx={{
+                                    color: green[500],
+                                }}
+                            />
+
+                        </Box>
+                    )}
+
+                    <ImageList cols={isXS ? 1 : isLG ? 2 : 3} gap={20} sx={{ overflow: 'hidden' }}>
+
+                        {
+
+                            explorefeed.map((post, i) => (
+                                <ImageListItem key={i} >
+                                    <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session} />
+                                </ImageListItem>
+                            ))
+                        }
+
+                    </ImageList>
+
+                </Box>
+
+            </Box>
 
         </>
 
