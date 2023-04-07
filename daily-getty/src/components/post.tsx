@@ -221,8 +221,9 @@ const Post = ({ _userObj, _post, session }) => {
                                     justifyContent={'start'}
                                     height={'30%'}
                                 >
-                                    <Link href={`/${profileId}`}>
-                                        <Typography
+                                    <Link  href={`/${profileId}`}>
+                                        <Typography 
+                                            variant='navButtonText'
                                             sx={{ fontSize: { xs: 16, sm: 16, md: 18, lg: 20 } }}
                                         >
                                             @{profileName}
@@ -232,6 +233,7 @@ const Post = ({ _userObj, _post, session }) => {
                                     <Typography
                                         sx={{ fontSize: { xs: 14, sm: 14, md: 16, lg: 18 } }}
                                         color={'#bbb'}
+                                        variant='navButtonText'
                                     >
                                         {generateTimeDifferenceString(convertPostIdToDateObj(post.id))}
                                     </Typography>
@@ -327,10 +329,12 @@ const Post = ({ _userObj, _post, session }) => {
                                 </Box>
                             </Box>
                             <Box sx={{ marginBottom: '20%', padding: '10%' }}>
-                                <Typography variant={'h5'} textAlign={'center'}>
+                                <Typography variant='navButtonText' fontWeight={'1000'} fontSize={25} textAlign={'center'}>
                                     Prompt: {postQuestion}
                                 </Typography>
-                                <Typography variant={'h6'} textAlign={'center'}>
+                                <br></br>
+                                <br></br>
+                                <Typography variant='navButtonText' fontWeight={'200000'} fontSize={18} textAlign={'center'}>
                                     {profileName} said: {post.userPrompt}
                                 </Typography>
                             </Box>
