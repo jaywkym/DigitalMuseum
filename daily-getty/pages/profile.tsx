@@ -24,6 +24,8 @@ export default function Profile() {
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const userSet = user.id !== undefined;
 
+    let getPosts = false;
+
     async function loadImages(blankPosts) {
 
         blankPosts.forEach(async (post) => {
@@ -92,7 +94,7 @@ export default function Profile() {
             .then(loadImages)
             .catch(err => console.error(err))
 
-    }, [userSet])
+    }, [userSet, getPosts])
 
     let posts_map = posts ? posts : {}
 
@@ -145,7 +147,7 @@ export default function Profile() {
                                     />
                                 )}
 
-                                <ImageList cols={isXS? 1 : isLG? 2 : 3} gap={20} sx={{overflow: 'hidden'}}>
+                                <ImageList cols={isXS? 1 : isMD? 2 : 3} gap={20} sx={{overflow: 'hidden'}}>
 
                                 {
                                             

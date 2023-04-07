@@ -25,33 +25,27 @@ import {
     RedditIcon,
 } from 'next-share'
 
-const Post = ({ _userObj, _post, session }) => {
+const Post = ({ _userObj, _post, session}) => {
 
 
-    console.log(session.user.id)
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
-
-    console.log(userObj)
-    console.log(post)
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
 
     const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
 
-    console.log(owner)
-
-    const [isHovering, setIsHovered] = useState(false);
+    const [isSelected, setIsSelected] = useState(false);
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
     const alt = post.userPrompt
     const postQuestion = post.givenPrompt
     const date = post.id
-    const src = post.image.url
+    const src = `${post.image.url}`//?idtoavoidcachehits=${Math.floor(Math.random() * 100000000)}` // Work around to avoid cache hits
     const userPost = post.user_id
-    //const postLikes = post.likes ? post.likes.length : 0;
+    const postLikes = post.likes? post.likes.length : 0;
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
@@ -196,8 +190,8 @@ const Post = ({ _userObj, _post, session }) => {
 
         try {
             const resp = await fetch('/api/database/posts/deletePost', requesting)
-            if (resp.status === 200)
-                window.location.reload();
+            // if (resp.status === 200)
+            //     getPosts = true
         } catch (err: any) {
             console.error(err)
         }
@@ -226,14 +220,17 @@ const Post = ({ _userObj, _post, session }) => {
 
     }
 
+    function changePostSelection() {
+        setIsSelected(!isSelected)
+    }
+
     const imageRef = useRef(null);
     const imageHeight = imageRef.current ? imageRef.current.height : 0
 
-
     return (
         <Box
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onClick={changePostSelection}
+            sx={{":hover": {cursor: 'pointer'}}}
         >
             <img
                 src={src}
@@ -250,7 +247,7 @@ const Post = ({ _userObj, _post, session }) => {
                 }}
             >
                 <Collapse
-                    in={isHovering}
+                    in={isSelected}
                     orientation='vertical'
                     timeout={'auto'}
                 // collapsedSize={'20%'} // Uncomment when bug fixed on first load
