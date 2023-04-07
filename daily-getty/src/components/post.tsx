@@ -19,6 +19,7 @@ import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/da
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddCommentIcon from '@mui/icons-material/AddComment';
+//import { FixedSizeList } from 'react-window';
 import {
     RedditShareButton,
     RedditIcon,
@@ -411,6 +412,8 @@ const Post = ({ _userObj, _post, session }) => {
                                     <Button onClick={commentOnPost}>
                                         Post
                                     </Button>
+
+
 
                             </Box>
                             <Box display={'flex'} alignContent={'center'} justifyContent={'center'}  >
