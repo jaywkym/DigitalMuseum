@@ -24,31 +24,33 @@ import {
     RedditIcon,
 } from 'next-share'
 
-const Post = ({ _userObj, _post, session}) => {
+const Post = ({ _userObj, _post, session }) => {
 
 
+    console.log(session.user.id)
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
+
+    console.log(userObj)
+    console.log(post)
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
 
     const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
 
-    const [isSelected, setIsSelected] = useState(false);
+    console.log(owner)
+
+    const [isHovering, setIsHovered] = useState(false);
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
     const alt = post.userPrompt
     const postQuestion = post.givenPrompt
     const date = post.id
-    const src = `${post.image.url}`//?idtoavoidcachehits=${Math.floor(Math.random() * 100000000)}` // Work around to avoid cache hits
+    const src = post.image.url
     const userPost = post.user_id
-<<<<<<< HEAD
     const postLikes = post.likes ? post.likes.length : 0;
-=======
-    const postLikes = post.likes? post.likes.length : 0;
->>>>>>> 24fe09c (changed image generation to use base64_json)
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
@@ -121,7 +123,6 @@ const Post = ({ _userObj, _post, session}) => {
             comment: userComment,
         }
 
-<<<<<<< HEAD
         const requesting = {
             method: 'POST',
             headers: {
@@ -176,14 +177,6 @@ const Post = ({ _userObj, _post, session}) => {
         // downloadLink.download = post.userPrompt;
         // downloadLink.click();
     } //Overlay Share Window
-=======
-        const downloadLink = document.createElement("a");
-        downloadLink.setAttribute('target', '_blank')
-        downloadLink.href = url;
-        downloadLink.download = post.userPrompt;
-        downloadLink.click();
-    }
->>>>>>> 24fe09c (changed image generation to use base64_json)
 
     const deletePost = async () => {
 
@@ -202,8 +195,8 @@ const Post = ({ _userObj, _post, session}) => {
 
         try {
             const resp = await fetch('/api/database/posts/deletePost', requesting)
-            // if (resp.status === 200)
-            //     getPosts = true
+            if (resp.status === 200)
+                window.location.reload();
         } catch (err: any) {
             console.error(err)
         }
@@ -232,17 +225,14 @@ const Post = ({ _userObj, _post, session}) => {
 
     }
 
-    function changePostSelection() {
-        setIsSelected(!isSelected)
-    }
-
     const imageRef = useRef(null);
     const imageHeight = imageRef.current ? imageRef.current.height : 0
 
+
     return (
         <Box
-            onClick={changePostSelection}
-            sx={{":hover": {cursor: 'pointer'}}}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <img
                 src={src}
@@ -259,7 +249,7 @@ const Post = ({ _userObj, _post, session}) => {
                 }}
             >
                 <Collapse
-                    in={isSelected}
+                    in={isHovering}
                     orientation='vertical'
                     timeout={'auto'}
                 // collapsedSize={'20%'} // Uncomment when bug fixed on first load
@@ -324,11 +314,7 @@ const Post = ({ _userObj, _post, session}) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-<<<<<<< HEAD
                                             <p>{/*postLikes*/} Likes</p>
-=======
-                                            {/* <p>{postLikes} Likes</p> */}
->>>>>>> 24fe09c (changed image generation to use base64_json)
                                             <ThumbUpOffAltIcon
                                                 sx={{
                                                     color: 'common.blueScheme.notWhite',
@@ -349,11 +335,7 @@ const Post = ({ _userObj, _post, session}) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-<<<<<<< HEAD
                                             <p>{/*postLikes*/} Likes</p>
-=======
-                                            {/* <p>{postLikes} Likes</p> */}
->>>>>>> 24fe09c (changed image generation to use base64_json)
                                             <ThumbUpIcon
                                                 sx={{
                                                     color: 'white',
