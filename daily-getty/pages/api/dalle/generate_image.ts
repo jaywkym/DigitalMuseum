@@ -89,7 +89,7 @@ async function requestToDalleAPI(prompt: string, amount: string) {
             'prompt': prompt,
             'n'     : Number.parseInt(amount),
             'size'  : "1024x1024",
-            'response_format': 'url'
+            'response_format': 'b64_json'
         })
     }
 

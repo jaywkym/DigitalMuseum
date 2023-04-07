@@ -8,7 +8,7 @@ import CheckItemExists from "@/src/components/checkPostExistence"
 import NavBar from '@/src/components/navbar';
 import { useSession } from 'next-auth/react';
 import useScreenSize from './database/pages';
-import { Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
+import { Alert, Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
@@ -18,6 +18,7 @@ import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
 import SwipeableViews from 'react-swipeable-views';
 
+const MAX_INPUT_CHARACTER_COUNT = 100;
 
 type Step = {
     label: string;
@@ -38,6 +39,7 @@ export default function NewMuse() {
     const [artStyle, setArtStyle] = useState('');
 
     const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
+    const [base64Images, setBase64Images] = useState([])
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = 3;
 
@@ -50,6 +52,8 @@ export default function NewMuse() {
     const theme = useTheme();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+    const character_count_limit_reached = userResponse.length == MAX_INPUT_CHARACTER_COUNT;
+    const userResponseOK = userResponse.length > 0 && userResponse.length <= MAX_INPUT_CHARACTER_COUNT;
 
     useEffect(() => {
 
@@ -101,6 +105,12 @@ export default function NewMuse() {
 
     const handleNext = () => {
 
+        if(activeStep === 0) {
+            if(!userResponseOK) {
+                
+            }
+        }
+
         if(activeStep === 1) {
             if(userResponse === undefined ||
                userResponse === '') {
@@ -120,7 +130,7 @@ export default function NewMuse() {
 
         else if(activeStep === 2) {
 
-            console.log(imageSelected)
+            const imageSelected = imageActiveStep
 
             if(imageSelected < 0 || imageSelected > 2) {
                 // ERROR
@@ -164,6 +174,7 @@ export default function NewMuse() {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
     };
+
   
     const handleBack = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -197,11 +208,6 @@ export default function NewMuse() {
         .then(setPrompt)
         .catch(console.error)
     }, [])
-
-    console.log({
-        activeStep: activeStep,
-        image: imageSelected
-    })
 
     return (
         <>
@@ -272,17 +278,28 @@ export default function NewMuse() {
                                     mountOnEnter
                                     unmountOnExit
                                 >
-                                    <TextField
-                                        id="prompt-field"
-                                        label="Place Response here"
-                                        sx={{backgroundColor: 'common.blueScheme.notWhite'}}
-                                        size={'medium'}
-                                        fullWidth
-                                        multiline
-                                        onChange={(e) => setUserResponse(e.target.value)}
-                                        value={userResponse}
-                                        placeholder='Like a spoon in the wind...'
-                                    ></TextField>
+                                    <Box 
+                                        display={'flex'} 
+                                        flexDirection={'column'}
+                                        width={'100%'}
+                                    >
+                                        <TextField
+                                            id="prompt-field"
+                                            label="Place Response here"
+                                            sx={{backgroundColor: 'common.blueScheme.notWhite'}}
+                                            size={'medium'}
+                                            fullWidth
+                                            multiline
+                                            onChange={(e) => setUserResponse(e.target.value)}
+                                            value={userResponse}
+                                            placeholder='Like a spoon in the wind...'
+                                            inputProps={{ maxLength: MAX_INPUT_CHARACTER_COUNT }}
+                                        ></TextField>
+                                        <Typography color={'common.blueScheme.notWhite'} paddingTop={1}>
+                                            {MAX_INPUT_CHARACTER_COUNT - userResponse.length} characters left
+                                        </Typography>
+                                    </Box>
+                                   
                                 </Slide>
                                 <Slide
                                     direction={activeStep === 1? 'left' : 'right'}
@@ -323,7 +340,7 @@ export default function NewMuse() {
                                     width={'100%'}
                                 >
                                     {
-                                        (images_loading || imageSaving) &&
+                                        images_loading &&
                                         <Box
                                             display={'flex'}
                                             flexDirection={'column'}
@@ -353,6 +370,34 @@ export default function NewMuse() {
 
                                     }
                                     {
+                                        imageSaving &&
+                                        <Box
+                                            display={'flex'}
+                                            flexDirection={'column'}
+                                            alignContent={'center'}
+                                            justifyContent={'center'}
+                                            alignItems={'center'}
+                                            justifyItems={'center'}
+                                        >
+                                            <Typography 
+                                                textAlign={'center'} 
+                                                color={'common.blueScheme.notWhite'} 
+                                                variant={'h5'} 
+                                                paddingBottom={3}
+                                            >
+                                                Uploading Muse! This may take up to 2 minutes to complete.
+                                            </Typography>
+                                            <CircularProgress
+                                                size={68}
+                                                sx={{
+                                                    color: green[500],
+                                                }}
+                                            />
+                                            
+                                        </Box>
+
+                                    }
+                                    {
                                     !images_loading && images_success && !imageSaving && 
                                     <Box sx={{ flexGrow: 1, maxWidth: '400px'}}>
                                         <Paper
@@ -366,7 +411,7 @@ export default function NewMuse() {
                                                 bgcolor: 'common.blueScheme.background',
                                             }}
                                         >
-                                            <Typography variant={'body1'} color={'common.blueScheme.notWhite'}>{imageSelected === -1? 'Select your image' : 'Post your selection!'}</Typography>
+                                            <Typography variant={'body1'} color={'common.blueScheme.notWhite'}>{'Post your selection!'}</Typography>
                                         </Paper>
                                         <SwipeableViews
                                             axis={'x'}
@@ -379,7 +424,7 @@ export default function NewMuse() {
                                                 {Math.abs(imageActiveStep - index) <= 2 ? (
                                                 <Image
                                                     // fill
-                                                    src={url}
+                                                    src={`data:image/png;base64, ${url}`}
                                                     width={400}
                                                     height={400}
                                                     alt={`image ${1}`}

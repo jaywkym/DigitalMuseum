@@ -60,7 +60,8 @@ const useImage = (prompt: string, style: string, amount: string):
                     if(!image_response.success)
                         return;
     
-                    posts.push(image_response.image.data[0].url);
+                    // Caste as any since generation returns base64 instead of url
+                    posts.push((image_response.image.data[0] as any).b64_json);
                 }))
                 
             } catch (err: any) {

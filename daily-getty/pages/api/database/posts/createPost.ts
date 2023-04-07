@@ -73,17 +73,16 @@ export default async function createPost (
   
 }
 
-async function uploadToAWS(url, user_id, post_id): Promise<string> {
+async function uploadToAWS(url: string, user_id: string, post_id: string): Promise<string> {
 
     try {
-        const res = await fetch(url, { method : 'GET' })
-        const blob = await res.blob()
-        const arrayBuffer = await blob.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        // const res = await fetch(url, { method : 'GET' })
+        // const blob = await res.blob()
+        // const arrayBuffer = await blob.arrayBuffer();
+        const buffer = Buffer.from(url, 'base64');
     
-        console.log(res)
-        console.log(blob)
-    
+        console.log(buffer)
+        
         const uploadedImage = await s3.upload({
             Bucket: process.env.AWS_S3_BUCKET_NAME,
             Key: `${user_id}_${post_id}`,
