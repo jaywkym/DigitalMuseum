@@ -57,6 +57,7 @@ export type DatabasePost = {
   userPrompt: string,
   givenPrompt: string,
   likes: string[],
+  comments: CommentsResponse,
   image: {
     created: number,
     url: string,
@@ -91,3 +92,13 @@ export type LikesResponse = {
   likes: string [],
 }
 
+export type CommentsResponse = {
+  comments: DatabaseComment[],
+}
+
+export type DatabaseComment = {
+  time: string,
+  user_id: string,
+  username: string,
+  comment: string,
+}
