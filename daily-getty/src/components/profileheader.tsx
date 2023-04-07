@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { DatabaseFriends, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import Box from '@mui/material/Box';
@@ -7,6 +7,21 @@ import { Avatar, Chip, Stack } from '@mui/material';
 import { Container } from '@mui/system';
 import { requestFriendsForUser, useFollowUser, useFollowers, useFollowing, useUnfollowUser } from '@/pages/database/profile';
 import { Button, Modal, Grid, List } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Slide, { SlideProps } from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
+import Link from 'next/link';
+
+const Transition = forwardRef(function Transition(
+    props: SlideProps,
+    ref: React.Ref<unknown>,
+) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -33,7 +48,7 @@ const ProfileHeader = ({ user, session }) => {
     const [unfollowSuccess, unfollowLoading, unfollowUser] = useUnfollowUser(session_user.id, user.id);
     const [isFollowing, setIsFriend] = useState(false)
 
-   // sGetFollowing();
+    // sGetFollowing();
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -44,7 +59,7 @@ const ProfileHeader = ({ user, session }) => {
 
     useEffect(() => {
 
-        if(userNeedsUpdate)
+        if (userNeedsUpdate)
             return;
 
         async function pullFriends() {
@@ -52,8 +67,8 @@ const ProfileHeader = ({ user, session }) => {
             setLoadingFriends(true);
 
             const dbFriends = await requestFriendsForUser(user.id)
-            
-            if(!dbFriends.success)
+
+            if (!dbFriends.success)
                 return;
 
             setFollowers(dbFriends.friends.followers);
@@ -63,9 +78,21 @@ const ProfileHeader = ({ user, session }) => {
         }
 
         pullFriends()
-        .catch(console.error)
+            .catch(console.error)
 
     }, [userNeedsUpdate, followLoading, unfollowLoading])
+
+
+    //FOLLOWERS/FOLLOWING MODAL
+    const [followersOpen, setFollowersOpen] = useState(false);
+    const [followingOpen, setFollowingOpen] = useState(false);
+
+    const handleFollowersOpen = () => setFollowersOpen(true);
+    const handleFollowersClose = () => setFollowersOpen(false);
+
+    const handleFollowingOpen = () => setFollowingOpen(true);
+    const handleFollowingClose = () => setFollowingOpen(false);
+
 
 
     // console.log({
@@ -84,20 +111,20 @@ const ProfileHeader = ({ user, session }) => {
             // setLoadingFriends(true);
 
             const dbFriends = await requestFriendsForUser(user.id)
-            
-            console.log("session id is")
-            console.log( session_user.id )
-            
-            if(dbFriends)
-            if(dbFriends.friends)
-            if(dbFriends.friends.followers)
 
-            dbFriends.friends.followers.forEach(friend => {    
-                if (friend == session_user.id ||
-                    friend == user.id) {
-                    foundFriend = true
-                } 
-            });
+            console.log("session id is")
+            console.log(session_user.id)
+
+            if (dbFriends)
+                if (dbFriends.friends)
+                    if (dbFriends.friends.followers)
+
+                        dbFriends.friends.followers.forEach(friend => {
+                            if (friend == session_user.id ||
+                                friend == user.id) {
+                                foundFriend = true
+                            }
+                        });
             console.log("im inside the use effect:")
             console.log(foundFriend);
             setIsFriend(foundFriend)
@@ -119,24 +146,24 @@ const ProfileHeader = ({ user, session }) => {
         // })
 
         checkFriendship()
-        .catch(console.error)
+            .catch(console.error)
 
     }, [following, followers, sFollowing, isFollowing])
 
     return (
         <Box
             sx={{
-                backgroundColor: 'common.blueScheme.foreground', 
-                margin: 0, 
+                backgroundColor: 'common.blueScheme.foreground',
+                margin: 0,
                 padding: 5,
                 boxShadow: '5px 5px 5px 3px'
             }}
-            
+
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <Box sx={{ m: 0 }}>
-                    <Typography 
-                        sx={{fontSize: {xs: 25, sm: 40, md: 50, lg: 60}}}
+                    <Typography
+                        sx={{ fontSize: { xs: 25, sm: 40, md: 50, lg: 60 } }}
                         color={'common.blueScheme.notWhite'}
                         paddingBottom={3}
                     >
@@ -151,51 +178,151 @@ const ProfileHeader = ({ user, session }) => {
                     />
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    {!loadingFriends && <Chip label={`Following ${following ? following.length : 0}`} sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}}/>}
-                    {!loadingFriends && <Chip label={`Followers ${followers ? followers.length : 0}`} sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}}/>}
-                    {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" sx={{backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222'}} onClick={() => {
+                    {!loadingFriends && <Chip
+                        label={`Following ${following ? following.length : 0}`}
+                        sx={{
+                            backgroundColor: 'common.blueScheme.background',
+                            color: 'common.blueScheme.notWhite',
+                            border: '1px solid #222',
+                        }}
+                        onClick={handleFollowingOpen}
+                    />}
+                    {!loadingFriends && <Chip
+                        label={`Followers ${followers ? followers.length : 0}`}
+                        sx={{
+                            backgroundColor: 'common.blueScheme.background',
+                            color: 'common.blueScheme.notWhite',
+                            border: '1px solid #222',
+                        }}
+                        onClick={handleFollowersOpen}
+                    />}
+
+                    {/* Followers Modal */}
+                    <Dialog
+                        open={followersOpen}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleFollowersClose}
+                        maxWidth="sm"
+                        fullWidth
+                        PaperProps={{
+                            style: {
+                                borderRadius: 15,
+                            },
+                        }}
+                    >
+                        <DialogTitle
+                            sx={{
+                                backgroundColor: '#4a148c',
+                                color: '#ffffff',
+                                fontWeight: 'bold',
+                                borderRadius: '15px 15px 0 0',
+                            }}
+                        >
+                            Followers
+                        </DialogTitle>
+                        <DialogContent
+                            sx={{
+                                backgroundColor: '#4a148c',
+                                color: '#ffffff',
+                                borderRadius: '0 0 15px 15px',
+                            }}
+                        >
+                            {followers.map((followerId) => (
+                                // Replace this with actual follower data
+                                <Link key={followerId} href={`/profile/${followerId}`}>
+                                    <DialogContentText>
+                                        {/* Replace this with the actual follower name */}
+                                        {followerId}
+                                    </DialogContentText>
+                                </Link>
+                            ))}
+                        </DialogContent>
+                        <DialogActions sx={{ backgroundColor: '#4a148c', borderRadius: '0 0 15px 15px' }}>
+                            <Button
+                                onClick={handleFollowersClose}
+                                sx={{
+                                    color: '#4a148c',
+                                    backgroundColor: '#ffffff',
+                                    borderRadius: '15px',
+                                    border: '1px solid #ffffff',
+                                }}
+                            >
+                                Close
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    {/* Following Modal */}
+                    <Dialog
+                        open={followingOpen}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleFollowingClose}
+                        maxWidth="sm"
+                        fullWidth
+                        PaperProps={{
+                            style: {
+                                borderRadius: 15,
+                            },
+                        }}
+                    >
+                        <DialogTitle
+                            sx={{
+                                backgroundColor: '#4a148c',
+                                color: '#ffffff',
+                                fontWeight: 'bold',
+                                borderRadius: '15px 15px 0 0',
+                            }}
+                        >
+                            Following
+                        </DialogTitle>
+                        <DialogContent
+                            sx={{
+                                backgroundColor: '#4a148c',
+                                color: '#ffffff',
+                                borderRadius: '0 0 15px 15px',
+                            }}
+                        >
+                            {following.map((followingId) => (
+                                // Replace this with actual following data
+                                <Link key={followingId} href={`/profile/${followingId}`}>
+                                    <DialogContentText>
+                                        {/* Replace this with the actual following name */}
+                                        {followingId}
+                                    </DialogContentText>
+                                </Link>
+                            ))}
+                        </DialogContent>
+                        <DialogActions sx={{ backgroundColor: '#4a148c', borderRadius: '0 0 15px 15px' }}>
+                            <Button
+                                onClick={handleFollowingClose}
+                                sx={{
+                                    color: '#4a148c',
+                                    backgroundColor: '#ffffff',
+                                    borderRadius: '15px',
+                                    border: '1px solid #ffffff',
+                                }}
+                            >
+                                Close
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+
+                    {!selfAccount && <Chip label={isFollowing ? 'unfollow' : 'follow'} variant="outlined" sx={{ backgroundColor: 'common.blueScheme.background', color: 'common.blueScheme.notWhite', border: '1px solid #222' }} onClick={() => {
                         if (!isFollowing)
                             followUser()
                         else
                             unfollowUser()
-    
-                             // TODO - Remove as following
 
-                                // .then(sGetFollowing)
-                                // .then(getFollowers)
+                        // TODO - Remove as following
+
+                        // .then(sGetFollowing)
+                        // .then(getFollowers)
                     }} />}
                 </Stack>
-                {/*
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                        <List>
-                            {sFollowing.map((friend) => (
-                                <li key={friend}>
-                                    <Grid container alignItems="center">
-                                        <Grid item sx={{ display: 'flex', width: 44 }}>
-                                            <img src={user.image} width={'50%'} />
-                                        </Grid>
-                                        <Grid item sx={{ width: 'calc(100% - 44px)' }}>
-                                            <Box
-                                                key={user.id}
-                                                component="span"
-                                                sx={{ fontWeight: 'bold', color: 'black' }}
-                                            >
-                                                <p>{user.name}</p>
-                                            </Box>
-                                        </Grid>
-                                    </Grid>
-                                </li>))}
-                        </List>
-                    </Box>
-                            </Modal> */}
-                            
-            </Box> 
+            </Box>
         </Box>
     );
 };
