@@ -8,7 +8,7 @@ import CheckItemExists from "@/src/components/checkPostExistence"
 import NavBar from '@/src/components/navbar';
 import { useSession } from 'next-auth/react';
 import useScreenSize from './database/pages';
-import { Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
+import { Alert, Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
@@ -18,6 +18,7 @@ import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { green } from '@mui/material/colors';
 import SwipeableViews from 'react-swipeable-views';
 
+const MAX_INPUT_CHARACTER_COUNT = 100;
 
 type Step = {
     label: string;
@@ -51,6 +52,8 @@ export default function NewMuse() {
     const theme = useTheme();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
+    const character_count_limit_reached = userResponse.length == MAX_INPUT_CHARACTER_COUNT;
+    const userResponseOK = userResponse.length > 0 && userResponse.length <= MAX_INPUT_CHARACTER_COUNT;
 
     useEffect(() => {
 
@@ -101,6 +104,12 @@ export default function NewMuse() {
       }, [user]);
 
     const handleNext = () => {
+
+        if(activeStep === 0) {
+            if(!userResponseOK) {
+                
+            }
+        }
 
         if(activeStep === 1) {
             if(userResponse === undefined ||
@@ -269,17 +278,28 @@ export default function NewMuse() {
                                     mountOnEnter
                                     unmountOnExit
                                 >
-                                    <TextField
-                                        id="prompt-field"
-                                        label="Place Response here"
-                                        sx={{backgroundColor: 'common.blueScheme.notWhite'}}
-                                        size={'medium'}
-                                        fullWidth
-                                        multiline
-                                        onChange={(e) => setUserResponse(e.target.value)}
-                                        value={userResponse}
-                                        placeholder='Like a spoon in the wind...'
-                                    ></TextField>
+                                    <Box 
+                                        display={'flex'} 
+                                        flexDirection={'column'}
+                                        width={'100%'}
+                                    >
+                                        <TextField
+                                            id="prompt-field"
+                                            label="Place Response here"
+                                            sx={{backgroundColor: 'common.blueScheme.notWhite'}}
+                                            size={'medium'}
+                                            fullWidth
+                                            multiline
+                                            onChange={(e) => setUserResponse(e.target.value)}
+                                            value={userResponse}
+                                            placeholder='Like a spoon in the wind...'
+                                            inputProps={{ maxLength: MAX_INPUT_CHARACTER_COUNT }}
+                                        ></TextField>
+                                        <Typography color={'common.blueScheme.notWhite'} paddingTop={1}>
+                                            {MAX_INPUT_CHARACTER_COUNT - userResponse.length} characters left
+                                        </Typography>
+                                    </Box>
+                                   
                                 </Slide>
                                 <Slide
                                     direction={activeStep === 1? 'left' : 'right'}
