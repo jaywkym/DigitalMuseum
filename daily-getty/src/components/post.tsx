@@ -7,17 +7,18 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton } from '@mui/material';
+import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton, TextField } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { CommentsResponse, DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
 import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
+import AddCommentIcon from '@mui/icons-material/AddComment';
 import {
     RedditShareButton,
     RedditIcon,
@@ -49,19 +50,23 @@ const Post = ({ _userObj, _post, session }) => {
     const date = post.id
     const src = post.image.url
     const userPost = post.user_id
-    const postLikes = post.likes.length
+    //const postLikes = post.likes ? post.likes.length : 0;
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
     const profileLink = postProfile.id;
     const profileId = postProfile.id
 
-    const userName = userObj ? userObj.name : ''
+    const userName = userObj ? userObj.name : '';
+
+
+    const [userComment, setUserComment] = useState('');
 
     const [deleteButton, setDeleteButton] = useState(null);
     const [clicked, setClicked] = useState(false);
     const [likeSuccess, likeLoading, likePost] = useLikeImage(user.id, post.id, post.user_id)
     const [unlikeSuccess, unlikeLoading, unlikePost] = useUnlikeImage(user.id, post.id, post.user_id)
+
 
     const [userLikesPost, setUserLikesPost] = useState(false)
 
@@ -105,14 +110,72 @@ const Post = ({ _userObj, _post, session }) => {
             setPostProfile(resp_profile)
     }
 
-    const handleShare = (event) => {
+    const commentOnPost = async (event) => {
 
-        const url = post.image.url;
+        if(userComment == ""){
+            return;
+        }
+         const commentRetrieveTest = {
+            owner_id: post.user_id,
+            user_id: userObj.id,
+            post_id: date,
+            username: userName,
+            comment: userComment,
+        }
 
-        const downloadLink = document.createElement("a");
-        downloadLink.href = url;
-        downloadLink.download = post.userPrompt;
-        downloadLink.click();
+        const requesting = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(commentRetrieveTest)
+        }
+
+        try {
+            const resp = await fetch('/api/database/posts/createComment', requesting)
+            if (resp.status === 200)
+                console.log("test good")
+                //window.location.reload();
+        } catch (err: any) {
+            console.error(err)
+        }
+
+    }
+
+    const handleShare = async (event) => {
+
+    
+        const commentTest = {
+            owner_id: post.user_id,
+            post_id: date,
+        }
+
+        const requesting = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(commentTest)
+        }
+
+        try {
+            const resp = await fetch('/api/database/posts/getPostComments', requesting)
+            const json = await resp.json() as CommentsResponse
+            console.log(json)
+                //window.location.reload();
+        } catch (err: any) {
+            console.error(err)
+        }
+
+       
+
+
+        // const url = post.image.url;
+
+        // const downloadLink = document.createElement("a");
+        // downloadLink.href = url;
+        // downloadLink.download = post.userPrompt;
+        // downloadLink.click();
     } //Overlay Share Window
 
     const deletePost = async () => {
@@ -249,7 +312,7 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            <p>{postLikes} Likes</p>
+                                            <p>{/*postLikes*/} Likes</p>
                                             <ThumbUpOffAltIcon
                                                 sx={{
                                                     color: 'common.blueScheme.notWhite',
@@ -270,7 +333,7 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            <p>{postLikes} Likes</p>
+                                            <p>{/*postLikes*/} Likes</p>
                                             <ThumbUpIcon
                                                 sx={{
                                                     color: 'white',
@@ -326,19 +389,40 @@ const Post = ({ _userObj, _post, session }) => {
                                     }
                                 </Box>
                             </Box>
-                            <Box sx={{ marginBottom: '30%', padding: '10%' }}>
-                                <Typography variant={'h3'} textAlign={'center'}>
-                                    Prompt: {postQuestion}
+                            <Box sx={{ marginBottom: '50%', padding: '10%' }}>
+                                {/* <Typography variant={'h5'} textAlign={'center'}>
+                                    {postQuestion}
                                 </Typography>
-                                <Typography variant={'h4'} textAlign={'center'}>
-                                    {profileName} said: {post.userPrompt}
-                                </Typography>
+                                <Typography variant={'h6'} textAlign={'center'}>
+                                    {post.userPrompt}
+                                </Typography> */}
+
+                                    <TextField
+                                        id="prompt-field"
+                                        label="Place Response here"
+                                        sx={{backgroundColor: 'common.blueScheme.notWhite'}}
+                                        size={'medium'}
+                                        fullWidth
+                                        multiline
+                                        onChange={(e) => setUserComment(e.target.value)}
+                                        value={userComment}
+                                        placeholder='Like a spoon in the wind...'
+                                    ></TextField>
+                                    <Button onClick={commentOnPost}>
+                                        Post
+                                    </Button>
+
                             </Box>
-                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}>
-                                <Button>
-                                    <Typography>
-                                        Critiques...
-                                    </Typography>
+                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}  >
+                                <Button
+                                    sx={{
+                                        color: '#4a148c',
+                                        backgroundColor: '#ffffff',
+                                        borderRadius: '15px',
+                                        border: '1px solid #ffffff',
+                                    }}
+                                >
+                                    See Critiques
                                 </Button>
                             </Box>
                         </Box>

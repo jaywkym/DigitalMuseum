@@ -135,6 +135,7 @@ export default function NewMuse() {
                 userPrompt: userResponse,
                 givenPrompt: prompt,
                 likes: [],
+                comments: null,
                 image: {
                     created: Date.now(),
                     url: selected_url
