@@ -8,7 +8,7 @@ import CheckItemExists from "@/src/components/checkPostExistence"
 import NavBar from '@/src/components/navbar';
 import { useSession } from 'next-auth/react';
 import useScreenSize from './database/pages';
-import { Alert, Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
+import { Alert, Button, CircularProgress, Container, FormControl, InputLabel, Link, MenuItem, MobileStepper, Paper, Select, Slide, SlideProps, Snackbar, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import generatePrompt from '@/src/components/generateprompt';
@@ -38,13 +38,12 @@ export default function NewMuse() {
     const [userResponse, setUserResponse] = useState('');
     const [artStyle, setArtStyle] = useState('');
 
-    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
-    const [base64Images, setBase64Images] = useState([])
+    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "1");
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = 3;
 
     const [hoveringImage, setHoveringImage] = useState(false);
-    const [imageSelected, setImageSelected] = useState(-1)
+    const [imageSelected, setImageSelected] = useState(0)
 
     const [imageSaving, setImageSaving] = useState(false);
 
@@ -52,15 +51,16 @@ export default function NewMuse() {
     const theme = useTheme();
 
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
-    const character_count_limit_reached = userResponse.length == MAX_INPUT_CHARACTER_COUNT;
-    const userResponseOK = userResponse.length > 0 && userResponse.length <= MAX_INPUT_CHARACTER_COUNT;
+
+    const [userResponseError, setUserResponseError] = useState(false);
+    const userResponseOK = activeStep == 0 && userResponse.length > 0 && userResponse.length <= MAX_INPUT_CHARACTER_COUNT;
+    const artStyleOK = activeStep == 1 && artStyle !== '';
+    const imageSelectedOK = activeStep == 2 && image_urls.length > 0 && images_success && !images_loading;
+    //const imagePostedOK = 
 
     useEffect(() => {
 
         let user_id = status === 'authenticated' ? (user as any).id : "";
-
-        console.log("In use effect")
-        console.log(user_id)
 
         if(user_id == ""){
             return;
@@ -89,17 +89,9 @@ export default function NewMuse() {
         fetch('/api/database/posts/checkPostExist', request)
             .then(res => res.json())
             .then(resj => {
-                if(resj.exist){
-                    doesImageExist(true);
-                    console.log("exist")
-                }
-                else{
-                    doesImageExist(false);
-                    console.log("no exist")
-                }
-    
-    
+                    doesImageExist(resj.exist);
             })
+            .catch(console.error)
     
       }, [user]);
 
@@ -107,14 +99,14 @@ export default function NewMuse() {
 
         if(activeStep === 0) {
             if(!userResponseOK) {
-                
+                setUserResponseError(true)
+                return;
             }
         }
 
         if(activeStep === 1) {
-            if(userResponse === undefined ||
-               userResponse === '') {
-                //ERROR
+            if(!artStyleOK) {
+                setUserResponseError(true)
                 return
             }
 
@@ -170,6 +162,7 @@ export default function NewMuse() {
             return
         }
 
+        handleAlertClose()
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
     };
@@ -177,6 +170,7 @@ export default function NewMuse() {
   
     const handleBack = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
+      handleAlertClose()
     };
   
     const handleReset = () => {
@@ -208,6 +202,15 @@ export default function NewMuse() {
         .catch(console.error)
     }, [])
 
+    function handleAlertClose() {
+        console.log("Closed")
+        setUserResponseError(false)
+    }
+
+    function AlertTransition(props) {
+        return <Slide {...props} direction="up" />;
+    }
+
     return (
         <>
 
@@ -223,6 +226,21 @@ export default function NewMuse() {
                     zIndex={-10}
                 ></Box>
                 <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
+                <Snackbar 
+                    open={userResponseError} 
+                    autoHideDuration={6000} 
+                    TransitionComponent={AlertTransition}
+
+                >
+                    <Alert 
+                        severity="warning"
+                        onClose={handleAlertClose}
+                    >
+                        {activeStep === 0 && 'Write your response first before moving on'}
+                        {activeStep === 1 && 'Please choose an art style'}
+
+                    </Alert>
+                </Snackbar>
 
                 <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                     <Box 
@@ -289,7 +307,10 @@ export default function NewMuse() {
                                             size={'medium'}
                                             fullWidth
                                             multiline
-                                            onChange={(e) => setUserResponse(e.target.value)}
+                                            onChange={(e) => {
+                                                setUserResponse(e.target.value)
+                                                handleAlertClose()
+                                            }}
                                             value={userResponse}
                                             placeholder='Like a spoon in the wind...'
                                             inputProps={{ maxLength: MAX_INPUT_CHARACTER_COUNT }}
@@ -314,7 +335,10 @@ export default function NewMuse() {
                                         id={'select-art-style'}
                                         value={artStyle}
                                         label="Art Style"
-                                        onChange={(e) => setArtStyle(e.target.value)}
+                                        onChange={(e) => {
+                                            setArtStyle(e.target.value)
+                                            handleAlertClose()
+                                        }}
                                         color={'primary'}
                                         sx={{backgroundColor: 'white'}}
                                     >
@@ -480,6 +504,12 @@ export default function NewMuse() {
                                     }
                                     </Box>
                                 }
+                                {
+                                    activeStep === 3 &&
+                                    <Box>
+                                        {'TEST'}
+                                    </Box>
+                                }
                                 <Box>
                                 </Box>
                             </Box>
@@ -496,6 +526,7 @@ export default function NewMuse() {
                                         activeStep === 1 && <Typography>Edit Response</Typography>
                                     }
                                 </Button>
+                                { !images_loading && !imageSaving &&
                                 <Button onClick={handleNext} sx={{margin: '40px 0'}}>
                                     {
                                         activeStep === 0 && <Typography>Select Art Style</Typography>
@@ -504,10 +535,11 @@ export default function NewMuse() {
                                     }{
                                         activeStep === 2 && <Typography>Post Image</Typography>
                                     }{
-                                        activeStep === 3 && <Link href={'/profile'}><Typography>See Image</Typography></Link>
+                                        activeStep === 3 && <Link href={'/profile'} underline="none"><Typography>See Image</Typography></Link>
                                     }
                                         <NavigateNextIcon />
                                 </Button>
+                                }
 
                             </Box>
                             <Stepper activeStep={activeStep} orientation={'horizontal'} sx={{width: '100%'}}>
