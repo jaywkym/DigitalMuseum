@@ -37,7 +37,8 @@ export default function NewMuse() {
     const [userResponse, setUserResponse] = useState('');
     const [artStyle, setArtStyle] = useState('');
 
-    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "1");
+    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
+    const [base64Images, setBase64Images] = useState([])
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = 3;
 
@@ -120,7 +121,7 @@ export default function NewMuse() {
 
         else if(activeStep === 2) {
 
-            console.log(imageSelected)
+            const imageSelected = imageActiveStep
 
             if(imageSelected < 0 || imageSelected > 2) {
                 // ERROR
@@ -164,6 +165,7 @@ export default function NewMuse() {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
     };
+
   
     const handleBack = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -197,11 +199,6 @@ export default function NewMuse() {
         .then(setPrompt)
         .catch(console.error)
     }, [])
-
-    console.log({
-        activeStep: activeStep,
-        image: imageSelected
-    })
 
     return (
         <>
@@ -323,7 +320,7 @@ export default function NewMuse() {
                                     width={'100%'}
                                 >
                                     {
-                                        (images_loading || imageSaving) &&
+                                        images_loading &&
                                         <Box
                                             display={'flex'}
                                             flexDirection={'column'}
@@ -353,6 +350,34 @@ export default function NewMuse() {
 
                                     }
                                     {
+                                        imageSaving &&
+                                        <Box
+                                            display={'flex'}
+                                            flexDirection={'column'}
+                                            alignContent={'center'}
+                                            justifyContent={'center'}
+                                            alignItems={'center'}
+                                            justifyItems={'center'}
+                                        >
+                                            <Typography 
+                                                textAlign={'center'} 
+                                                color={'common.blueScheme.notWhite'} 
+                                                variant={'h5'} 
+                                                paddingBottom={3}
+                                            >
+                                                Uploading Muse! This may take up to 2 minutes to complete.
+                                            </Typography>
+                                            <CircularProgress
+                                                size={68}
+                                                sx={{
+                                                    color: green[500],
+                                                }}
+                                            />
+                                            
+                                        </Box>
+
+                                    }
+                                    {
                                     !images_loading && images_success && !imageSaving && 
                                     <Box sx={{ flexGrow: 1, maxWidth: '400px'}}>
                                         <Paper
@@ -366,7 +391,7 @@ export default function NewMuse() {
                                                 bgcolor: 'common.blueScheme.background',
                                             }}
                                         >
-                                            <Typography variant={'body1'} color={'common.blueScheme.notWhite'}>{imageSelected === -1? 'Select your image' : 'Post your selection!'}</Typography>
+                                            <Typography variant={'body1'} color={'common.blueScheme.notWhite'}>{'Post your selection!'}</Typography>
                                         </Paper>
                                         <SwipeableViews
                                             axis={'x'}
@@ -379,7 +404,7 @@ export default function NewMuse() {
                                                 {Math.abs(imageActiveStep - index) <= 2 ? (
                                                 <Image
                                                     // fill
-                                                    src={url}
+                                                    src={`data:image/png;base64, ${url}`}
                                                     width={400}
                                                     height={400}
                                                     alt={`image ${1}`}
