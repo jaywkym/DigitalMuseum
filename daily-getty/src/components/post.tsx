@@ -247,7 +247,7 @@ const Post = ({ _userObj, _post, session}) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            {/* <p>{postLikes} Likes</p> */}
+                                            <p>{/*postLikes*/} Likes</p>
                                             <ThumbUpOffAltIcon
                                                 sx={{
                                                     color: 'common.blueScheme.notWhite',
@@ -268,7 +268,7 @@ const Post = ({ _userObj, _post, session}) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            {/* <p>{postLikes} Likes</p> */}
+                                            <p>{/*postLikes*/} Likes</p>
                                             <ThumbUpIcon
                                                 sx={{
                                                     color: 'white',
@@ -324,19 +324,24 @@ const Post = ({ _userObj, _post, session}) => {
                                     }
                                 </Box>
                             </Box>
-                            <Box sx={{ marginBottom: '30%', padding: '10%' }}>
-                                <Typography variant={'h3'} textAlign={'center'}>
+                            <Box sx={{ marginBottom: '20%', padding: '10%' }}>
+                                <Typography variant={'h5'} textAlign={'center'}>
                                     Prompt: {postQuestion}
                                 </Typography>
-                                <Typography variant={'h4'} textAlign={'center'}>
+                                <Typography variant={'h6'} textAlign={'center'}>
                                     {profileName} said: {post.userPrompt}
                                 </Typography>
                             </Box>
-                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}>
-                                <Button>
-                                    <Typography>
-                                        Critiques...
-                                    </Typography>
+                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}  >
+                                <Button
+                                    sx={{
+                                        color: '#4a148c',
+                                        backgroundColor: '#ffffff',
+                                        borderRadius: '15px',
+                                        border: '1px solid #ffffff',
+                                    }}
+                                >
+                                    See Critiques
                                 </Button>
                             </Box>
                         </Box>
