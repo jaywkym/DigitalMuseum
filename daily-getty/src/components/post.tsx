@@ -50,7 +50,7 @@ const Post = ({ _userObj, _post, session }) => {
     const date = post.id
     const src = post.image.url
     const userPost = post.user_id
-    const postLikes = post.likes ? post.likes.length : 0;
+    //const postLikes = post.likes ? post.likes.length : 0;
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
@@ -312,7 +312,7 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            <p>{postLikes} Likes</p>
+                                            <p>{/*postLikes*/} Likes</p>
                                             <ThumbUpOffAltIcon
                                                 sx={{
                                                     color: 'common.blueScheme.notWhite',
@@ -333,7 +333,7 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            <p>{postLikes} Likes</p>
+                                            <p>{/*postLikes*/} Likes</p>
                                             <ThumbUpIcon
                                                 sx={{
                                                     color: 'white',
@@ -413,11 +413,16 @@ const Post = ({ _userObj, _post, session }) => {
                                     </Button>
 
                             </Box>
-                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}>
-                                <Button>
-                                    <Typography>
-                                        Critiques...
-                                    </Typography>
+                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}  >
+                                <Button
+                                    sx={{
+                                        color: '#4a148c',
+                                        backgroundColor: '#ffffff',
+                                        borderRadius: '15px',
+                                        border: '1px solid #ffffff',
+                                    }}
+                                >
+                                    See Critiques
                                 </Button>
                             </Box>
                         </Box>
