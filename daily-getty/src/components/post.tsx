@@ -7,11 +7,11 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton, TextField } from '@mui/material';
+import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton, TextField, ListItem, ListItemText, ListItemButton, List } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import { CommentsResponse, DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { CommentsResponse, DatabaseComment, DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/da
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddCommentIcon from '@mui/icons-material/AddComment';
-//import { FixedSizeList } from 'react-window';
+import { FixedSizeList, ListChildComponentProps} from 'react-window';
 import {
     RedditShareButton,
     RedditIcon,
@@ -54,6 +54,11 @@ const Post = ({ _userObj, _post, session}) => {
 
     const userName = userObj ? userObj.name : '';
 
+    const [commentfeed, setCommentfeed] = useState([] as DatabaseComment[]);
+    const [checkedForComments, setCheckedForComments] = useState(false)
+
+    const commentsLoading = commentfeed.length === 0 && !checkedForComments
+    const noPosts = commentfeed.length === 0 && checkedForComments
 
     const [userComment, setUserComment] = useState('');
 
@@ -130,6 +135,8 @@ const Post = ({ _userObj, _post, session}) => {
             const resp = await fetch('/api/database/posts/createComment', requesting)
             if (resp.status === 200)
                 console.log("test good")
+                setUserComment("");
+                loadUserComments().catch(console.error);
                 //window.location.reload();
         } catch (err: any) {
             console.error(err)
@@ -137,32 +144,14 @@ const Post = ({ _userObj, _post, session}) => {
 
     }
 
+
     const handleShare = async (event) => {
 
-    
-        const commentTest = {
-            owner_id: post.user_id,
-            post_id: date,
-        }
+        //console.log(commentfeed);
 
-        const requesting = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(commentTest)
-        }
-
-        try {
-            const resp = await fetch('/api/database/posts/getPostComments', requesting)
-            const json = await resp.json() as CommentsResponse
-            console.log(json)
-                //window.location.reload();
-        } catch (err: any) {
-            console.error(err)
-        }
-
-       
+        commentfeed.map((comment) => (
+            console.log(comment.comment)
+         ))
 
 
         // const url = post.image.url;
@@ -172,6 +161,7 @@ const Post = ({ _userObj, _post, session}) => {
         // downloadLink.download = post.userPrompt;
         // downloadLink.click();
     } //Overlay Share Window
+
 
     const deletePost = async () => {
 
@@ -196,6 +186,61 @@ const Post = ({ _userObj, _post, session}) => {
             console.error(err)
         }
     }
+
+    async function loadUserComments() {
+
+
+        const commentTest = {
+            owner_id: post.user_id,
+            post_id: date,
+        }
+
+        const requesting = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(commentTest)
+        }
+
+        const comments = [];
+        const resp = await fetch(`/api/database/posts/getPostComments`, requesting)
+        const json = await resp.json() as CommentsResponse;
+
+        
+
+        const dbComments = json.comments;
+        //setCommentfeed(dbComments);
+
+
+        //console.log(dbComments);
+
+       
+
+        if(dbComments){
+            const commentHopes = Object.keys(dbComments).map((id) => {
+                return dbComments[id];
+            })
+            console.log(commentHopes)
+
+            setCommentfeed(commentHopes);
+        }
+
+        setCheckedForComments(true);
+
+    }
+
+    useEffect(() => {
+
+        loadUserComments().catch(console.error);
+
+    }, [])
+
+    const CommentObject = ({time,author,comment, username}) => 
+        <li key={time}>
+            <h2>{username}</h2>
+            <h4>{comment}</h4>
+        </li>
 
     useEffect(() => {
 
@@ -229,7 +274,8 @@ const Post = ({ _userObj, _post, session}) => {
 
     return (
         <Box
-            onClick={changePostSelection}
+            onMouseEnter={changePostSelection}
+            onMouseLeave={changePostSelection}
             sx={{":hover": {cursor: 'pointer'}}}
         >
             <img
@@ -410,7 +456,20 @@ const Post = ({ _userObj, _post, session}) => {
                                         Post
                                     </Button>
 
-
+                                     
+                                    <List  sx={{ maxHeight: 130, height: '100%', overflow: 'auto',  padding: '10%', bgcolor: 'background.paper', }}>
+                                        {
+                                            commentfeed.map((comment) => (
+                                                <ListItem sx={{  }}>
+                                                   <ListItemText primary={
+                                                   <Typography variant="body2" style={{ color: '#000000'}}>{comment.username}: {comment.comment}</Typography>
+                                                   
+                                                   } />
+                                                </ListItem> 
+                                                ))
+                                        }      
+                                    </List>
+                                             
 
                             </Box>
                             <Box display={'flex'} alignContent={'center'} justifyContent={'center'}  >

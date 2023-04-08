@@ -38,7 +38,7 @@ export default function NewMuse() {
     const [userResponse, setUserResponse] = useState('');
     const [artStyle, setArtStyle] = useState('');
 
-    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
+    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "1");
     const [base64Images, setBase64Images] = useState([])
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = 3;
