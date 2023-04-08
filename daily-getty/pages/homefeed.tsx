@@ -30,6 +30,8 @@ export default function HomeFeed() {
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
     const [udatedQuestion, setUpdated] = useState(false);
 
+    const [anyPost, updateAnyPosts] = useState(false);
+
     const friends_updated = friends && friends.length !== 0;
     const posts_updated = posts && posts.length !== 0;
 
@@ -41,9 +43,11 @@ export default function HomeFeed() {
             if(!dbFriendsResponse.success)
                 return;
 
-            if(!dbFriendsResponse.friends)
+            if(!dbFriendsResponse.friends){
                 return;
-
+            }
+               
+            console.log("got here? wo3w")
             if(!dbFriendsResponse.friends.following)
                 setFriends([] as string[])
             else
@@ -78,11 +82,24 @@ export default function HomeFeed() {
 
                 const dbResponse = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
                 const json = await dbResponse.json() as DatabaseUserPostsResponse;
+
+                console.log("getting da photos")
+                console.log(json)
                 if(!json.success)
                     return;
 
-                if(!json.posts)
+                if(!json.posts){
                     return;
+                }
+
+                const databasePosting: DatabasePost[] = session ? json.posts as DatabasePost[] : null;
+
+                console.log(databasePosting)
+                if(databasePosting == null){
+                    console.log("its 0 bb")
+                }
+                    
+                    
 
                 const user_posts: DatabasePost[] = Object.keys(json.posts).map((post_id) => {
                     return json.posts[post_id] as DatabasePost
@@ -115,6 +132,7 @@ export default function HomeFeed() {
                 const dbResponse = await requestPostFromUserById(blank_post.user_id, blank_post.id)
                 console.log(dbResponse)
                 if(!dbResponse.success)
+                
                     return;
 
                 if(!dbResponse.post)
@@ -135,7 +153,7 @@ export default function HomeFeed() {
                     ++current_index;
 
                 })
-
+                
                 return dbResponse.post
 
             });
@@ -188,10 +206,11 @@ export default function HomeFeed() {
                                 marginTop={4}
                         >
                             
+                            
                              <ImageList cols={isSM? 1 : isLG? 2 : 3} gap={20}>
 
                                 {
-                                            
+                                        
                                         posts.map((post, i) => (
                                         <ImageListItem key={i} >
                                             <Post _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session}/>
