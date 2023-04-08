@@ -25,27 +25,33 @@ import {
     RedditIcon,
 } from 'next-share'
 
-const Post = ({ _userObj, _post, session}) => {
+const Post = ({ _userObj, _post, session }) => {
 
 
+    console.log(session.user.id)
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
+
+    console.log(userObj)
+    console.log(post)
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
 
     const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
 
-    const [isSelected, setIsSelected] = useState(false);
+    console.log(owner)
+
+    const [isHovering, setIsHovered] = useState(false);
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
     const alt = post.userPrompt
     const postQuestion = post.givenPrompt
     const date = post.id
-    const src = `${post.image.url}`//?idtoavoidcachehits=${Math.floor(Math.random() * 100000000)}` // Work around to avoid cache hits
+    const src = post.image.url
     const userPost = post.user_id
-    const postLikes = post.likes? post.likes.length : 0;
+    const postLikes = post.likes ? post.likes.length : 0;
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
@@ -180,8 +186,8 @@ const Post = ({ _userObj, _post, session}) => {
 
         try {
             const resp = await fetch('/api/database/posts/deletePost', requesting)
-            // if (resp.status === 200)
-            //     getPosts = true
+            if (resp.status === 200)
+                window.location.reload();
         } catch (err: any) {
             console.error(err)
         }
@@ -265,12 +271,9 @@ const Post = ({ _userObj, _post, session}) => {
 
     }
 
-    function changePostSelection() {
-        setIsSelected(!isSelected)
-    }
-
     const imageRef = useRef(null);
     const imageHeight = imageRef.current ? imageRef.current.height : 0
+
 
     return (
         <Box
@@ -293,7 +296,7 @@ const Post = ({ _userObj, _post, session}) => {
                 }}
             >
                 <Collapse
-                    in={isSelected}
+                    in={isHovering}
                     orientation='vertical'
                     timeout={'auto'}
                 // collapsedSize={'20%'} // Uncomment when bug fixed on first load
@@ -328,8 +331,9 @@ const Post = ({ _userObj, _post, session}) => {
                                     justifyContent={'start'}
                                     height={'30%'}
                                 >
-                                    <Link href={`/${profileId}`}>
-                                        <Typography
+                                    <Link  href={`/${profileId}`}>
+                                        <Typography 
+                                            variant='navButtonText'
                                             sx={{ fontSize: { xs: 16, sm: 16, md: 18, lg: 20 } }}
                                         >
                                             @{profileName}
@@ -339,6 +343,7 @@ const Post = ({ _userObj, _post, session}) => {
                                     <Typography
                                         sx={{ fontSize: { xs: 14, sm: 14, md: 16, lg: 18 } }}
                                         color={'#bbb'}
+                                        variant='navButtonText'
                                     >
                                         {generateTimeDifferenceString(convertPostIdToDateObj(post.id))}
                                     </Typography>
@@ -433,6 +438,17 @@ const Post = ({ _userObj, _post, session}) => {
                                     }
                                 </Box>
                             </Box>
+                            <Box sx={{ marginBottom: '20%', padding: '10%' }}>
+                                <Typography variant='navButtonText' fontWeight={'1000'} fontSize={25} textAlign={'center'}>
+                                    Prompt: {postQuestion}
+                                </Typography>
+                                <br></br>
+                                <br></br>
+                                <Typography variant='navButtonText' fontWeight={'200000'} fontSize={18} textAlign={'center'}>
+                                    {profileName} said: {post.userPrompt}
+
+                                </Typography>
+                                
                             <Box sx={{ marginBottom: '50%', padding: '10%' }}>
                                 {/* <Typography variant={'h5'} textAlign={'center'}>
                                     {postQuestion}
@@ -484,6 +500,7 @@ const Post = ({ _userObj, _post, session}) => {
                                     See Critiques
                                 </Button>
                             </Box>
+                        </Box>
                         </Box>
                     </Box>
                 </Collapse>
