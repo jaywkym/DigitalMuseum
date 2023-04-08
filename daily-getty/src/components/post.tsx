@@ -277,9 +277,8 @@ const Post = ({ _userObj, _post, session }) => {
 
     return (
         <Box
-            onMouseEnter={changePostSelection}
-            onMouseLeave={changePostSelection}
-            sx={{":hover": {cursor: 'pointer'}}}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <img
                 src={src}
