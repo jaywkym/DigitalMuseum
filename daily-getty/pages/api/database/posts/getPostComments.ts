@@ -34,6 +34,9 @@ export default async function getComments (
 
     const body = req.body;
 
+    console.log("/n/n/n")
+    console.log(body);
+
     if(!body.post_id || !body.owner_id) {
         res.status(418).json(
             generateDbResponse(
@@ -53,17 +56,18 @@ export default async function getComments (
     let comments = await asyncOnValue(dbref);
 
 
+    console.log(comments)
 
-    if(!comments) {
-        res.status(418).json(
-            generateDbResponse(
-                []
-            )
-        )
+    // if(!comments) {
+    //     res.status(200).json(
+    //         generateDbResponse(
+    //             []
+    //         )
+    //     )
 
-        return;
+    //     return;
         
-    }
+    // }
 
     //console.log(post.comments)
 
