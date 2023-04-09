@@ -39,7 +39,6 @@ export default function NewMuse() {
     const [artStyle, setArtStyle] = useState('');
 
     const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "1");
-    const [base64Images, setBase64Images] = useState([])
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = 3;
 
@@ -508,9 +507,20 @@ export default function NewMuse() {
                                 }
                                 {
                                     activeStep === 3 &&
-                                    <Box>
-                                        {'TEST'}
+                                    <Slide
+                                        direction={activeStep === 3? 'left' : 'right'}
+                                        in={activeStep === 3}
+                                        container={inputContainerRef.current}
+                                        mountOnEnter
+                                        unmountOnExit
+                                    >
+                                    <Box width={'100%'}>
+                                        <Alert variant="outlined" severity="success">
+                                            Success: Muse has been posted — Go to your profile to check it out!
+                                        </Alert>
                                     </Box>
+                                    </Slide>
+
                                 }
                                 <Box>
                                 </Box>

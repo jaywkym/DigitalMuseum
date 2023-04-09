@@ -4,7 +4,8 @@ import type {
     DatabaseUserPostsResponse,
     DatabaseUserPostResponse,
     DatabaseResponse,
-    DatabaseUser
+    DatabaseUser,
+    CommentsResponse
 }  from "../../types/FirebaseResponseTypes";
 import { useSession } from "next-auth/react";
 
@@ -32,6 +33,7 @@ const useAddPost = (b64: string, user_id: string, user_prompt: string, created: 
         const uploadInfo: DatabasePost = {
             id: null,
             user_id: user_id,
+            comments: {} as CommentsResponse,
             userPrompt: user_prompt,
             givenPrompt: null, 
             likes: [],

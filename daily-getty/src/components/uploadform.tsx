@@ -22,6 +22,7 @@ import useAddPost from '@/pages/database/createPostFront';
 import Loading from './loading';
 import { useSession } from 'next-auth/react'
 import type {
+    CommentsResponse,
     DatabasePost,
 } from "../../types/FirebaseResponseTypes";
 import generatePrompt from './generateprompt';
@@ -63,6 +64,7 @@ const MuseForm = () => {
             user_id: user_id,
             userPrompt: prompt,
             givenPrompt: question,
+            comments: {} as CommentsResponse,
             likes: [],
             image: {
                 created: createdNum,
