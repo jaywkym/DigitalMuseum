@@ -33,7 +33,6 @@ const NavBar = ({isMobile, session, isUpdated}) => {
     const [followers, setFollowers] = useState([] as string[]);
     const [following, setFollowing] = useState([] as string[]);
     const [loadingFriends, setLoadingFriends] = useState(true);
-    const [changeTest, setChangeTest] = useState(false);
 
     const [hover, setHover] = useState(false);
 
@@ -228,7 +227,7 @@ const NavBar = ({isMobile, session, isUpdated}) => {
                                     sm: 45, 
                                     md: 70
                                 }, 
-                                marginBottom: '20px'
+                                marginBottom: '10px'
                             }}
                         />
                     </Link>
@@ -236,14 +235,12 @@ const NavBar = ({isMobile, session, isUpdated}) => {
                     <Typography 
                         variant='navButtonText' 
                         color={'common.blueScheme.notWhite'}
-                        margin={'10px 0'}
                         sx={{display: {xs: 'none', md: 'flex'}}}
                     >
                         @{user.name}
                     </Typography>
                     <LogoutIcon 
                         sx={{
-                            marginBottom: 4,
                             display: {xs: 'flex', md: 'none'},
                             color: 'common.blueScheme.notWhite',
                             ":hover": {
@@ -255,26 +252,7 @@ const NavBar = ({isMobile, session, isUpdated}) => {
                     />
                 
                         <Box sx={{display: {xs: 'none', md: 'flex', flexDirection: 'row', justifyItems: 'space-between'}}}>
-                            {
-                            !loadingFriends && 
-                            <Chip 
-                                label={`Following ${following ? following.length : 0}`} 
-                                sx={{
-                                    color: 'common.blueScheme.notWhite', 
-                                    backgroundColor: 'rgba(0, 0, 0, .4)',
-                                    display: {xs: 'none', md: 'flex'}
-                                }}
-                            />
-                            }
-                            {!loadingFriends && 
-                            <Chip 
-                                label={`Followers ${followers ? followers.length : 0}`}
-                                sx={{
-                                    color: 'common.blueScheme.notWhite', 
-                                    backgroundColor: 'rgba(0, 0, 0, .4)',
-                                    display: {xs: 'none', md: 'flex'}
-                                }}
-                            />}
+
                         </Box>
                         <Box sx={{display: {xs: 'none', md: 'block'}}}>
                             <Button 
