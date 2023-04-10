@@ -96,7 +96,7 @@ export default function Asynchronous() {
             >
 
             </Box>
-            <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion} />
+            <NavBar isMobile={isXS} session={session} />
 
             <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'}>
                 <Box
@@ -147,7 +147,7 @@ export default function Asynchronous() {
                         </Box>
                     )}
 
-                    <ImageList cols={isXS ? 1 : isLG ? 2 : 3} gap={20} sx={{ overflow: 'hidden' }}>
+                    <ImageList cols={isXS ? 1 : isSM ? 3 : 2} gap={20} sx={{ overflow: 'hidden' }}>
 
                         {
 

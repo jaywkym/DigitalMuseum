@@ -147,7 +147,7 @@ export default function Profile() {
                                     />
                                 )}
 
-                                <ImageList cols={isXS? 1 : isMD? 2 : 3} gap={20} sx={{overflow: 'hidden'}}>
+                                <ImageList cols={isXS ? 1 : isSM ? 3 : 2} gap={20} sx={{overflow: 'hidden'}}>
 
                                 {
                                             
