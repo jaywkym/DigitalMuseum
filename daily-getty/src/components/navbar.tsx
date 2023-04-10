@@ -6,6 +6,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PollIcon from '@mui/icons-material/Poll';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { useEffect, useRef, useState } from 'react';
 import { DatabaseUser } from '@/types/FirebaseResponseTypes';
@@ -15,8 +16,9 @@ import { signOut } from 'next-auth/react';
 const navButtons: navButton[] = [
     {name: 'Homefeed', icon: <HomeIcon sx={{transform: 'scale(1.5)'}} />, url: '/homefeed'}, 
     {name: 'Explore', icon: <ExploreIcon sx={{transform: 'scale(1.5)'}}/>,url: '/explore'}, 
-    {name: 'NewMuse', icon: <AddCircleIcon  sx={{transform: 'scale(1.5)'}} />, url: '/newmuse'}, 
-    {name: 'Profile', icon: <AccountBoxIcon  sx={{transform: 'scale(1.5)'}} />, url: '/profile'}, 
+    {name: 'NewMuse', icon: <AddCircleIcon sx={{transform: 'scale(1.5)'}} />, url: '/newmuse'}, 
+    {name: 'vote', icon: <PollIcon sx={{transform: 'scale(1.5)'}} />, url: '/vote/prompt'},
+    {name: 'Profile', icon: <AccountBoxIcon sx={{transform: 'scale(1.5)'}} />, url: '/profile'}, 
 ];
 
 type navButton = {
@@ -25,73 +27,12 @@ type navButton = {
     url: string
 }
 
-const NavBar = ({isMobile, session, isUpdated}) => {
+const NavBar = ({isMobile, session}) => {
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const userNeedsUpdate = user.id === undefined;
 
-    const [followers, setFollowers] = useState([] as string[]);
-    const [following, setFollowing] = useState([] as string[]);
-    const [loadingFriends, setLoadingFriends] = useState(true);
-
     const [hover, setHover] = useState(false);
-
-    useEffect(() => {
-
-        if(userNeedsUpdate)
-            return;
-
-        async function pullFriends() {
-
-            setLoadingFriends(true);
-
-            console.log("start got here")
-            const dbFriends = await requestFriendsForUser(user.id)
-            
-            console.log("got here?")
-            console.log(dbFriends)
-            if(!dbFriends.success)
-                return;
-
-            setFollowers(dbFriends.friends.followers);
-            setFollowing(dbFriends.friends.following)
-            setLoadingFriends(false)
-
-        }
-
-        pullFriends()
-        .catch(console.error)
-
-    }, [userNeedsUpdate])
-
-    useEffect(() => {
-
-        if(isUpdated == false){
-            return;
-        }
-
-        async function pullFriends() {
-
-            setLoadingFriends(true);
-
-            console.log("start got here")
-            const dbFriends = await requestFriendsForUser(user.id)
-            
-            console.log("got here?")
-            console.log(dbFriends)
-            if(!dbFriends.success)
-                return;
-
-            setFollowers(dbFriends.friends.followers);
-            setFollowing(dbFriends.friends.following)
-            setLoadingFriends(false)
-
-        }
-
-        pullFriends()
-        .catch(console.error)
-
-    }, [isUpdated])
 
     function mobile(): JSX.Element{
         return(
