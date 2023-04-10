@@ -26,4 +26,24 @@ export type PromptResponse = {
     prompts: string[]
 }
 
+export type DatabaseVotingPrompt = {
+    prompt: string,
+    votes : string[]
+}
+
+export type VotingPromptsResponse = {
+    success: boolean,
+    prompts: DatabaseVotingPrompt[]
+}
+
+export type UserVotedResponse = {
+    success: boolean,
+    voted : boolean,
+    prompt : number
+}
+
+export type CurrentPromptResponse = {
+    success: boolean,
+    prompt: string
+}
 

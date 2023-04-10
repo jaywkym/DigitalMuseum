@@ -1,19 +1,16 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { getServerSession } from "next-auth/next"
 import type { 
     DalleError, 
     DalleResponse,
     ImageResponse,
     PromptResponse,
-}  from "../../../types/DalleResponseTypes";
+}  from "../../../../../types/DalleResponseTypes";
 import type { 
    DatabasePost,
    DatabaseUserResponse,
    DatabaseUser
-}  from "../../../types/FirebaseResponseTypes";
-import fs from 'fs'
+}  from "../../../../../types/FirebaseResponseTypes";
 
 
 const DALLE_API_KEY = process.env.DALLE_API_KEY
@@ -37,6 +34,14 @@ export default async function request_image_handler(
 ) {
 
         /* Only accept POST requests */
+        if(req.method !== 'POST') {
+            res.status(405).json(
+                {success: false, prompts: []}
+            )
+            
+            return;
+        }
+
     const response = await requestToGPTAPI();
     if(!response.success) {
         res.status(200).json({error: true} as any as PromptResponse)
@@ -46,8 +51,6 @@ export default async function request_image_handler(
     const unifiedPrompts = response.choices[0].message.content
 
     const prompts = parseGPTContent(unifiedPrompts)
-
-    fs.writeFileSync('prompts.json', JSON.stringify(prompts))
 
     res.status(200).json({success: true, prompts: prompts})
     
@@ -95,7 +98,6 @@ async function requestToGPTAPI() {
         const resp = await fetch(url, request);
         const json = await resp.json()
 
-        console.log(json)
         /* TODO - Handle error for successful request but invalid parameters (Invalid api key, invalid request...) */
         if(json.error) {
             json.error.success = false
@@ -107,7 +109,7 @@ async function requestToGPTAPI() {
 
     /* Return error if an error occured fetching the DALLE api */
     } catch (err: any) {
-        console.log(err)
+        console.error(err)
         return generateError(1, 'unknown error');
     }
 }
@@ -177,7 +179,7 @@ async function addPostApi(info: DatabasePost) {
             
         })
         .catch(err => {
-            console.log("ERR: Fetching in addPostApi")
+            console.error("ERR: Fetching in addPostApi")
             resolve(false)
         })
     })
@@ -199,23 +201,18 @@ async function addPostApi(info: DatabasePost) {
         body: JSON.stringify(user)
     }
 
-    console.log("Pull user requesT")
-    console.log(request)
-
     return new Promise((resolve, reject) => {
         fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
-            console.log("Received response")
-            console.log(res)
             if(res.success)
                 resolve(res.user)
             resolve(res.user)
             
         })
         .catch(err => {
-            console.log("ERR: In pull_user fetching")
+            console.error("ERR: In pull_user fetching")
             reject(err);
         })
     })

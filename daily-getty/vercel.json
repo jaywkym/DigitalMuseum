@@ -1,6 +1,6 @@
 {
     "crons": [{
-      "path": "/api/dalle/generate_prompts",
+      "path": "/api/database/prompt/rotateAndCountPrompts",
       "schedule": "0 0 * * *"
     }]
 }
