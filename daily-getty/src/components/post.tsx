@@ -474,8 +474,8 @@ const Post = ({ _userObj, _post, session }) => {
                                      
                                     <List  sx={{ maxHeight: 130, height: '100%', overflow: 'auto',  padding: '10%', bgcolor: 'background.paper', }}>
                                         {
-                                            commentfeed.map((comment) => (
-                                                <ListItem sx={{  }}>
+                                            commentfeed.map((comment, index) => (
+                                                <ListItem sx={{  }} key={index}  >
                                                    <ListItemText primary={
                                                    <Typography variant="body2" style={{ color: '#000000'}}>{comment.username}: {comment.comment}</Typography>
                                                    
