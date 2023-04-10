@@ -242,11 +242,13 @@ const NavBar = ({isMobile, session, isUpdated}) => {
                     <LogoutIcon 
                         sx={{
                             display: {xs: 'flex', md: 'none'},
+                            marginBottom: '10px',
                             color: 'common.blueScheme.notWhite',
                             ":hover": {
                                 cursor: 'pointer'
                             }
                         }}
+                        
 
                         onClick={() => signOut()}
                     />

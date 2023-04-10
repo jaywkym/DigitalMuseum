@@ -38,7 +38,7 @@ export default function NewMuse() {
     const [userResponse, setUserResponse] = useState('');
     const [artStyle, setArtStyle] = useState('');
 
-    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "1");
+    const [image_urls, created, images_success, images_loading, error, generateImage] = useImage(userResponse, artStyle, "3");
     const [imageActiveStep, setImageActiveStep] = useState(0);
     const maxSteps = 3;
 
@@ -212,6 +212,8 @@ export default function NewMuse() {
         return <Slide {...props} direction="up" />;
     }
 
+    const testURL = 'https://dailymuse.s3.us-east-2.amazonaws.com/7d8284fb-565c-4d84-8327-e80bb38d1722_2023_4_4'
+
     return (
         <>
 
@@ -257,7 +259,7 @@ export default function NewMuse() {
                         <Box padding={3}>
                             <Typography
                                 textAlign={'center'}
-                                variant={'h2'}
+                                variant={'h3'}
                                 color={'common.blueScheme.notWhite'}
                             >
                                 Generate New Muse!
@@ -270,13 +272,16 @@ export default function NewMuse() {
                                 width: '95%', 
                                 backgroundColor: 'common.blueScheme.foreground',
                                 boxShadow: '3px 3px 6px 6px',
-                                padding: 5
+                                padding: 5,
+                                display: 'flex',
+                                flexDirection: 'column',
+
                             }}
 
                             ref={inputContainerRef}
                         >
                             <Box>
-                                <Typography variant={'h3'} color={'common.blueScheme.notWhite'} paddingBottom={2}>
+                                <Typography variant={'h4'} color={'common.blueScheme.notWhite'} paddingBottom={2}>
                                     Prompt of the Day
                                 </Typography>
                             </Box>
@@ -449,21 +454,22 @@ export default function NewMuse() {
                                                 <Image
                                                     // fill
                                                     src={`data:image/png;base64, ${url}`}
-                                                    width={400}
-                                                    height={400}
+                                                    width={1000}
+                                                    height={1000}
                                                     alt={`image ${1}`}
                                                     style={{
-                                                        border: imageSelected === index? '1px solid white' : 'none',
                                                         cursor: hoveringImage? 'pointer' : 'auto',
+                                                        height: '100%',
+                                                        width: '100%'
                                                     }}
 
                                                     onMouseEnter={() => setHoveringImage(true)}
                                                     onMouseLeave={() => setHoveringImage(false)}
-                                                    onClick={() => setImageSelected(index)}
                                                 />
                                                 ) : null}
                                             </Box>
                                             ))}
+                                            
                                         </SwipeableViews>
                                         <MobileStepper
                                             steps={maxSteps}
@@ -535,33 +541,41 @@ export default function NewMuse() {
                                 <Button onClick={handleBack} sx={{margin: '40px 0'}} disabled={activeStep !== 1}>
                                     <NavigateBeforeIcon /> 
                                     {
-                                        activeStep === 1 && <Typography>Edit Response</Typography>
+                                         !isXS && activeStep === 1 && <Typography>Edit Response</Typography>
                                     }
                                 </Button>
                                 { !images_loading && !imageSaving &&
                                 <Button onClick={handleNext} sx={{margin: '40px 0'}}>
                                     {
-                                        activeStep === 0 && <Typography>Select Art Style</Typography>
+                                         !isXS && activeStep === 0 && <Typography>Select Art Style</Typography>
                                     }{
-                                        activeStep === 1 && <Typography>Generate Images</Typography>
+                                        !isXS && activeStep === 1 && <Typography>Generate Images</Typography>
                                     }{
-                                        activeStep === 2 && <Typography>Post Image</Typography>
+                                        !isXS && activeStep === 2 && <Typography>Post Image</Typography>
                                     }{
-                                        activeStep === 3 && <Link href={'/profile'} underline="none"><Typography>See Image</Typography></Link>
+                                        !isXS && activeStep === 3 && <Link href={'/profile'} underline="none"><NavigateNextIcon /><Typography>See Image</Typography></Link>
+                                    }{
+                                        isXS && activeStep === 3 && <Link href={'/profile'} underline="none"><NavigateNextIcon /></Link>
+                                    }{
+                                        activeStep !== 3 && <NavigateNextIcon />
                                     }
-                                        <NavigateNextIcon />
+                                        
                                 </Button>
                                 }
 
                             </Box>
-                            <Stepper activeStep={activeStep} orientation={'horizontal'} sx={{width: '100%'}}>
+                            <Stepper activeStep={activeStep} orientation={'horizontal'} sx={{width: '100%'}} alternativeLabel>
                                 {steps.map((step, index) => (
                                     <Step key={step.label} sx={{color: 'white'}}>
                                         <StepLabel>
-                                            <Typography sx={{color: 'white'}}>
-                                                {step.label}
-                                            </Typography>
+                                            {   
+                                                !isXS &&
+                                                <Typography sx={{color: 'white'}}>
+                                                    {step.label}
+                                                </Typography>
 
+                                            
+                                            }   
                                         </StepLabel>
                                         </Step>
                                     
