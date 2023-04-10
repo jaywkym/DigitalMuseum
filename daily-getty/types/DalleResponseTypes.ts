@@ -21,4 +21,9 @@ export type DalleResponse = {
     success: boolean
 }
 
+export type PromptResponse = {
+    success: boolean,
+    prompts: string[]
+}
+
 

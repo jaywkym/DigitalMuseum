@@ -41,6 +41,11 @@ export default async function request_image_handler(
     
 }
 
+function parseGPTContent(unifiedContent: string) {
+
+    const regex = '\ab+c\g';
+}
+
 /**
  * 
  * reqeustDalleImages: Attempts to request AI images from DALLE given a user
@@ -52,6 +57,8 @@ export default async function request_image_handler(
  * @returns DalleResponse representing a successful or error response from DALLE
  */
 async function requestToGPTAPI() {
+
+    return {choices: [{message: {content: "1. What's your favorite food?\\n2. What's your favorite place you've ever visited?\\n3. Do you prefer dogs or cats?\\n4. What's your go-to hobby?\\n5. What's one thing you're looking forward to in the next month?"}}]}
 
     /* Generate dalle post request information */
     const request = {
