@@ -228,7 +228,7 @@ export default function NewMuse() {
                     sx={{backgroundColor: 'common.blueScheme.background'}} 
                     zIndex={-10}
                 ></Box>
-                <NavBar isMobile={isXS} session={session} isUpdated={udatedQuestion}/>
+                <NavBar isMobile={isXS} session={session} />
                 <Snackbar 
                     open={userResponseError} 
                     autoHideDuration={6000} 
