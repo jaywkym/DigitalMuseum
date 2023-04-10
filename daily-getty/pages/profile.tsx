@@ -113,7 +113,7 @@ export default function Profile() {
                 >
 
                 </Box>
-                <NavBar isMobile={isXS} session={session} isUpdated = {udatedQuestion}/>
+                <NavBar isMobile={isXS} session={session} />
                 <Box display={'flex'} justifyContent={'end'} flexDirection={'column'} alignItems={'end'} width={'100%'}>
                     <Box 
                         sx={{

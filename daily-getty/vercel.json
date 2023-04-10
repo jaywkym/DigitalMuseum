@@ -1,0 +1,6 @@
+{
+    "crons": [{
+      "path": "/api/dalle/generate_prompts",
+      "schedule": "0 0 * * *"
+    }]
+}
