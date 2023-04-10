@@ -38,7 +38,8 @@ export type VotingPromptsResponse = {
 
 export type UserVotedResponse = {
     success: boolean,
-    voted : boolean
+    voted : boolean,
+    prompt : number
 }
 
 export type CurrentPromptResponse = {

@@ -25,40 +25,46 @@ export default async function request_image_handler(
     /* Only accept POST requests */
     if(req.method !== 'POST') {
         res.status(405).json(
-            {success: false, voted : false}
+            {success: false, voted : false, prompt: -1}
         )
         
         return;
     }
 
-    const user_id = req.body.user_id as string;
+    const user_id = req.body.user_id;
+    console.log(req.body)
+    console.log(req.body["user_id"])
 
     const votesResponse = await getAllVotes();
     if(!votesResponse.success) {
-        res.status(200).json({success: false, voted : false})
+        res.status(200).json({success: false, voted : false, prompt: -1})
         return;
     }
 
     const promptsObj = votesResponse.prompts;
     let voted = false;
 
-    promptsObj.forEach((promptObj) => {
+    promptsObj.map((promptObj, promptNum) => {
 
         const votes = promptObj.votes
 
         if(votes === undefined || voted)
             return;
 
+            console.log(votes)
+            console.log(user_id)
+
+
         if(votes.includes(user_id)) {
             voted = true;
-            res.status(200).json({success: true, voted: true})
+            res.status(200).json({success: true, voted: true, prompt: promptNum})
             return;
         }
     })
 
     if(voted) return;
 
-    res.status(200).json({success: true, voted : false})
+    res.status(200).json({success: true, voted : false, prompt : -1})
 }
 
 async function getAllVotes(): Promise<VotingPromptsResponse> {
