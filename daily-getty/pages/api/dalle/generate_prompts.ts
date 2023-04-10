@@ -6,12 +6,14 @@ import type {
     DalleError, 
     DalleResponse,
     ImageResponse,
+    PromptResponse,
 }  from "../../../types/DalleResponseTypes";
 import type { 
    DatabasePost,
    DatabaseUserResponse,
    DatabaseUser
 }  from "../../../types/FirebaseResponseTypes";
+import fs from 'fs'
 
 
 const DALLE_API_KEY = process.env.DALLE_API_KEY
@@ -31,19 +33,35 @@ const url = 'https://api.openai.com/v1/chat/completions'
  */
 export default async function request_image_handler(
   req: NextApiRequest,
-  res: NextApiResponse<ImageResponse>
+  res: NextApiResponse<PromptResponse>
 ) {
 
-    /* Only accept POST requests */
-   const response = await requestToGPTAPI();
+        /* Only accept POST requests */
+    const response = await requestToGPTAPI();
+    if(!response.success) {
+        res.status(200).json({error: true} as any as PromptResponse)
+        return;
+    } 
 
-   res.status(200).json(response)
+    const unifiedPrompts = response.choices[0].message.content
+
+    const prompts = parseGPTContent(unifiedPrompts)
+
+    fs.writeFileSync('prompts.json', JSON.stringify(prompts))
+
+    res.status(200).json({success: true, prompts: prompts})
     
 }
 
 function parseGPTContent(unifiedContent: string) {
 
-    const regex = '\ab+c\g';
+    const regex = /\d. .+/g;
+
+    const prompts = []
+    
+    unifiedContent.match(regex).forEach(prompt => prompts.push(prompt.substring(3)))
+   
+    return prompts;
 }
 
 /**
@@ -57,8 +75,6 @@ function parseGPTContent(unifiedContent: string) {
  * @returns DalleResponse representing a successful or error response from DALLE
  */
 async function requestToGPTAPI() {
-
-    return {choices: [{message: {content: "1. What's your favorite food?\\n2. What's your favorite place you've ever visited?\\n3. Do you prefer dogs or cats?\\n4. What's your go-to hobby?\\n5. What's one thing you're looking forward to in the next month?"}}]}
 
     /* Generate dalle post request information */
     const request = {
