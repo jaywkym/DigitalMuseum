@@ -28,19 +28,13 @@ import {
 const Post = ({ _userObj, _post, session }) => {
 
 
-    console.log(session.user.id)
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
-
-    console.log(userObj)
-    console.log(post)
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
 
     const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
-
-    console.log(owner)
 
     const [isHovering, setIsHovered] = useState(false);
 
@@ -140,7 +134,6 @@ const Post = ({ _userObj, _post, session }) => {
         try {
             const resp = await fetch('/api/database/posts/createComment', requesting)
             if (resp.status === 200)
-                console.log("test good")
                 setUserComment("");
                 loadUserComments().catch(console.error);
                 //window.location.reload();
@@ -152,12 +145,6 @@ const Post = ({ _userObj, _post, session }) => {
 
 
     const handleShare = async (event) => {
-
-        //console.log(commentfeed);
-
-        commentfeed.map((comment) => (
-            console.log(comment.comment)
-         ))
 
 
         // const url = post.image.url;
@@ -219,7 +206,6 @@ const Post = ({ _userObj, _post, session }) => {
         //setCommentfeed(dbComments);
 
 
-        //console.log(dbComments);
 
        
 
@@ -227,7 +213,6 @@ const Post = ({ _userObj, _post, session }) => {
             const commentHopes = Object.keys(dbComments).map((id) => {
                 return dbComments[id];
             })
-            console.log(commentHopes)
 
             setCommentfeed(commentHopes);
         }

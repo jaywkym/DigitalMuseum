@@ -1,16 +1,12 @@
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DatabasePost, DatabaseUser, DatabaseUsersResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Box, Container, Grid, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
-import HomeSearch from '@/src/components/homesearch';
+import { Box,ImageList, ImageListItem,Typography } from '@mui/material';
 import NavBar from '@/src/components/navbar';
 import Post from '@/src/components/post';
 import { constructCurrentDateId, requestPostFromUserById } from './database/posts';
-import { PostAddSharp } from '@mui/icons-material';
 import ExploreSearch from '@/src/components/ExploreSearch';
 import useScreenSize from './database/pages';
 import { green } from '@mui/material/colors';
@@ -23,17 +19,12 @@ export default function Asynchronous() {
     const [open, setOpen] = useState(false);
     const [explorefeed, setExplorefeed] = useState([] as DatabasePost[]);
     const [checkedForPosts, setCheckedForPosts] = useState(false)
-    const [udatedQuestion, setUpdated] = useState(false);
+    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
     const postsLoading = explorefeed.length === 0 && !checkedForPosts
     const noPosts = explorefeed.length === 0 && checkedForPosts
 
-    const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
-
-    const { push } = useRouter();
-
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
-    const loading: boolean = open && users.length === 0;
 
     useEffect(() => {
 
@@ -109,8 +100,7 @@ export default function Asynchronous() {
                 >
 
                     <ExploreSearch users={users} />
-                    {/* <Post _userObj={session} _post={testPost} key={1} session={session} /> */}
-
+                    
                 </Box>
                 <Box
                     sx={{

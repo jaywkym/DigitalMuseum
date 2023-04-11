@@ -1,41 +1,41 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
-import Stack from '@mui/material/Stack';
 import Head from 'next/head'
-import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import List from '@mui/material/List';
-import { Container } from '@mui/system';
-import HomeSearch from '@/src/components/homesearch';
 import Post from '@/src/components/post';
-// import NavBar from '@/src/components/bottomnav';
 import { requestPostFromUserById } from './database/posts';
-import { CircularProgress } from '@mui/material';
-import { green } from '@mui/material/colors';
 import { DatabasePost, DatabaseUser, DatabaseUserPostsResponse } from '@/types/FirebaseResponseTypes';
 import { useSession } from 'next-auth/react';
 import { requestFriendsForUser } from './database/profile';
 import NavBar from '@/src/components/navbar';
 import useScreenSize from './database/pages';
+import { Typography } from '@mui/material';
 
 export default function HomeFeed() {
 
-    const [value, setValue] = React.useState(0);
     const { data: session, status } = useSession();
     const user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
     const [friends, setFriends] = useState([] as string[]);
     const [posts, setPosts] = useState([] as DatabasePost[])
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
-    const [udatedQuestion, setUpdated] = useState(false);
-
-    const [anyPost, updateAnyPosts] = useState(false);
+    const [pulledFriends, setPulledFriends] = useState(false);
 
     const friends_updated = friends && friends.length !== 0;
     const posts_updated = posts && posts.length !== 0;
+    const noFriends = pulledFriends && friends.length === 0;
+
+    console.log({
+        noFriends: noFriends,
+        friends: friends,
+        pulledFriends: pulledFriends,
+        posts: posts
+    })
 
     useEffect(() => {
+
+        if(user.id === undefined)
+            return;
 
         async function pullFriends() {
             const dbFriendsResponse = await requestFriendsForUser(user.id);
@@ -46,8 +46,9 @@ export default function HomeFeed() {
             if(!dbFriendsResponse.friends){
                 return;
             }
+
+            console.log(dbFriendsResponse.friends)
                
-            console.log("got here? wo3w")
             if(!dbFriendsResponse.friends.following)
                 setFriends([] as string[])
             else
@@ -60,9 +61,6 @@ export default function HomeFeed() {
     }, [user.id])
 
     useEffect(() => {
-        if(!friends_updated)
-            return;
-
 
         async function pullBlankPostsFromFriends() {
 
@@ -83,23 +81,12 @@ export default function HomeFeed() {
                 const dbResponse = await fetch(`/api/database/posts/getAllPostsFromUser`, request)
                 const json = await dbResponse.json() as DatabaseUserPostsResponse;
 
-                console.log("getting da photos")
-                console.log(json)
                 if(!json.success)
                     return;
 
                 if(!json.posts){
                     return;
                 }
-
-                const databasePosting: DatabasePost[] = session ? json.posts as DatabasePost[] : null;
-
-                console.log(databasePosting)
-                if(databasePosting == null){
-                    console.log("its 0 bb")
-                }
-                    
-                    
 
                 const user_posts: DatabasePost[] = Object.keys(json.posts).map((post_id) => {
                     return json.posts[post_id] as DatabasePost
@@ -113,24 +100,22 @@ export default function HomeFeed() {
 
             blankPosts.sort((a, b) => {return a.id < b.id? 1 : 0});
             setPosts(blankPosts)
+            setPulledFriends(true)
 
         }
 
         pullBlankPostsFromFriends()
         .catch(console.error)
 
-    }, [friends_updated])
+    }, [friends])
 
     useEffect(() => {
-        if(!posts_updated)
-            return;
 
         async function pullAllPosts() {
 
             const promises = posts.map(async (blank_post) => {
                 
                 const dbResponse = await requestPostFromUserById(blank_post.user_id, blank_post.id)
-                console.log(dbResponse)
                 if(!dbResponse.success)
                 
                     return;
@@ -141,12 +126,10 @@ export default function HomeFeed() {
                 const post = dbResponse.post;
                 let current_index = 0;
 
-                console.log("testing 1")
                 posts.forEach((current_post) => {
 
                     if(current_post.id == post.id && current_post.user_id == post.user_id) {
                         posts[current_index].image.url = post.image.url
-                        console.log(posts[current_index])
                         return;
                     }
 
@@ -164,7 +147,7 @@ export default function HomeFeed() {
         pullAllPosts()
         .catch(console.error)
 
-    }, [posts_updated])
+    }, [posts])
 
     return (
         <>
@@ -205,6 +188,13 @@ export default function HomeFeed() {
 
                                 marginTop={4}
                         >
+
+                            {   noFriends &&
+                                <Typography variant={'h4'} color={'common.blueScheme.notWhite'}>
+                                    You are not following anyone. Check out the explore page to find users.
+                                </Typography>
+
+                            }
                             
                             
                              <ImageList cols={isXS ? 1 : isSM ? 3 : 2}  gap={20}>
