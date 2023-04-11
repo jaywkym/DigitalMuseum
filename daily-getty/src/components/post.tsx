@@ -6,7 +6,7 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { CommentsResponse, DatabaseComment, DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, use, useEffect, useRef, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
 import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/database/posts';
@@ -33,6 +33,14 @@ const Post = ({ _userObj, _post, session }) => {
     const [isHovering, setIsHovered] = useState(false);
 
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
+
+    const [likes, changeLikes] = useState(0);
+
+   // console.log(post.likes);
+    // if(post.likes){
+        
+    //     changeLikes(post.likes.length);
+    // }
 
     const alt = post.userPrompt
     const postQuestion = post.givenPrompt
@@ -100,12 +108,12 @@ const Post = ({ _userObj, _post, session }) => {
     }
 
     const handleShare = async (event) => {
-        // const url = post.image.url;
+        const url = post.image.url;
 
-        // const downloadLink = document.createElement("a");
-        // downloadLink.href = url;
-        // downloadLink.download = post.userPrompt;
-        // downloadLink.click();
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = post.userPrompt;
+        downloadLink.click();
     }
 
     //COMMENT MODAL
@@ -150,6 +158,11 @@ const Post = ({ _userObj, _post, session }) => {
         if (imageNeedsUpdate)
             return;
 
+        if(post.likes){
+    
+            changeLikes(post.likes.length);
+        }
+
         getUserInfo()
             .catch(console.error)
 
@@ -159,11 +172,15 @@ const Post = ({ _userObj, _post, session }) => {
     }, [])
 
     async function handleLike() {
-        if (userLikesPost)
+        if (userLikesPost){
             await unlikePost()
-        else
+            changeLikes(likes-1)
+        }
+        else{
             await likePost()
-
+            changeLikes(likes+1)
+        }
+        
         await getUserLikesPost()
     }
 
@@ -255,16 +272,7 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            {/*
-                                            {
-                                                noLikes &&
-                                                <p>0 Likes</p>
-                                            }
-                                            {
-                                                !noLikes &&
-                                                <p>{postLikes} Likes</p>
-                                            }
-                                        */}
+                                            {likes}
                                             <ThumbUpOffAltIcon
                                                 sx={{
                                                     color: 'common.blueScheme.notWhite',
@@ -285,16 +293,7 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            {/*
-                                            {
-                                                noLikes &&
-                                                <p>0 Likes</p>
-                                            }
-                                            {
-                                                !noLikes &&
-                                                <p>{postLikes} Likes</p>
-                                            }
-                                        */}
+                                            {likes}
                                             <ThumbUpIcon
                                                 sx={{
                                                     color: 'white',
