@@ -215,6 +215,7 @@ const Post = ({ _userObj, _post, session }) => {
                         display={'flex'}
                         flexDirection={'column'}
                         justifyContent={'space-between'}
+                        overflow = "scroll"
                     >
                         <Box
                             width={'100%'}
@@ -347,12 +348,12 @@ const Post = ({ _userObj, _post, session }) => {
                                 </Box>
                             </Box>
                             <Box sx={{ marginBottom: '20%', padding: '10%' }}>
-                                <Typography variant='navButtonText' fontWeight={'1000'} fontSize={22} textAlign={'center'}>
+                                <Typography variant='navButtonText' fontWeight={'1000'} fontSize={20} textAlign={'center'}>
                                     {postQuestion}
                                 </Typography>
                                 <br></br>
                                 <br></br>
-                                <Typography variant='navButtonText' fontWeight={'200000'} fontSize={16} textAlign={'center'}>
+                                <Typography variant='navButtonText' fontWeight={'200000'} fontSize={14} textAlign={'center'}>
                                     {profileName} said: {post.userPrompt}
                                 </Typography>
                                 <CommentsModal _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session} isOpen={isModalOpen} onCloseModal={handleModalClose} />
