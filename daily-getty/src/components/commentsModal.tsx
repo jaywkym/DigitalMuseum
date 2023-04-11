@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import Slide, { SlideProps } from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
+import { CommentsResponse, DatabaseComment, DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { Fragment, useEffect, useRef, useState, forwardRef } from 'react';
 import { pull_user } from '@/pages/database/profile';
 import Link from 'next/link';
@@ -20,7 +20,9 @@ const Transition = forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CommentsModal = ({ _userObj, _post, session }) => {
+
+const CommentsModal = ({ _userObj, _post, session, isOpen, onCloseModal }) => {
+
 
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
@@ -36,8 +38,6 @@ const CommentsModal = ({ _userObj, _post, session }) => {
     const postQuestion = post.givenPrompt
     const date = post.id
     const src = post.image.url
-    const userPost = post.user_id
-    const postLikes = post.likes.length
 
     const profileName = postProfile.name
     const profileImage = postProfile.image
@@ -47,17 +47,77 @@ const CommentsModal = ({ _userObj, _post, session }) => {
     const userName = userObj ? userObj.name : ''
 
     //const comments = post.comments TO BE IMPLEMENTED Should be an array of comments 
+    const [userComment, setUserComment] = useState('');
+    const [commentfeed, setCommentfeed] = useState([] as DatabaseComment[]);
+    const [checkedForComments, setCheckedForComments] = useState(false)
 
-    const [open, setOpen] = useState(false);
+    const commentsLoading = commentfeed.length === 0 && !checkedForComments
+    const noPosts = commentfeed.length === 0 && checkedForComments
+
+    async function loadUserComments() {
+        const commentTest = {
+            owner_id: post.user_id,
+            post_id: date,
+        }
+
+        const requesting = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(commentTest)
+        }
+
+        const comments = [];
+        const resp = await fetch(`/api/database/posts/getPostComments`, requesting)
+        const json = await resp.json() as CommentsResponse;
+
+        const dbComments = json.comments;
+        //setCommentfeed(dbComments);
+
+        if (dbComments) {
+            const commentHopes = Object.keys(dbComments).map((id) => {
+                return dbComments[id];
+            })
+            setCommentfeed(commentHopes);
+        }
+        setCheckedForComments(true);
+    }
+
+    const commentOnPost = async (event) => {
+
+        if (userComment == "") {
+            return;
+        }
+        const commentRetrieveTest = {
+            owner_id: post.user_id,
+            user_id: userObj.id,
+            post_id: date,
+            username: userName,
+            comment: userComment,
+        }
+
+        const requesting = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(commentRetrieveTest)
+        }
+
+        try {
+            const resp = await fetch('/api/database/posts/createComment', requesting)
+            if (resp.status === 200)
+                setUserComment("");
+            loadUserComments().catch(console.error);
+            //window.location.reload();
+        } catch (err: any) {
+            console.error(err)
+        }
+
+    }
+
     const [newComment, setNewComment] = useState('');
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     const handleNewCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setNewComment(event.target.value);
@@ -67,64 +127,93 @@ const CommentsModal = ({ _userObj, _post, session }) => {
         // Add logic to submit the new comment
         console.log('Submit comment:', newComment);
         setNewComment('');
-        handleClose();
     };
+
+    useEffect(() => {
+        loadUserComments().catch(console.error);
+    }, [])
 
     return (
         <Box>
-            {/* ... existing content */}
-            <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-                View Comments
-            </Button>
             <Dialog
-                open={open}
+                open={isOpen}
                 TransitionComponent={Transition}
                 keepMounted
-                onClose={handleClose}
+                onClose={onCloseModal}
                 maxWidth="sm"
                 fullWidth
+                PaperProps={{
+                    sx: {
+                        backgroundColor: '#0c181f',
+                        borderRadius: 2, // Adjust this value to change the roundness of the corners
+                    },
+                }}
             >
-                <DialogTitle sx={{ backgroundColor: '#1a237e', color: '#ffffff' }}>
+                <DialogTitle sx={{ backgroundColor: '#0c181f', color: '#ffffff' }}>
                     Comments
                 </DialogTitle>
-                <DialogContent sx={{ backgroundColor: '#303f9f', color: '#ffffff' }}>
+                <DialogContent sx={{ backgroundColor: '#060c0f', color: '#ffffff' }}>
                     {/* Map through the comments and display each comment with user's name, profile image, and content */}
                     {/* Replace `comments` with the actual comments data */}
-                    {/*
-                    {comments.map((comment) => (
-                        <Box key={comment.id} display="flex" alignItems="center" mb={1}>
-                            <Link href={`/profile/${comment.user.id}`}>
-                                <Avatar
-                                    alt={comment.user.name}
-                                    src={comment.user.profileImage}
-                                    sx={{ cursor: 'pointer', marginRight: 1 }}
-                                />
-                            </Link>
+                    <Box sx={{ m: 2 }}>
+                        {
+                            commentfeed.map((comment, index) => (
+                                <Box sx={{ m: 1 }} key={index} display="flex" alignItems="center" mb={1}>
+                                    {
+                                        /*
+                                        <Link href={`/profile/${comment.username}`}>
+                                        {/
+                                        <Avatar
+                                            alt={comment.username}
+                                            src={comment.user.profileImage}
+                                            sx={{ cursor: 'pointer', marginRight: 1 }}
+                                        />
+                                        }
+                                    </Link>*/
+                                    }
+
+                                    <Typography variant="body1">
+                                        <strong>{comment.username}: </strong> {comment.comment}
+                                    </Typography>
+                                </Box>
+                            ))
+                        }
+
+                        {
+                            commentsLoading &&
                             <Typography variant="body1">
-                                <strong>{comment.user.name}</strong> {comment.content}
+                                <strong>Critques loading...</strong>
                             </Typography>
-                        </Box>
-                    ))}
-                    */}
-                </DialogContent>
-                <DialogActions sx={{ backgroundColor: '#1a237e' }}>
+                        }
+
+                        {
+                            noPosts &&
+                            <Box sx={{ m: 3 }}>
+                                <Typography variant="body1">
+                                    <strong>No Critiques Yet</strong>
+                                </Typography>
+                            </Box>
+                        }
+
+                    </Box>
+
                     <TextField
-                        autoFocus
-                        margin="dense"
-                        id="comment"
-                        label="Add a comment"
-                        type="text"
+                        id="prompt-field"
+                        label="Place Response here"
+                        sx={{ backgroundColor: 'common.blueScheme.notWhite' }}
+                        size={'medium'}
                         fullWidth
-                        variant="standard"
-                        value={newComment}
-                        onChange={handleNewCommentChange}
-                        InputProps={{ disableUnderline: true, style: { color: '#ffffff' } }}
-                        InputLabelProps={{ style: { color: '#c7a4ff' } }}
-                    />
-                    <Button onClick={handleSubmitComment} color="primary">
+                        multiline
+                        onChange={(e) => setUserComment(e.target.value)}
+                        value={userComment}
+                        placeholder='Ages like eggs...'
+                    ></TextField>
+                </DialogContent>
+                <DialogActions sx={{ backgroundColor: '#0c181f' }}>
+                    <Button onClick={commentOnPost} color="primary">
                         Submit
                     </Button>
-                    <Button onClick={handleClose} color="secondary">
+                    <Button onClick={onCloseModal} color="secondary">
                         Cancel
                     </Button>
                 </DialogActions>
