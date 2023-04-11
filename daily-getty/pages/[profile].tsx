@@ -32,9 +32,6 @@ export default function Profile() {
 
     const loadProfile = router.query.profile === undefined;
 
-    console.log(pageProfile)
-
-
     let posts_map = posts? posts : {}
 
     useEffect(() => {
@@ -71,8 +68,6 @@ export default function Profile() {
 
 
     async function loadImages(blankPosts) {
-
-        console.log(blankPosts)
 
         blankPosts.forEach(async (post) => {
 
@@ -120,7 +115,12 @@ export default function Profile() {
             return dbPosts[id];
         })
 
-        blankPosts.sort().reverse()
+        blankPosts.sort((a, b) => {
+            const date_a = (new Date(a.id.replaceAll('_', '-'))).getTime()
+            const date_b = (new Date(b.id.replaceAll('_', '-'))).getTime()
+
+             return date_a < date_b? 1 : 0;
+        })
 
         setPosts(blankPosts)
 
