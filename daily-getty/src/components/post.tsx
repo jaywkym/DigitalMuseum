@@ -153,19 +153,12 @@ const Post = ({ _userObj, _post, session }) => {
 
     const handleShare = async (event) => {
 
-        //console.log(commentfeed);
+        const url = post.image.url;
 
-        commentfeed.map((comment) => (
-            console.log(comment.comment)
-         ))
-
-
-        // const url = post.image.url;
-
-        // const downloadLink = document.createElement("a");
-        // downloadLink.href = url;
-        // downloadLink.download = post.userPrompt;
-        // downloadLink.click();
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = post.userPrompt;
+        downloadLink.click();
     } //Overlay Share Window
 
 

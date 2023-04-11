@@ -17,7 +17,7 @@ const navButtons: navButton[] = [
     {name: 'Homefeed', icon: <HomeIcon sx={{transform: 'scale(1.5)'}} />, url: '/homefeed'}, 
     {name: 'Explore', icon: <ExploreIcon sx={{transform: 'scale(1.5)'}}/>,url: '/explore'}, 
     {name: 'NewMuse', icon: <AddCircleIcon sx={{transform: 'scale(1.5)'}} />, url: '/newmuse'}, 
-    {name: 'vote', icon: <PollIcon sx={{transform: 'scale(1.5)'}} />, url: '/vote/prompt'},
+    {name: 'Vote', icon: <PollIcon sx={{transform: 'scale(1.5)'}} />, url: '/vote/prompt'},
     {name: 'Profile', icon: <AccountBoxIcon sx={{transform: 'scale(1.5)'}} />, url: '/profile'}, 
 ];
 
