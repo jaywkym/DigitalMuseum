@@ -201,7 +201,7 @@ const ProfileHeader = ({ user, session }) => {
                         >
                             {followers.map((followerId) => (
                                 // Replace this with actual follower data
-                                <Link key={followerId} href={`/profile/${followerId}`}>
+                                <Link key={followerId} href={`/${followerId}`}>
                                     <DialogContentText>
                                         {/* Replace this with the actual follower name */}
                                         {followerId}
@@ -257,7 +257,7 @@ const ProfileHeader = ({ user, session }) => {
                         >
                             {following.map((followingId) => (
                                 // Replace this with actual following data
-                                <Link key={followingId} href={`/profile/${followingId}`}>
+                                <Link key={followingId} href={`/${followingId}`}>
                                     <DialogContentText>
                                         {/* Replace this with the actual following name */}
                                         {followingId}
