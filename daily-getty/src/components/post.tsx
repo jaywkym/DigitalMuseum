@@ -5,6 +5,7 @@ import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, Tog
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ChatIcon from '@mui/icons-material/Chat';
 import { CommentsResponse, DatabaseComment, DatabasePost, DatabaseUser } from '@/types/FirebaseResponseTypes';
 import { Fragment, use, useEffect, useRef, useState } from 'react';
 import { pull_user } from '@/pages/database/profile';
@@ -357,13 +358,14 @@ const Post = ({ _userObj, _post, session }) => {
                                     {profileName} said: {post.userPrompt}
                                 </Typography>
                                 <CommentsModal _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session} isOpen={isModalOpen} onCloseModal={handleModalClose} />
+                                <br></br>
                                 <Box sx={{ m: 1 }} display={'flex'} alignContent={'center'} justifyContent={'center'}  >
                                     <Button sx={{
                                         color: '#4a148c',
                                         backgroundColor: '#ffffff',
                                         borderRadius: '15px',
                                         border: '1px solid #ffffff',
-                                    }} onClick={handleModalOpen}>See Critiques</Button>
+                                    }} onClick={handleModalOpen}>See Comments</Button>
                                 </Box>
                             </Box>
                         </Box>

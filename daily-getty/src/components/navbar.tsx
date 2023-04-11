@@ -88,7 +88,7 @@ const NavBar = ({ isMobile, session }) => {
                 position: 'fixed',
                 boxShadow: '1px 1px 7px 7px'
             }}>
-                <Box sx={{ width: '100%', maxWidth: 120 }}>
+                <Box sx={{ width: '100%', maxWidth: 120, marginTop:2}}>
                     <Link href='/homefeed'><img src='../static/logo.png' width='100%'></img></Link>
                 </Box>
                 <Stack spacing={2} >
