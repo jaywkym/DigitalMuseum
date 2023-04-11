@@ -1,10 +1,4 @@
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Imagelist from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Avatar, CardActionArea, Collapse, Grow, ImageListItemBar, Skeleton, ToggleButton, TextField, ListItem, ListItemText, ListItemButton, List } from '@mui/material';
@@ -19,28 +13,22 @@ import { requestIfUserLikesPost, useLikeImage, useUnlikeImage } from '@/pages/da
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddCommentIcon from '@mui/icons-material/AddComment';
-import { FixedSizeList, ListChildComponentProps} from 'react-window';
+//import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import {
     RedditShareButton,
     RedditIcon,
 } from 'next-share'
+import CommentsModal from './commentsModal';
 
 const Post = ({ _userObj, _post, session }) => {
 
-
-    console.log(session.user.id)
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
-
-    console.log(userObj)
-    console.log(post)
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
 
 
     const [owner, setOwner] = useState(userObj.id == post.user_id ? true : false);
-
-    console.log(owner)
 
     const [isHovering, setIsHovered] = useState(false);
 
@@ -60,11 +48,9 @@ const Post = ({ _userObj, _post, session }) => {
 
     const userName = userObj ? userObj.name : '';
 
+
     const [commentfeed, setCommentfeed] = useState([] as DatabaseComment[]);
     const [checkedForComments, setCheckedForComments] = useState(false)
-
-    const commentsLoading = commentfeed.length === 0 && !checkedForComments
-    const noPosts = commentfeed.length === 0 && checkedForComments
 
     const [userComment, setUserComment] = useState('');
 
@@ -92,15 +78,12 @@ const Post = ({ _userObj, _post, session }) => {
         if (days === 0) {
             return "Today";
         }
-
         else if (days === 1) {
             return "Yesterday"
         }
-
         else if (days <= 30) {
             return days + " days ago"
         }
-
         return months + " months ago"
     }
 
@@ -116,51 +99,27 @@ const Post = ({ _userObj, _post, session }) => {
             setPostProfile(resp_profile)
     }
 
-    const commentOnPost = async (event) => {
+    const handleShare = async (event) => {
+        // const url = post.image.url;
 
-        if(userComment == ""){
-            return;
-        }
-         const commentRetrieveTest = {
-            owner_id: post.user_id,
-            user_id: userObj.id,
-            post_id: date,
-            username: userName,
-            comment: userComment,
-        }
-
-        const requesting = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(commentRetrieveTest)
-        }
-
-        try {
-            const resp = await fetch('/api/database/posts/createComment', requesting)
-            if (resp.status === 200)
-                console.log("test good")
-                setUserComment("");
-                loadUserComments().catch(console.error);
-                //window.location.reload();
-        } catch (err: any) {
-            console.error(err)
-        }
-
+        // const downloadLink = document.createElement("a");
+        // downloadLink.href = url;
+        // downloadLink.download = post.userPrompt;
+        // downloadLink.click();
     }
 
+    //COMMENT MODAL
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleShare = async (event) => {
+    const handleModalOpen = () => {
+        setIsModalOpen(true);
+        console.log("Open Modal")
+    };
 
-        const url = post.image.url;
-
-        const downloadLink = document.createElement("a");
-        downloadLink.href = url;
-        downloadLink.download = post.userPrompt;
-        downloadLink.click();
-    } //Overlay Share Window
-
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        console.log("Close Modal")
+    };
 
     const deletePost = async () => {
 
@@ -186,61 +145,6 @@ const Post = ({ _userObj, _post, session }) => {
         }
     }
 
-    async function loadUserComments() {
-
-
-        const commentTest = {
-            owner_id: post.user_id,
-            post_id: date,
-        }
-
-        const requesting = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(commentTest)
-        }
-
-        const comments = [];
-        const resp = await fetch(`/api/database/posts/getPostComments`, requesting)
-        const json = await resp.json() as CommentsResponse;
-
-        
-
-        const dbComments = json.comments;
-        //setCommentfeed(dbComments);
-
-
-        //console.log(dbComments);
-
-       
-
-        if(dbComments){
-            const commentHopes = Object.keys(dbComments).map((id) => {
-                return dbComments[id];
-            })
-            console.log(commentHopes)
-
-            setCommentfeed(commentHopes);
-        }
-
-        setCheckedForComments(true);
-
-    }
-
-    useEffect(() => {
-
-        loadUserComments().catch(console.error);
-
-    }, [])
-
-    const CommentObject = ({time,author,comment, username}) => 
-        <li key={time}>
-            <h2>{username}</h2>
-            <h4>{comment}</h4>
-        </li>
-
     useEffect(() => {
 
         if (imageNeedsUpdate)
@@ -261,12 +165,10 @@ const Post = ({ _userObj, _post, session }) => {
             await likePost()
 
         await getUserLikesPost()
-
     }
 
     const imageRef = useRef(null);
     const imageHeight = imageRef.current ? imageRef.current.height : 0
-
 
     return (
         <Box
@@ -323,8 +225,8 @@ const Post = ({ _userObj, _post, session }) => {
                                     justifyContent={'start'}
                                     height={'30%'}
                                 >
-                                    <Link  href={`/${profileId}`}>
-                                        <Typography 
+                                    <Link href={`/${profileId}`}>
+                                        <Typography
                                             variant='navButtonText'
                                             sx={{ fontSize: { xs: 16, sm: 16, md: 18, lg: 20 } }}
                                         >
@@ -353,7 +255,16 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            <p>{/*postLikes*/} Likes</p>
+                                            {/*
+                                            {
+                                                noLikes &&
+                                                <p>0 Likes</p>
+                                            }
+                                            {
+                                                !noLikes &&
+                                                <p>{postLikes} Likes</p>
+                                            }
+                                        */}
                                             <ThumbUpOffAltIcon
                                                 sx={{
                                                     color: 'common.blueScheme.notWhite',
@@ -374,7 +285,16 @@ const Post = ({ _userObj, _post, session }) => {
                                         <Box display={'flex'}
                                             flexDirection={'row'}
                                         >
-                                            <p>{/*postLikes*/} Likes</p>
+                                            {/*
+                                            {
+                                                noLikes &&
+                                                <p>0 Likes</p>
+                                            }
+                                            {
+                                                !noLikes &&
+                                                <p>{postLikes} Likes</p>
+                                            }
+                                        */}
                                             <ThumbUpIcon
                                                 sx={{
                                                     color: 'white',
@@ -401,7 +321,6 @@ const Post = ({ _userObj, _post, session }) => {
 
                                             onClick={handleShare}
                                         />
-
                                     }
                                     {
                                         owner &&
@@ -431,78 +350,30 @@ const Post = ({ _userObj, _post, session }) => {
                                 </Box>
                             </Box>
                             <Box sx={{ marginBottom: '20%', padding: '10%' }}>
-                                <Typography variant='navButtonText' fontWeight={'1000'} fontSize={25} textAlign={'center'}>
-                                    Prompt: {postQuestion}
-                                </Typography>
-                                <br></br>
-                                <br></br>
-                                <Typography variant='navButtonText' fontWeight={'200000'} fontSize={18} textAlign={'center'}>
-                                    {profileName} said: {post.userPrompt}
-
-                                </Typography>
-                                
-                            <Box sx={{ marginBottom: '50%', padding: '10%' }}>
-                                {/* <Typography variant={'h5'} textAlign={'center'}>
+                                <Typography variant='navButtonText' fontWeight={'1000'} fontSize={22} textAlign={'center'}>
                                     {postQuestion}
                                 </Typography>
-                                <Typography variant={'h6'} textAlign={'center'}>
-                                    {post.userPrompt}
-                                </Typography> */}
-
-                                    <TextField
-                                        id="prompt-field"
-                                        label="Place Response here"
-                                        sx={{backgroundColor: 'common.blueScheme.notWhite'}}
-                                        size={'medium'}
-                                        fullWidth
-                                        multiline
-                                        onChange={(e) => setUserComment(e.target.value)}
-                                        value={userComment}
-                                        placeholder='Like a spoon in the wind...'
-                                    ></TextField>
-                                    <Button onClick={commentOnPost}>
-                                        Post
-                                    </Button>
-
-                                     
-                                    <List  sx={{ maxHeight: 130, height: '100%', overflow: 'auto',  padding: '10%', bgcolor: 'background.paper', }}>
-                                        {
-                                            commentfeed.map((comment, index) => (
-                                                <ListItem sx={{  }} key={index}  >
-                                                   <ListItemText primary={
-                                                   <Typography variant="body2" style={{ color: '#000000'}}>{comment.username}: {comment.comment}</Typography>
-                                                   
-                                                   } />
-                                                </ListItem> 
-                                                ))
-                                        }      
-                                    </List>
-                                             
-
-                            </Box>
-                            <Box display={'flex'} alignContent={'center'} justifyContent={'center'}  >
-                                <Button
-                                    sx={{
+                                <br></br>
+                                <br></br>
+                                <Typography variant='navButtonText' fontWeight={'200000'} fontSize={16} textAlign={'center'}>
+                                    {profileName} said: {post.userPrompt}
+                                </Typography>
+                                <CommentsModal _userObj={user} _post={post} key={post.user_id + "-" + post.id} session={session} isOpen={isModalOpen} onCloseModal={handleModalClose} />
+                                <Box sx={{ m: 1 }} display={'flex'} alignContent={'center'} justifyContent={'center'}  >
+                                    <Button sx={{
                                         color: '#4a148c',
                                         backgroundColor: '#ffffff',
                                         borderRadius: '15px',
                                         border: '1px solid #ffffff',
-                                    }}
-                                >
-                                    See Critiques
-                                </Button>
+                                    }} onClick={handleModalOpen}>See Critiques</Button>
+                                </Box>
                             </Box>
-                        </Box>
                         </Box>
                     </Box>
                 </Collapse>
-            </Box>
-
-        </Box>
-
+            </Box >
+        </Box >
     );
-
 }
-
 
 export default Post;

@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head'
 import Box from '@mui/material/Box';
 import Image from 'next/image';
-import CssBaseline from '@mui/material/CssBaseline';
-import abstractbg from "./public/abstractbg.jpg"
-import CheckItemExists from "@/src/components/checkPostExistence"
 import NavBar from '@/src/components/navbar';
 import { useSession } from 'next-auth/react';
 import useScreenSize from './database/pages';
@@ -30,8 +27,6 @@ export default function NewMuse() {
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
     const [activeStep, setActiveStep] = useState(0);
 
-    const [udatedQuestion, setUpdated] = useState(false);
-
     const [ImageExist, doesImageExist] = useState(true);
 
     const [prompt, setPrompt] = useState('')
@@ -43,7 +38,6 @@ export default function NewMuse() {
     const maxSteps = 3;
 
     const [hoveringImage, setHoveringImage] = useState(false);
-    const [imageSelected, setImageSelected] = useState(0)
 
     const [imageSaving, setImageSaving] = useState(false);
 
@@ -56,7 +50,6 @@ export default function NewMuse() {
     const userResponseOK = activeStep == 0 && userResponse.length > 0 && userResponse.length <= MAX_INPUT_CHARACTER_COUNT;
     const artStyleOK = activeStep == 1 && artStyle !== '';
     const imageSelectedOK = activeStep == 2 && image_urls.length > 0 && images_success && !images_loading;
-    //const imagePostedOK = 
 
     useEffect(() => {
 
@@ -204,7 +197,6 @@ export default function NewMuse() {
     }, [])
 
     function handleAlertClose() {
-        console.log("Closed")
         setUserResponseError(false)
     }
 
