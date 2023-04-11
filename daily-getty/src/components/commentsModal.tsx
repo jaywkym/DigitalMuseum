@@ -27,9 +27,6 @@ const CommentsModal = ({ _userObj, _post, session, isOpen, onCloseModal }) => {
     const userObj = _userObj as DatabaseUser;
     const post = _post as DatabasePost;
 
-    console.log(userObj)
-    console.log(post)
-
     const [postProfile, setPostProfile] = useState({} as DatabaseUser)
 
     let user: DatabaseUser = session ? session.user as DatabaseUser : {} as DatabaseUser;
@@ -125,7 +122,6 @@ const CommentsModal = ({ _userObj, _post, session, isOpen, onCloseModal }) => {
 
     const handleSubmitComment = () => {
         // Add logic to submit the new comment
-        console.log('Submit comment:', newComment);
         setNewComment('');
     };
 

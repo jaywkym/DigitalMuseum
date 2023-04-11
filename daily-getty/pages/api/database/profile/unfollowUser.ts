@@ -12,7 +12,6 @@ export default async function removeFriend (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
-    console.log("got into part of this?")
     /* Only accept POST requests */
     if(req.method !== 'POST') {
         res.status(405).json(
@@ -68,7 +67,6 @@ export default async function removeFriend (
 
     let new_friends_obj: DatabaseFriends = await getFollowingForUserById(friend_id);
 
-    console.log("here?2")
     if(!new_friends_obj)
         new_friends_obj = {
             id: friend_id,
@@ -91,7 +89,7 @@ export default async function removeFriend (
         )
         return;
     }
-    console.log("here?42")
+
     if(!new_friends_obj.followers.includes(user_id)) {
         res.status(200).json(
             generateDbResponse(
@@ -106,10 +104,10 @@ export default async function removeFriend (
     new_friends_obj.followers.splice(friend_index, 1);
 
     const db = database;
-    console.log("here?5")
+
     set(ref(db, `friends/${user_id}`), friends_obj)
     set(ref(db, `friends/${friend_id}`), new_friends_obj)
-    console.log("here?6")
+
     res.status(200).json(
         generateDbResponse(
             true,

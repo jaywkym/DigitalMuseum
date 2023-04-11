@@ -82,9 +82,6 @@ export default async function followUser (
 
     const db = database;
 
-    console.log(friends_obj)
-    console.log(new_friends_obj)
-
     set(ref(db, `friends/${user_id}`), friends_obj)
     set(ref(db, `friends/${friend_id}`), new_friends_obj)
 

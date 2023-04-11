@@ -30,8 +30,6 @@ export default async function checkPost (
     const user_id = body.user_id
     const post_id = body.post_id
 
-    console.log(user_id);
-    console.log(post_id);
     const db = database;
     const dbref = ref(db, `posts/${user_id}/${post_id}`)
 

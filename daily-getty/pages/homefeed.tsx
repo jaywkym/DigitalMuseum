@@ -25,13 +25,6 @@ export default function HomeFeed() {
     const posts_updated = posts && posts.length !== 0;
     const noFriends = pulledFriends && friends.length === 0;
 
-    console.log({
-        noFriends: noFriends,
-        friends: friends,
-        pulledFriends: pulledFriends,
-        posts: posts
-    })
-
     useEffect(() => {
 
         if(user.id === undefined)
@@ -46,8 +39,6 @@ export default function HomeFeed() {
             if(!dbFriendsResponse.friends){
                 return;
             }
-
-            console.log(dbFriendsResponse.friends)
                
             if(!dbFriendsResponse.friends.following)
                 setFriends([] as string[])
@@ -98,7 +89,13 @@ export default function HomeFeed() {
 
             await Promise.all(promise);
 
-            blankPosts.sort((a, b) => {return a.id < b.id? 1 : 0});
+            blankPosts.sort((a, b) => {
+                const date_a = (new Date(a.id.replaceAll('_', '-'))).getTime()
+                const date_b = (new Date(b.id.replaceAll('_', '-'))).getTime()
+    
+                 return date_a < date_b? 1 : 0;
+            })
+            
             setPosts(blankPosts)
             setPulledFriends(true)
 

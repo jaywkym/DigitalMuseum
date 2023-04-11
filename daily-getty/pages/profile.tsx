@@ -17,7 +17,6 @@ export default function Profile() {
     const { data: session, status } = useSession();
     const [posts, setPosts] = useState([] as DatabasePost[]);
     const [loading, setLoading] = useState(false);
-    const [udatedQuestion, setUpdated] = useState(false);
 
     const [isXS, isSM, isMD, isLG, isXL] = useScreenSize();
 
@@ -70,11 +69,16 @@ export default function Profile() {
         const dbResponse = await resp.json() as DatabaseUserPostsResponse;
         const dbPosts = dbResponse.posts;
 
-        const blankPosts = Object.keys(dbPosts).map((id) => {
+        const blankPosts: DatabasePost[] = Object.keys(dbPosts).map((id) => {
             return dbPosts[id];
         })
 
-        blankPosts.sort().reverse()
+        blankPosts.sort((a, b) => {
+            const date_a = (new Date(a.id.replaceAll('_', '-'))).getTime()
+            const date_b = (new Date(b.id.replaceAll('_', '-'))).getTime()
+
+             return date_a < date_b? 1 : 0;
+        })
 
         setPosts(blankPosts)
 

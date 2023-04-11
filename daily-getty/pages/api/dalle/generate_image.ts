@@ -109,7 +109,7 @@ async function requestToDalleAPI(prompt: string, amount: string) {
 
     /* Return error if an error occured fetching the DALLE api */
     } catch (err: any) {
-        console.log(err)
+        console.error(err)
         return generateError(1, 'unknown error');
     }
 }
@@ -179,7 +179,7 @@ async function addPostApi(info: DatabasePost) {
             
         })
         .catch(err => {
-            console.log("ERR: Fetching in addPostApi")
+            console.error("ERR: Fetching in addPostApi")
             resolve(false)
         })
     })
@@ -201,23 +201,19 @@ async function addPostApi(info: DatabasePost) {
         body: JSON.stringify(user)
     }
 
-    console.log("Pull user requesT")
-    console.log(request)
-
     return new Promise((resolve, reject) => {
         fetch(`${process.env.NEXTAUTH_URL}api/database/profile/getUserAccount`, request)
         .then(res => res.json())
         .then((resj) => {
             const res = resj as DatabaseUserResponse;
-            console.log("Received response")
-            console.log(res)
+
             if(res.success)
                 resolve(res.user)
             resolve(res.user)
             
         })
         .catch(err => {
-            console.log("ERR: In pull_user fetching")
+            console.error("ERR: In pull_user fetching")
             reject(err);
         })
     })

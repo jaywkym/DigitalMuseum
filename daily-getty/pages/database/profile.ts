@@ -30,19 +30,6 @@ export function useFollowing(user_id: string):
 
         const dbFriendsResponse = await requestFollowingForUser(user_id);
 
-        console.log(dbFriendsResponse)
-
-        // if(dbFriendsResponse.success) {
-        //     if(dbFriendsResponse.friends)
-        //         if(dbFriendsResponse.friends.following)
-        //             setFollowing(dbFriendsResponse.friends.following)
-        //     else {
-        //         setFollowing([]);
-        //     }
-        // } else {
-        //     setFollowing([])
-        // }
-
        setLoading(false);
     }
 
@@ -123,7 +110,6 @@ export function useFollowUser(user_id: string, friend_id: string):
 
 export function useUnfollowUser(user_id: string, friend_id: string):
     [boolean, boolean, () => Promise<void>] {
-        //console.log("test this dogddamit ")
 
         const [success, setSuccess] = useState(false);
         const [loading, setLoading] = useState(false);

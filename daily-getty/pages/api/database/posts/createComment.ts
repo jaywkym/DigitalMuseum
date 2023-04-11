@@ -15,8 +15,6 @@ export default async function createPost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
-    console.log("inside createComment");
-
     /* Only accept POST requests */
     if(req.method !== 'POST') {
         res.status(405).json(
@@ -42,18 +40,9 @@ export default async function createPost (
     const day = date.getDate();
     const post_id = body.post_id
 
-    console.log("testing post_id comment")
-    console.log(post_id);
-
-
     const time = String(date.getTime());
 
     const owner = body.owner_id
-
-    //console.log(time)
-
-    //const post_id = year + "_" + month + "_" + day;
-
     
     const dbcomment = {
         time: time,

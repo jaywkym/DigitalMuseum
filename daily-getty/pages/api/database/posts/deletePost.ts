@@ -29,8 +29,7 @@ export default async function unlikePost (
     }
 
     const body = req.body;
-    console.log(body)
-    console.log("in start")
+
     if(!body.post_id || !body.owner_id) {
         res.status(418).json(
             generateDbResponse(
@@ -41,16 +40,14 @@ export default async function unlikePost (
 
         return;
     }
-    console.log("in start")
+
     const post_id = body.post_id;
     const owner_id = body.owner_id;
-    console.log("in start1.5")
-    const db = database;
-    console.log("in start1.5")
-    const dbref = ref(db, `posts/${owner_id}/${post_id}`)
-    console.log("in start1.55")
 
-    console.log("in start2")
+    const db = database;
+
+    const dbref = ref(db, `posts/${owner_id}/${post_id}`)
+
     let post = await asyncOnValue(dbref);
     if(!post) {
         res.status(418).json(
@@ -65,10 +62,8 @@ export default async function unlikePost (
     }
     //set(ref(db, `posts/${owner_id}/${post_id}`), null)
 
-    console.log("in start3")
     remove(ref(db, `posts/${owner_id}/${post_id}`));
 
-    console.log("in start4")
     res.status(200).json(
         generateDbResponse(
             true, 

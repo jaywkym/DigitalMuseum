@@ -121,12 +121,10 @@ const Post = ({ _userObj, _post, session }) => {
 
     const handleModalOpen = () => {
         setIsModalOpen(true);
-        console.log("Open Modal")
     };
 
     const handleModalClose = () => {
         setIsModalOpen(false);
-        console.log("Close Modal")
     };
 
     const deletePost = async () => {

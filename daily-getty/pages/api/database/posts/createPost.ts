@@ -18,8 +18,6 @@ export default async function createPost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
-    console.log("inside createPost");
-
     /* Only accept POST requests */
     if(req.method !== 'PUT') {
         res.status(405).json(
@@ -76,12 +74,8 @@ export default async function createPost (
 async function uploadToAWS(url: string, user_id: string, post_id: string): Promise<string> {
 
     try {
-        // const res = await fetch(url, { method : 'GET' })
-        // const blob = await res.blob()
-        // const arrayBuffer = await blob.arrayBuffer();
         const buffer = Buffer.from(url, 'base64');
-    
-        console.log(buffer)
+
         
         const uploadedImage = await s3.upload({
             Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -90,8 +84,6 @@ async function uploadToAWS(url: string, user_id: string, post_id: string): Promi
             ContentType: 'image/png'
         }).promise()
 
-        // const awsSignedURL = await s3.getSignedUrl('putObject', {Bucket: process.env.AWS_S3_BUCKET_NAME, Key: uploadedImage.Key})
-        // console.log(awsSignedURL)
 
         return `${process.env.AWS_S3_BUCKET_URL}${user_id}_${post_id}`
     } catch (err: any) {

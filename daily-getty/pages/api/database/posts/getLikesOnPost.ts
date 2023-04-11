@@ -65,8 +65,6 @@ export default async function userLikesPost (
 
     let userLiked = post.likes;
 
-    //console.log(userLiked)
-
     res.status(200).json(
         generateDbResponse(
             post.likes

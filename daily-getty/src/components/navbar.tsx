@@ -93,9 +93,9 @@ const NavBar = ({ isMobile, session }) => {
                 </Box>
                 <Stack spacing={2} >
                     {
-                        navButtons.map(({ name, icon, url }) => {
+                        navButtons.map(({ name, icon, url }, index) => {
                             return (
-                                <>
+                                <Box key={name + "_" + index}>
                                     <Box
 
                                         sx={{
@@ -142,7 +142,7 @@ const NavBar = ({ isMobile, session }) => {
                                             </Button>
                                         </Link>
                                     </Box>
-                                </>
+                                </Box>
                             )
                         })
                     }
