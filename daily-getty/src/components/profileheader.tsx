@@ -93,27 +93,13 @@ const ProfileHeader = ({ user, session }) => {
     const handleFollowingOpen = () => setFollowingOpen(true);
     const handleFollowingClose = () => setFollowingOpen(false);
 
-
-
-    // console.log({
-    //     user_id: user.id,
-    //     userNeedsUpdate: userNeedsUpdate,
-    //     friendsLoading: loadingFriends,
-    //     followers: followers,
-    //     following: following
-    // })
-
     useEffect(() => {
 
         async function checkFriendship() {
 
             let foundFriend = false;
-            // setLoadingFriends(true);
 
             const dbFriends = await requestFriendsForUser(user.id)
-
-            console.log("session id is")
-            console.log(session_user.id)
 
             if (dbFriends)
                 if (dbFriends.friends)
@@ -125,25 +111,10 @@ const ProfileHeader = ({ user, session }) => {
                                 foundFriend = true
                             }
                         });
-            console.log("im inside the use effect:")
-            console.log(foundFriend);
+
             setIsFriend(foundFriend)
 
         }
-
-        // if (!sFollowing)
-        //     return;
-
-        //console.log(sFollowing);
-        // sFollowing.forEach(friend => {
-
-        //     if (friend == session_user.id ||
-        //         friend == user.id) {
-        //         foundFriend = true
-        //         return;
-        //     }
-
-        // })
 
         checkFriendship()
             .catch(console.error)

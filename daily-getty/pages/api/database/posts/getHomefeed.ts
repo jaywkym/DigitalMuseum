@@ -27,25 +27,13 @@ export default async function getHomefeed (
         return;
     }
 
-    console.log("Pulling session")
-
     const session = await getServerSession(req, res, authOptions);
-
-    console.log("Received session")
-    console.log(session)
 
     const user_id = (session.user as any).id
 
     const resp = await getAllPostsForUsers(user_id);
 
     let posts = resp.posts
-
-    console.log(posts)
-    
-    // const db = database;
-    // const dbref = ref(db, `posts/${user_id}`)
-
-    // let posts = await asyncOnValue(dbref);
 
     if(posts === null)
         posts = {} as DatabasePost[]
@@ -65,8 +53,6 @@ function getAllPostsForUsers(user_id: string): Promise<DatabaseUserPostsResponse
         })
     }
 
-    console.log(request)
-
     return new Promise((resolve, reject) => {
         fetch(`${process.env.NEXTAUTH_URL}api/database/posts/getAllPostsFromUser`, request)
         .then(res => res.json())
@@ -74,20 +60,14 @@ function getAllPostsForUsers(user_id: string): Promise<DatabaseUserPostsResponse
 
             const res = resj as DatabaseUserPostsResponse
 
-            console.log(res)
             if(!res.success) {
                 resolve(res)
             }
 
-            console.log("Received post")
-            console.log(res)
-
             resolve(res)
-
            
         })
         .catch(err => {
-            console.log(err)
             resolve({} as DatabaseUserPostsResponse)
         })
     })

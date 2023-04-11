@@ -88,21 +88,13 @@ export const authOptions: NextAuthOptions = {
             if (!(profile as any).email_verified)
                 return false;
 
-            console.log("Checking email verified")
-
             /* Reject login if email is not verified */
             if (!(profile as any).email_verified)
                 return false;
 
-            console.log("Email verified")
-            console.log("Checking account exists")
-
-            console.log(user)
-
             /* Verify if new user (Create account) */
             const account_exists = await check_user_exists(user.email);
 
-            console.log("Account exists: " + account_exists)
             /* Log in user if their account exists */
             if (account_exists)
                 return true;
@@ -115,19 +107,13 @@ export const authOptions: NextAuthOptions = {
                 googleId: user.id
             }
 
-            console.log(userAccount)
-
-            console.log("Creating account...")
-
             /* Create user account if it does not exist */
             const resp = await create_account(userAccount)
 
             if (!resp) {
-                console.log("ERR: Could not create account")
+                console.error("ERR: Could not create account")
                 return false;
             }
-
-            console.log("Account created")
 
             return true
         },
@@ -215,7 +201,7 @@ async function pull_user(user: DatabaseUser): Promise<DatabaseUser> {
 }
 
 async function check_user_exists(email: string): Promise<boolean> {
-    console.log("Checking for user")
+
     const request = {
         method: 'POST',
         headers: {
@@ -225,9 +211,6 @@ async function check_user_exists(email: string): Promise<boolean> {
             'email': email
         })
     }
-
-    console.log("Sending request in check_user_exists")
-    console.log(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`)
 
     try {
         const resp = await fetch(`${process.env.NEXTAUTH_URL}api/database/profile/checkForUser`, request);

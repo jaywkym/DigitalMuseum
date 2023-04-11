@@ -67,18 +67,10 @@ export default async function userLikesPost (
 
     let userLiked = post.likes;
 
-    //console.log(userLiked)
-    console.log("RECEIVING SESSION")
     const session = await getServerSession(req, res, authOptions);
-    console.log(session)
     const session_id = (session.user as any).id
 
     const userLikesPost = userLiked.includes(session_id)
-
-    console.log({
-        list: userLiked,
-        true: userLikesPost
-    })
 
     res.status(200).json(
         generateDbResponse(

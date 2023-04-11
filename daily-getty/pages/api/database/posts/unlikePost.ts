@@ -16,7 +16,6 @@ export default async function unlikePost (
     res: NextApiResponse<DatabaseResponse>
   ) {
 
-    console.log("INSIDE THIS BITCH \n\n\n\n")
     /* Only accept POST requests */
     if(req.method !== 'POST') {
         res.status(405).json(

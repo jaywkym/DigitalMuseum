@@ -66,8 +66,6 @@ export default async function likePost (
 
     let userLiked = post.likes;
 
-    console.log(userLiked)
-
     const session = await getServerSession(req, res, authOptions);
     const session_id = (session.user as any).id;
 

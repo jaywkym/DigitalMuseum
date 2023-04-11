@@ -240,8 +240,6 @@ export function useUserLikesImage(user_id: string, post_id: string, owner_id: st
 
     async function unlikeImage() {
 
-        console.log("GOT HERE")
-
         if(loading || !user_id || !post_id) {
             setSuccess(false)
             return;
@@ -256,7 +254,6 @@ export function useUserLikesImage(user_id: string, post_id: string, owner_id: st
         setSuccess(false);
 
         const dbResponse = await requestUnlikePost(user_id, post_id, owner_id);
-        console.log(dbResponse)
 
         setSuccess(dbResponse.success)
         setLoading(false)
@@ -284,8 +281,6 @@ export async function requestLikePost(
             owner_id: owner_id
         })
     }
-
-    console.log(request);
 
     try {
 
